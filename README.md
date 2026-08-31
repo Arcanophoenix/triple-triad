@@ -23,14 +23,15 @@ thing - engine, GUI, card art - into one double-clickable executable.
 
 - **Cut a release:** push a tag (`git tag v0.1.0 && git push --tags`). The
   `build` workflow (`.github/workflows/build.yml`) runs the tests, builds a binary
-  on Linux / macOS x86-64 / macOS arm64 / Windows with PyInstaller, and attaches
-  the four zips to a GitHub Release. `workflow_dispatch` builds them without a tag.
+  on Linux and Windows with PyInstaller, and attaches the zips to a GitHub Release.
+  `workflow_dispatch` builds them without a tag. (macOS isn't built - add a
+  `macos-latest` matrix entry if you need it; the runners cost 10x minutes.)
 - **Build one locally:** `pip install pyinstaller && pyinstaller --clean --noconfirm
-  TripleTriad.spec` → `dist/TripleTriad`.
+  TripleTriad.spec` → `dist/TripleTriad`. This is also how a Mac user gets a build.
 - **What a recipient does:** unzip, run it. It starts the local server and opens
   the board in their browser, same as `./tt-cli gui`. The binary is unsigned, so
-  first launch needs a nudge past the OS: macOS → right-click → Open (once);
-  Windows → "More info" → "Run anyway". Their collection / history / review cache
+  first launch needs a nudge past the OS: Windows → "More info" → "Run anyway";
+  macOS → right-click → Open (once). Their collection / history / review cache
   live in a per-user folder (`%APPDATA%\TripleTriad`, `~/Library/Application
   Support/TripleTriad`, or `~/.local/share/triple-triad`), printed on startup and
   overridable with `TRIPLE_TRIAD_HOME`. The bundled NPC decks are read-only;

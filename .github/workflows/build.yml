@@ -27,10 +27,6 @@ jobs:
         include:
           - os: ubuntu-latest
             asset: TripleTriad-linux-x86_64
-          - os: macos-13
-            asset: TripleTriad-macos-x86_64
-          - os: macos-latest
-            asset: TripleTriad-macos-arm64
           - os: windows-latest
             asset: TripleTriad-windows-x86_64
     runs-on: ${{ matrix.os }}
