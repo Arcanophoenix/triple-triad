@@ -1,0 +1,314 @@
+{
+  "Triple Triad Master": {
+    "cards": [
+      "Chocobo Card",
+      "Mandragora Card",
+      "Tonberry Card",
+      "Pudding Card",
+      "Spriggan Card"
+    ],
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Jonas of the Three Spades": {
+    "fixed": [
+      "Demon Wall Card",
+      "Sabotender Card",
+      "Spriggan Card"
+    ],
+    "pool": [
+      "Blue Dragon Card",
+      "Ahriman Card",
+      "Ixal Card",
+      "Moogle Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open",
+      "Same"
+    ]
+  },
+  "Guhtwint of the Three Diamonds": {
+    "fixed": [
+      "Behemoth Card",
+      "Blue Dragon Card",
+      "Bomb Card"
+    ],
+    "pool": [
+      "Scarface Bugaal Ja Card",
+      "Chocobo Card",
+      "Ahriman Card",
+      "Coblyn Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open",
+      "Plus"
+    ]
+  },
+  "Maisenta": {
+    "fixed": [
+      "Mutamix Bubblypots Card",
+      "Mandragora Card",
+      "Coeurl Card"
+    ],
+    "pool": [
+      "Succubus Card",
+      "Sylph Card",
+      "Coblyn Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Roger": {
+    "fixed": [
+      "Blue Dragon Card",
+      "Morbol Card",
+      "Chocobo Card"
+    ],
+    "pool": [
+      "Chimera Card",
+      "Ixal Card",
+      "Pudding Card",
+      "Bomb Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Mother Miounne": {
+    "fixed": [
+      "Mother Miounne Card",
+      "Baderon Tenfingers Card",
+      "Ixal Card"
+    ],
+    "pool": [
+      "Frixio Card",
+      "Momodi Modi Card",
+      "Ahriman Card",
+      "Goobbue Card",
+      "Pudding Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "F'hobhas": {
+    "fixed": [
+      "Godbert Manderville Card",
+      "Mutamix Bubblypots Card",
+      "Amalj'aa Card"
+    ],
+    "pool": [
+      "Demon Wall Card",
+      "Chocobo Card",
+      "Sahagin Card",
+      "Pudding Card",
+      "Bomb Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Momodi": {
+    "fixed": [
+      "Momodi Modi Card",
+      "Mother Miounne Card",
+      "Amalj'aa Card"
+    ],
+    "pool": [
+      "Mutamix Bubblypots Card",
+      "Baderon Tenfingers Card",
+      "Chocobo Card",
+      "Coeurl Card",
+      "Coblyn Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Wymond": {
+    "fixed": [
+      "Ultros & Typhon Card",
+      "Momodi Modi Card",
+      "Chocobo Card"
+    ],
+    "pool": [
+      "Blue Dragon Card",
+      "Spriggan Card",
+      "Mandragora Card",
+      "Coblyn Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Memeroon": {
+    "fixed": [
+      "Memeroon Card",
+      "Amalj'aa Card",
+      "Dodo Card"
+    ],
+    "pool": [
+      "Siren Card",
+      "Tonberry Card",
+      "Mandragora Card",
+      "Goobbue Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Helmhart": {
+    "fixed": [
+      "Godbert Manderville Card",
+      "Gerolt Card",
+      "Ahriman Card"
+    ],
+    "pool": [
+      "Louisoix Leveilleur Card",
+      "Titan Card",
+      "Ultros & Typhon Card",
+      "Scarface Bugaal Ja Card",
+      "Tonberry Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Baderon": {
+    "fixed": [
+      "Momodi Modi Card",
+      "Baderon Tenfingers Card",
+      "Mother Miounne Card"
+    ],
+    "pool": [
+      "Y'shtola Card",
+      "Siren Card",
+      "Scarface Bugaal Ja Card",
+      "Sahagin Card",
+      "Kobold Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Mimidoa": {
+    "fixed": [
+      "Leviathan Card",
+      "Biggs & Wedge Card",
+      "Tataru Taru Card"
+    ],
+    "pool": [
+      "Memeroon Card",
+      "Chimera Card",
+      "Ixal Card",
+      "Chocobo Card",
+      "Moogle Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Piralnaut": {
+    "fixed": [
+      "Minfilia Card",
+      "Succubus Card",
+      "Frixio Card"
+    ],
+    "pool": [
+      "Raya-O-Senna & A-Ruhn-Senna Card",
+      "Mother Miounne Card",
+      "Coeurl Card",
+      "Sahagin Card",
+      "Amalj'aa Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Aurifort of the Three Clubs": {
+    "fixed": [
+      "Ultima Weapon Card",
+      "Succubus Card",
+      "Memeroon Card"
+    ],
+    "pool": [
+      "Scarface Bugaal Ja Card",
+      "Moogle Card",
+      "Sylph Card",
+      "Goobbue Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open",
+      "Order"
+    ]
+  },
+  "Trachtoum": {
+    "fixed": [
+      "Titan Card",
+      "Gerolt Card",
+      "Tonberry Card"
+    ],
+    "pool": [
+      "Y'shtola Card",
+      "Blue Dragon Card",
+      "Ultros & Typhon Card",
+      "Moogle Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Fufulupa": {
+    "fixed": [
+      "Biggs & Wedge Card",
+      "Momodi Modi Card",
+      "Tonberry Card"
+    ],
+    "pool": [
+      "Raubahn Aldynn Card",
+      "Thancred Card",
+      "Tataru Taru Card",
+      "Moogle Card",
+      "Chocobo Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Yellow Moon": {
+    "fixed": [
+      "Gaius van Baelsar Card",
+      "Gaelicat Card"
+    ],
+    "pool": [
+      "Yugiri Mistwalker Card",
+      "Gerolt Card",
+      "Rhitahtyn sas Arvina Card",
+      "Tidus Card",
+      "Shiva Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Ascension",
+      "Swap"
+    ]
+  }
+}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triple Triad</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav id="nav">
+  <span class="brand">Triple Triad <span class="brand-sub">solver</span></span>
+  <button class="nav-btn" data-view="solver">Solver</button>
+  <button class="nav-btn" data-view="manage">Manage decks</button>
+</nav>
+
+<datalist id="npclist"></datalist>
+
+<main>
+
+  <!-- ============ SOLVER ============ -->
+  <section id="view-solver" class="view">
+    <div class="card-box">
+      <h2>Play an NPC</h2>
+
+      <label for="npc">Opponent</label>
+      <input id="npc" list="npclist" placeholder="type an NPC name">
+      <div id="npc-info" class="hint"></div>
+      <div id="npc-deck-wrap" hidden>
+        <label for="npc-deck">Their 5 cards (deck not recorded)</label>
+        <input id="npc-deck" placeholder="Chocobo, Mandragora, Tonberry, Pudding, Spriggan">
+      </div>
+
+      <label>Your deck</label>
+      <div class="deck-choose">
+        <select id="deck-pick"><option value="">— pick a saved deck —</option></select>
+        <button id="recommend-btn" type="button" class="ghost">Recommend from owned</button>
+      </div>
+      <div id="deck-preview" class="deck-preview"></div>
+      <div id="rec-out" class="rec-out"></div>
+
+      <label for="rules">Rules override</label>
+      <input id="rules" placeholder="(blank = use the NPC's)">
+
+      <div class="row radios">
+        <label><input type="radio" name="first" value="1" checked> I go first</label>
+        <label><input type="radio" name="first" value="0"> NPC first</label>
+      </div>
+
+      <button id="start" class="primary">Start match</button>
+      <div id="setup-err" class="err"></div>
+    </div>
+  </section>
+
+  <!-- ============ MANAGE ============ -->
+  <section id="view-manage" class="view" hidden>
+    <div class="manage-grid">
+
+      <div class="card-box">
+        <h2>Deck</h2>
+        <div class="deck-choose">
+          <select id="deck-load"><option value="">— load a deck —</option></select>
+          <button id="deck-new" type="button" class="ghost">New</button>
+        </div>
+        <div class="slots" id="deck-slots"></div>
+        <div id="deck-count" class="hint"></div>
+        <label for="deck-name">Name</label>
+        <div class="save-row">
+          <input id="deck-name" placeholder="name this deck">
+          <button id="save-deck" class="primary" type="button">Save</button>
+          <button id="del-deck" class="ghost" type="button">Delete</button>
+        </div>
+        <div id="deck-msg" class="hint"></div>
+        <p class="hint">Click a card on the right to add or drop it. Max 5, at most one 4-5★.</p>
+      </div>
+
+      <div class="card-box">
+        <h2>Cards <span id="own-count" class="hint inl"></span></h2>
+        <div class="pick-tools">
+          <input id="card-filter" placeholder="filter by name or number…">
+          <label class="inl"><input type="checkbox" id="owned-only"> owned only</label>
+        </div>
+        <div class="picker" id="card-picker"></div>
+        <p class="hint">Checkbox = you own it. Row = in the deck on the left.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="view-game" class="view" hidden>
+    <div class="topbar">
+      <span id="rules-badge" class="badge"></span>
+      <span id="score" class="score"></span>
+      <span id="turn" class="turn"></span>
+      <span class="spacer"></span>
+      <label class="inl" title="On your turn, play the recommended move automatically. You still enter the NPC's moves."><input type="checkbox" id="autoplay"> Auto-play my moves</label>
+      <button id="undo">Undo</button>
+      <button id="newgame">New match</button>
+    </div>
+
+    <div class="board" id="board">
+      <div class="name name-you" id="name-you">You</div>
+      <div class="name name-npc" id="name-npc">NPC</div>
+      <div class="hand hand-you" id="hand-you"></div>
+      <div class="hand hand-npc" id="hand-npc"></div>
+      <div class="grid" id="grid"></div>
+      <div class="rec-line" id="rec-line"></div>
+      <div class="banner" id="banner" hidden></div>
+    </div>
+
+    <div class="unseen" id="npc-unseen" hidden></div>
+    <div class="postmatch" id="postmatch" hidden></div>
+    <div class="tip" id="tip"></div>
+  </section>
+
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

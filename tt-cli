@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""Triple Triad tools - single entry point.
+
+  ./tt-cli <command> [args...]
+
+commands:
+  gui        browser GUI - the FFXIV board, click to play          (start here)
+  play       interactive match in the terminal, recommendation each of your turns
+  solve      solve.py: `solve move ...` mid-game  |  `solve plan <NPC> ...` whole match
+  recommend  best 5-card deck vs an NPC from the cards you own
+  difficulty rank NPCs by rough difficulty - who to challenge in what order
+  review     replay logged matches and check the solver against the results
+  scrape     import NPC decks + rules from reference/NPCs/*.html
+  deck       add | show | list recorded NPC decks (manual)
+  data       rebuild data/cards.json + data/npcs.json from reference/
+
+Run a command with -h for its own options, e.g. `./tt-cli play -h`.
+"""
+import runpy
+import sys
+from pathlib import Path
+
+CMDS = {
+    "gui": "gui.py",
+    "play": "play.py",
+    "solve": "solve.py",
+    "recommend": "recommend.py",
+    "difficulty": "difficulty.py",
+    "review": "review.py",
+    "scrape": "scrape_npc.py",
+    "deck": "deck.py",
+    "data": "extract_wiki.py",
+}
+
+if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help", "help"):
+    print(__doc__)
+    sys.exit(0)
+if sys.argv[1] not in CMDS:
+    print(f"unknown command {sys.argv[1]!r}\n", file=sys.stderr)
+    print(__doc__, file=sys.stderr)
+    sys.exit(2)
+
+root = Path(__file__).resolve().parent
+target = root / "scripts" / CMDS[sys.argv[1]]
+sys.path.insert(0, str(root / "scripts"))   # sibling-module imports (e.g. ttdata)
+sys.path.insert(0, str(root))               # the tt/ package
+sys.argv = [str(target), *sys.argv[2:]]
+runpy.run_path(str(target), run_name="__main__")

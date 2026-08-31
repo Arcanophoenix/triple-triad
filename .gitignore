@@ -1,0 +1,30 @@
+# --- per-user data (never shared) --------------------------------------------
+/data/collection.json
+/data/history.jsonl
+/data/.review_cache.json
+/notes.txt
+
+# --- scrape inputs / bulky wiki mirrors -------------------------------------
+# Not needed to run or build. cards.json / npcs.json are committed already;
+# re-save these pages from the wiki only when you need `tt-cli data` / `scrape`.
+# The card-icon dir and the "Cards @ ARR" art + html ARE kept - the GUI serves them.
+/reference/NPCs/
+/reference/Triple Triad Cards*.html
+/reference/Triple Triad - Final*.html
+/reference/Triple Triad NPCs*.html
+/reference/Triple Triad - Final*_files/
+/reference/Triple Triad NPCs*_files/
+/reference/*.webp
+
+# --- build output ----------------------------------------------------------
+/build/
+/dist/
+*.spec.bak
+
+# --- python -------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/

@@ -1,0 +1,2904 @@
+[
+  {
+    "name": "Aiglephine",
+    "slug": "Aiglephine",
+    "location": {
+      "zone": "Labyrinthos",
+      "x": 29.2,
+      "y": 13.2
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Troll Card"
+    ],
+    "unlock": "Glorified Ratcatcher",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "Arsieu",
+    "slug": "Arsieu",
+    "location": {
+      "zone": "Gangos",
+      "x": 5.9,
+      "y": 6.6
+    },
+    "rules": [
+      "Plus",
+      "Ascension"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Dawon Card",
+      "Adrammelech Card"
+    ],
+    "unlock": "The Lady of Blades",
+    "patch": "5.35",
+    "deck": null
+  },
+  {
+    "name": "Aurifort of the Three Clubs",
+    "slug": "Aurifort_of_the_Three_Clubs",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.0,
+      "y": 7.0
+    },
+    "rules": [
+      "Three Open",
+      "Order"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 50,
+    "rewards": [
+      "Goobbue Card",
+      "Scarface Bugaal Ja Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Baderon",
+    "slug": "Baderon",
+    "location": {
+      "zone": "Limsa Lominsa Upper Decks",
+      "x": 11.6,
+      "y": 11.1
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 49,
+    "rewards": [
+      "Sahagin Card",
+      "Baderon Tenfingers Card"
+    ],
+    "unlock": "A Wild Rose by Any Other Name",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Botan",
+    "slug": "Botan",
+    "location": {
+      "zone": "Kugane",
+      "x": 7.8,
+      "y": 14.7
+    },
+    "rules": [
+      "Plus",
+      "Roulette"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 73,
+    "rewards": [
+      "Louhi Card",
+      "Happy Bunny Card",
+      "Yukinko Card",
+      "Pazuzu Card"
+    ],
+    "unlock": "And We Shall Call It Pyros",
+    "patch": "4.45",
+    "deck": null
+  },
+  {
+    "name": "Br'uk Noq'",
+    "slug": "Br%27uk_Noq%27",
+    "location": {
+      "zone": "Yak T'el",
+      "x": 12.7,
+      "y": 14.8
+    },
+    "rules": [
+      "Ascension"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Branchbearer Card"
+    ],
+    "unlock": "The Feat of the Brotherhood",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Buscarron",
+    "slug": "Buscarron",
+    "location": {
+      "zone": "South Shroud",
+      "x": 18.1,
+      "y": 19.8
+    },
+    "rules": [
+      "Order"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 59,
+    "rewards": [
+      "Demon Wall Card",
+      "Raya-O-Senna & A-Ruhn-Senna Card",
+      "Papalymo & Yda Card"
+    ],
+    "unlock": "Into the Beast's Maw",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Camalbusert",
+    "slug": "Camalbusert",
+    "location": {
+      "zone": "Old Sharlayan",
+      "x": 14.7,
+      "y": 11.1
+    },
+    "rules": [
+      "Fallen Ace",
+      "Swap"
+    ],
+    "mgp_cost": null,
+    "mgp_win": 48,
+    "rewards": [
+      "Genie of the Lamp Card",
+      "Rukhkh Card"
+    ],
+    "unlock": "A Spellbinding Read",
+    "patch": "7.45",
+    "deck": null
+  },
+  {
+    "name": "Celia",
+    "slug": "Celia",
+    "location": {
+      "zone": "Old Sharlayan",
+      "x": 15.8,
+      "y": 6.9
+    },
+    "rules": [
+      "Plus",
+      "Sudden Death"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 73,
+    "rewards": [
+      "Fourchenault Leveilleur Card",
+      "Endwalker Alphinaud & Alisaie Card"
+    ],
+    "unlock": "Endwalker",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "Cheatingway",
+    "slug": "Cheatingway",
+    "location": {
+      "zone": "Old Sharlayan",
+      "x": 11.0,
+      "y": 8.9
+    },
+    "rules": [
+      "Swap",
+      "Plus"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Loporrit Card",
+      "Argos Card"
+    ],
+    "unlock": "Her Children, One and All",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "Cobleva",
+    "slug": "Cobleva",
+    "location": {
+      "zone": "Lakeland",
+      "x": 14.3,
+      "y": 7.7
+    },
+    "rules": [
+      "Plus",
+      "Reverse"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 34,
+    "rewards": [
+      "Dwarf Card",
+      "Rolling Tankard Card"
+    ],
+    "unlock": "Tanks for the Memory",
+    "patch": "5.3",
+    "deck": null
+  },
+  {
+    "name": "Dominiac",
+    "slug": "Dominiac",
+    "location": {
+      "zone": "Coerthas Western Highlands",
+      "x": 16.6,
+      "y": 22.6
+    },
+    "rules": [
+      "Order"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 73,
+    "rewards": [
+      "Griffin Card",
+      "Deepeye Card"
+    ],
+    "unlock": "A War without End",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Drery",
+    "slug": "Drery",
+    "location": {
+      "zone": "Amh Araeng",
+      "x": 11.8,
+      "y": 16.9
+    },
+    "rules": [
+      "Plus",
+      "Same"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 48,
+    "rewards": [
+      "Evil Weapon Card",
+      "Gigantender Card"
+    ],
+    "unlock": "Have a Heart and Mystery Miners",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Droyn",
+    "slug": "Droyn",
+    "location": {
+      "zone": "Ul'dah - Steps of Thal",
+      "x": 11.8,
+      "y": 13.0
+    },
+    "rules": [
+      "Same",
+      "Descension"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Siegfried Card",
+      "Azulmagia Card"
+    ],
+    "unlock": "Blue Cheese",
+    "patch": "5.45",
+    "deck": null
+  },
+  {
+    "name": "Elaisse",
+    "slug": "Elaisse",
+    "location": {
+      "zone": "The Pillars",
+      "x": 7.7,
+      "y": 10.8
+    },
+    "rules": [
+      "Chaos",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 112,
+    "rewards": [
+      "Archaeornis Card",
+      "Gibrillont Card"
+    ],
+    "unlock": "Caught in the Act",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Elvaan Red Mage",
+    "slug": "Elvaan_Red_Mage",
+    "location": {
+      "zone": "Lower Jeuno",
+      "x": 6.7,
+      "y": 6.3
+    },
+    "rules": [
+      "Chaos",
+      "Plus"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Promathia Card"
+    ],
+    "unlock": "Distant Promises",
+    "patch": "7.5",
+    "deck": null
+  },
+  {
+    "name": "Eo Sigun",
+    "slug": "Eo_Sigun",
+    "location": {
+      "zone": "Il Mheg",
+      "x": 22.2,
+      "y": 3.6
+    },
+    "rules": [
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 40,
+    "rewards": [
+      "Porxie Card",
+      "Nu Mou Card"
+    ],
+    "unlock": "Manic Pixie Dream Realm",
+    "patch": "5.1",
+    "deck": null
+  },
+  {
+    "name": "Ercanbald",
+    "slug": "Ercanbald",
+    "location": {
+      "zone": "Rhalgr's Reach",
+      "x": 9.8,
+      "y": 9.7
+    },
+    "rules": [],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Griffin Card",
+      "M'naago Card"
+    ],
+    "unlock": "A Haven for the Bold",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "F'hobhas",
+    "slug": "F%27hobhas",
+    "location": {
+      "zone": "Central Thanalan",
+      "x": 23.5,
+      "y": 13.9
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 33,
+    "rewards": [
+      "Mutamix Bubblypots Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Flichoirel the Lordling",
+    "slug": "Flichoirel_the_Lordling",
+    "location": {
+      "zone": "The Battlehall",
+      "x": 3.7,
+      "y": 3.6
+    },
+    "rules": [],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Colibri Card",
+      "Nael van Darnus Card"
+    ],
+    "unlock": "",
+    "patch": "3.4",
+    "deck": null
+  },
+  {
+    "name": "Fufulupa",
+    "slug": "Fufulupa",
+    "location": {
+      "zone": "Western Thanalan",
+      "x": 22.6,
+      "y": 17.1
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 48,
+    "rewards": [
+      "Chimera Card",
+      "Thancred Card"
+    ],
+    "unlock": "A Wild Rose by Any Other Name",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Furtive Former Imperial",
+    "slug": "Furtive_Former_Imperial",
+    "location": {
+      "zone": "Terncliff",
+      "x": 5.0,
+      "y": 6.3
+    },
+    "rules": [
+      "Swap",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 64,
+    "rewards": [
+      "Sapphire Weapon Card"
+    ],
+    "unlock": "Ruby Doomsday",
+    "patch": "5.3",
+    "deck": null
+  },
+  {
+    "name": "Gamingway",
+    "slug": "Gamingway",
+    "location": {
+      "zone": "Mare Lamentorum",
+      "x": 18.1,
+      "y": 16.1
+    },
+    "rules": [
+      "Swap"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 64,
+    "rewards": [
+      "Dreamingway Card"
+    ],
+    "unlock": "Dreams Come True",
+    "patch": "6.35",
+    "deck": null
+  },
+  {
+    "name": "Garima",
+    "slug": "Garima",
+    "location": {
+      "zone": "The Fringes",
+      "x": 28.2,
+      "y": 19.9
+    },
+    "rules": [
+      "Plus",
+      "Ascension"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 34,
+    "rewards": [
+      "Ananta Card",
+      "Qiqirn Meateater Card"
+    ],
+    "unlock": "Delicate as a Flower",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Gavoll Ja",
+    "slug": "Gavoll_Ja",
+    "location": {
+      "zone": "Tuliyollal",
+      "x": 15.7,
+      "y": 2.9
+    },
+    "rules": [
+      "Chaos",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 64,
+    "rewards": [
+      "Gulool Ja Ja Card"
+    ],
+    "unlock": "No Time for Tears",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Gegeruju",
+    "slug": "Gegeruju",
+    "location": {
+      "zone": "Eastern La Noscea",
+      "x": 33.8,
+      "y": 30.5
+    },
+    "rules": [
+      "Swap",
+      "Sudden Death"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 116,
+    "rewards": [
+      "Y'shtola Card",
+      "Minfilia Card"
+    ],
+    "unlock": "All Good Things",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Ghasa",
+    "slug": "Ghasa",
+    "location": {
+      "zone": "Thavnair",
+      "x": 19.5,
+      "y": 28.3
+    },
+    "rules": [
+      "Roulette",
+      "Plus"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Hippo Cart Card"
+    ],
+    "unlock": "Leader to Leader",
+    "patch": "6.15",
+    "deck": null
+  },
+  {
+    "name": "Gibrillont",
+    "slug": "Gibrillont",
+    "location": {
+      "zone": "Foundation",
+      "x": 13.0,
+      "y": 11.8
+    },
+    "rules": [
+      "Roulette"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Estinien Card"
+    ],
+    "unlock": "Drinking the Pain Away",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Glynard",
+    "slug": "Glynard",
+    "location": {
+      "zone": "The Crystarium",
+      "x": 10.8,
+      "y": 15.3
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 48,
+    "rewards": [
+      "Amaro Card"
+    ],
+    "unlock": "Warrior of Darkness",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Grewenn",
+    "slug": "Grewenn",
+    "location": {
+      "zone": "Eulmore",
+      "x": 12.5,
+      "y": 9.9
+    },
+    "rules": [
+      "Plus",
+      "Swap"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 73,
+    "rewards": [
+      "Ran'jit Card",
+      "Jongleurs of Eulmore Card"
+    ],
+    "unlock": "Shadowbringers",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Guhtwint of the Three Diamonds",
+    "slug": "Guhtwint_of_the_Three_Diamonds",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.0,
+      "y": 7.0
+    },
+    "rules": [
+      "Three Open",
+      "Plus"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 32,
+    "rewards": [
+      "Chocobo Card",
+      "Scarface Bugaal Ja Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Gyoei",
+    "slug": "Gyoei",
+    "location": {
+      "zone": "Yanxia",
+      "x": 15.6,
+      "y": 31.8
+    },
+    "rules": [
+      "Reverse",
+      "Plus"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Namazu Card",
+      "Great Gold Whisker Card"
+    ],
+    "unlock": "Criminal Phrenology",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Gyuf Uin",
+    "slug": "Gyuf_Uin",
+    "location": {
+      "zone": "Il Mheg",
+      "x": 16.1,
+      "y": 30.7
+    },
+    "rules": [
+      "Three Open",
+      "Swap"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Feo Ul Card"
+    ],
+    "unlock": "Acht-la Ormh Inn",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Hab",
+    "slug": "Hab",
+    "location": {
+      "zone": "Southern Thanalan",
+      "x": 24.8,
+      "y": 40.9
+    },
+    "rules": [
+      "Descension"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 104,
+    "rewards": [
+      "Godbert Manderville Card",
+      "Thancred Card",
+      "Hildibrand & Nashu Mhakaracca Card"
+    ],
+    "unlock": "Zombies Are People Too",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Hachinan",
+    "slug": "Hachinan",
+    "location": {
+      "zone": "Yanxia",
+      "x": 26.4,
+      "y": 12.9
+    },
+    "rules": [
+      "Ascension",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 114,
+    "rewards": [
+      "Zenos yae Galvus Card",
+      "Asahi sas Brutus Card"
+    ],
+    "unlock": "The Primary Agreement",
+    "patch": "4.4",
+    "deck": null
+  },
+  {
+    "name": "Hall Overseer",
+    "slug": "Hall_Overseer",
+    "location": {
+      "zone": "The Battlehall",
+      "x": 3.5,
+      "y": 3.6
+    },
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 125,
+    "rewards": [
+      "Terra Branford Card",
+      "Magitek Colossus Card"
+    ],
+    "unlock": "",
+    "patch": "3.4",
+    "deck": null
+  },
+  {
+    "name": "Hanagasa",
+    "slug": "Hanagasa",
+    "location": {
+      "zone": "Kugane",
+      "x": 10.4,
+      "y": 11.8
+    },
+    "rules": [
+      "Plus",
+      "Descension"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 48,
+    "rewards": [
+      "Argath Thadalfus Card",
+      "Rofocale Card",
+      "Yiazmat Card",
+      "Ultima",
+      "the High Seraph Card"
+    ],
+    "unlock": "The City of Lost Angels",
+    "patch": "5.2",
+    "deck": null
+  },
+  {
+    "name": "Hargra",
+    "slug": "Hargra",
+    "location": {
+      "zone": "The Rak'tika Greatwood",
+      "x": 18.5,
+      "y": 26.0
+    },
+    "rules": [
+      "Same",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 64,
+    "rewards": [
+      "Runar Card",
+      "Shadowbringers Y'shtola Card"
+    ],
+    "unlock": "Bearing With It and An Express Delivery",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Helmhart",
+    "slug": "Helmhart",
+    "location": {
+      "zone": "Eastern Thanalan",
+      "x": 20.1,
+      "y": 21.4
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 40,
+    "rewards": [
+      "Ultros & Typhon Card",
+      "Gerolt Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Hetsukaze",
+    "slug": "Hetsukaze",
+    "location": {
+      "zone": "Kugane",
+      "x": 7.9,
+      "y": 13.6
+    },
+    "rules": [
+      "Plus",
+      "Same"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 64,
+    "rewards": [
+      "Penthesilea Card",
+      "Dvergr Card",
+      "Ejika Tsunjika Card",
+      "Provenance Watcher Card"
+    ],
+    "unlock": "And We Shall Call It Hydatos",
+    "patch": "4.55",
+    "deck": null
+  },
+  {
+    "name": "Hokushin",
+    "slug": "Hokushin",
+    "location": {
+      "zone": "Kugane",
+      "x": 14.4,
+      "y": 11.2
+    },
+    "rules": [
+      "Plus",
+      "Swap"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 64,
+    "rewards": [
+      "Karakuri Hanya Card",
+      "Yojimbo & Daigoro Card"
+    ],
+    "unlock": "Good Swords, Good Dogs",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "House Fortemps Manservant",
+    "slug": "House_Fortemps_Manservant",
+    "location": {
+      "zone": "Fortemps Manor",
+      "x": 6.0,
+      "y": 6.0
+    },
+    "rules": [
+      "Three Open",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Honoroit Card",
+      "Artoirel de Fortemps Card",
+      "Emmanellain de Fortemps Card"
+    ],
+    "unlock": "Heavensward and The Paths We Walk",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Hume Black Mage",
+    "slug": "Hume_Black_Mage",
+    "location": {
+      "zone": "Lower Jeuno",
+      "x": 5.5,
+      "y": 5.7
+    },
+    "rules": [
+      "Chaos",
+      "Same"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Kam'lanaut Card"
+    ],
+    "unlock": "Apocalypse Nigh",
+    "patch": "7.3",
+    "deck": null
+  },
+  {
+    "name": "Hume Thief",
+    "slug": "Hume_Thief",
+    "location": {
+      "zone": "Lower Jeuno",
+      "x": 6.4,
+      "y": 6.9
+    },
+    "rules": [
+      "Swap",
+      "Same"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Alexander Resurrected Card",
+      "Shantotto the Demon Card"
+    ],
+    "unlock": "Distant Promises",
+    "patch": "7.5",
+    "deck": null
+  },
+  {
+    "name": "Ibenart",
+    "slug": "Ibenart",
+    "location": {
+      "zone": "Kholusia",
+      "x": 19.1,
+      "y": 17.4
+    },
+    "rules": [
+      "Three Open",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 34,
+    "rewards": [
+      "Lord and Lady Chai Card"
+    ],
+    "unlock": "That None Shall Ever Again",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Idle Imperial",
+    "slug": "Idle_Imperial",
+    "location": {
+      "zone": "Azys Lla",
+      "x": 28.0,
+      "y": 31.0
+    },
+    "rules": [
+      "Swap",
+      "Chaos"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 124,
+    "rewards": [
+      "Hilda Card",
+      "Regula van Hydrus Card",
+      "Curator Card",
+      "Tiamat Card"
+    ],
+    "unlock": "The First Flight of the Excelsior",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Imperial Deserter",
+    "slug": "Imperial_Deserter",
+    "location": {
+      "zone": "The Lochs",
+      "x": 32.7,
+      "y": 30.1
+    },
+    "rules": [
+      "Fallen Ace"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 125,
+    "rewards": [
+      "Grynewaht Card",
+      "Yotsuyu Card",
+      "Fordola rem Lupis Card"
+    ],
+    "unlock": "Stormblood",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Indolent Imperial",
+    "slug": "Indolent_Imperial",
+    "location": {
+      "zone": "Mor Dhona",
+      "x": 11.0,
+      "y": 17.0
+    },
+    "rules": [
+      "Ascension"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 120,
+    "rewards": [
+      "Livia sas Junius Card",
+      "Rhitahtyn sas Arvina Card",
+      "Nero tol Scaeva Card",
+      "Gaius van Baelsar Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Ironworks Hand",
+    "slug": "Ironworks_Hand",
+    "location": {
+      "zone": "Rhalgr's Reach",
+      "x": 13.7,
+      "y": 11.3
+    },
+    "rules": [
+      "Roulette",
+      "Roulette"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 73,
+    "rewards": [
+      "Shinryu Card",
+      "Omega Card",
+      "Alpha Card"
+    ],
+    "unlock": "To Kweh under Distant Skies",
+    "patch": "4.2",
+    "deck": null
+  },
+  {
+    "name": "Isobe",
+    "slug": "Isobe",
+    "location": {
+      "zone": "The Ruby Sea",
+      "x": 20.2,
+      "y": 19.5
+    },
+    "rules": [
+      "Plus",
+      "Swap"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 114,
+    "rewards": [
+      "Ango Card",
+      "Hisui & Kurenai Card"
+    ],
+    "unlock": "The Two Princesses of Sui-no-Sato",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Joellaut",
+    "slug": "Joellaut",
+    "location": {
+      "zone": "Coerthas Central Highlands",
+      "x": 13.2,
+      "y": 15.5
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 48,
+    "rewards": [
+      "Ixal Card",
+      "Alphinaud & Alisaie Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Jonas of the Three Spades",
+    "slug": "Jonas_of_the_Three_Spades",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.0,
+      "y": 7.0
+    },
+    "rules": [
+      "All Open",
+      "Same"
+    ],
+    "mgp_cost": 10,
+    "mgp_win": 22,
+    "rewards": [
+      "Ixal Card",
+      "Moogle Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Kaizan",
+    "slug": "Kaizan",
+    "location": {
+      "zone": "The Ruby Sea",
+      "x": 22.3,
+      "y": 8.6
+    },
+    "rules": [
+      "Swap",
+      "Descension"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 34,
+    "rewards": [
+      "Rasho Card"
+    ],
+    "unlock": "A Dance with Snakes",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Kikimo",
+    "slug": "Kikimo",
+    "location": {
+      "zone": "Kugane",
+      "x": 8.6,
+      "y": 14.0
+    },
+    "rules": [
+      "Swap",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 64,
+    "rewards": [
+      "Hancock Card"
+    ],
+    "unlock": "By the Grace of Lord Lolorito",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Kilfufu",
+    "slug": "Kilfufu",
+    "location": {
+      "zone": "Ul'dah - Steps of Nald",
+      "x": 12.5,
+      "y": 8.3
+    },
+    "rules": [
+      "Three Open",
+      "Plus"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 40,
+    "rewards": [
+      "Geryon the Steer Card"
+    ],
+    "unlock": "A Key to the Past",
+    "patch": "6.25",
+    "deck": null
+  },
+  {
+    "name": "King Elmer III",
+    "slug": "King_Elmer_III",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 3.8,
+      "y": 7.8
+    },
+    "rules": [
+      "Plus"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 117,
+    "rewards": [
+      "Godbert Manderville Card",
+      "Bahamut Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Kiuka",
+    "slug": "Kiuka",
+    "location": {
+      "zone": "The Doman Enclave",
+      "x": 6.9,
+      "y": 5.9
+    },
+    "rules": [
+      "Chaos"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 125,
+    "rewards": [
+      "Hien Card"
+    ],
+    "unlock": "The World Turned Upside Down",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Klynthota",
+    "slug": "Klynthota",
+    "location": {
+      "zone": "Mor Dhona",
+      "x": 30.4,
+      "y": 13.7
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 93,
+    "rewards": [
+      "Unei & Doga Card",
+      "Phlegethon Card",
+      "Xande Card",
+      "Cloud of Darkness Card"
+    ],
+    "unlock": "Moon Sliver and Me , Of Errant Epistles , and The Light of Hope",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Kotokaze",
+    "slug": "Kotokaze",
+    "location": {
+      "zone": "Kugane",
+      "x": 10.2,
+      "y": 10.2
+    },
+    "rules": [
+      "Same"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Kotokaze Card"
+    ],
+    "unlock": "By the Grace of Lord Lolorito",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Lamlyn",
+    "slug": "Lamlyn",
+    "location": {
+      "zone": "Lakeland",
+      "x": 35.4,
+      "y": 20.2
+    },
+    "rules": [
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Lyna Card"
+    ],
+    "unlock": "Reassuring the Masses",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Landenel",
+    "slug": "Landenel",
+    "location": {
+      "zone": "South Shroud",
+      "x": 16.0,
+      "y": 28.0
+    },
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 53,
+    "rewards": [
+      "Titan Card",
+      "Odin Card"
+    ],
+    "unlock": "All Good Things",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Laniaitte",
+    "slug": "Laniaitte",
+    "location": {
+      "zone": "The Sea of Clouds",
+      "x": 17.0,
+      "y": 37.3
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 110,
+    "rewards": [
+      "Paissa Card",
+      "Dhalmel Card"
+    ],
+    "unlock": "An Engineering Enterprise and Honoring the Past",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Larisa",
+    "slug": "Larisa",
+    "location": {
+      "zone": "Solution Nine",
+      "x": 5.8,
+      "y": 13.9
+    },
+    "rules": [
+      "Plus",
+      "All Open"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Outrunner Card"
+    ],
+    "unlock": "In Serenity and Sorrow",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Lewena",
+    "slug": "Lewena",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.8,
+      "y": 6.1
+    },
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 182,
+    "rewards": [
+      "Onion Knight Card",
+      "Bartz Klauser Card",
+      "Terra Branford Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Lewto-Sue",
+    "slug": "Lewto-Sue",
+    "location": {
+      "zone": "Amh Araeng",
+      "x": 26.8,
+      "y": 16.3
+    },
+    "rules": [
+      "Plus",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 34,
+    "rewards": [
+      "Ryne Card",
+      "Gaia Card"
+    ],
+    "unlock": "Where I Belong",
+    "patch": "5.4",
+    "deck": null
+  },
+  {
+    "name": "Linu Vali",
+    "slug": "Linu_Vali",
+    "location": {
+      "zone": "The Sea of Clouds",
+      "x": 6.6,
+      "y": 14.3
+    },
+    "rules": [
+      "Reverse",
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Bismarck Card",
+      "Brachiosaur Card",
+      "Waukkeon Card"
+    ],
+    "unlock": "The Nest of Honor",
+    "patch": "3.1",
+    "deck": null
+  },
+  {
+    "name": "Luwyawa",
+    "slug": "Luwyawa",
+    "location": {
+      "zone": "Shaaloani",
+      "x": 28.8,
+      "y": 30.3
+    },
+    "rules": [
+      "Three Open",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Rroneek Card"
+    ],
+    "unlock": "The Long Road to Xak Tural",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Maillart",
+    "slug": "Maillart",
+    "location": {
+      "zone": "Old Sharlayan",
+      "x": 8.5,
+      "y": 15.2
+    },
+    "rules": [
+      "Chaos",
+      "Plus"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 64,
+    "rewards": [
+      "Thaliak Card",
+      "Llymlaen Card"
+    ],
+    "unlock": "Embraced by Gods",
+    "patch": "6.5",
+    "deck": null
+  },
+  {
+    "name": "Maisenta",
+    "slug": "Maisenta",
+    "location": {
+      "zone": "New Gridania",
+      "x": 11.5,
+      "y": 11.2
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 10,
+    "mgp_win": 22,
+    "rewards": [
+      "Coblyn Card",
+      "Sylph Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Malevolent Weasel",
+    "slug": "Malevolent_Weasel",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.7,
+      "y": 6.2
+    },
+    "rules": [
+      "Swap",
+      "Plus",
+      "Chaos"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Ollier Card"
+    ],
+    "unlock": "",
+    "patch": "7.2",
+    "deck": null
+  },
+  {
+    "name": "Marcechamp",
+    "slug": "Marcechamp",
+    "location": {
+      "zone": "Tailfeather",
+      "x": 31.9,
+      "y": 22.9
+    },
+    "rules": [
+      "Reverse",
+      "Plus"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 124,
+    "rewards": [
+      "Ysayle Card"
+    ],
+    "unlock": "Gifts for the Outcasts",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Marcette",
+    "slug": "Marcette",
+    "location": {
+      "zone": "Central Shroud",
+      "x": 16.5,
+      "y": 18.6
+    },
+    "rules": [
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 60,
+    "rewards": [
+      "Frixio Card",
+      "Garuda Card"
+    ],
+    "unlock": "Fungal Frolic",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Marielle",
+    "slug": "Marielle",
+    "location": {
+      "zone": "The Sea of Clouds",
+      "x": 15.3,
+      "y": 37.7
+    },
+    "rules": [
+      "Order"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 124,
+    "rewards": [
+      "Count Edmont de Fortemps Card",
+      "Laniaitte de Haillenarte Card"
+    ],
+    "unlock": "A Reward Long in Coming",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Masatsuchi",
+    "slug": "Masatsuchi",
+    "location": {
+      "zone": "Yanxia",
+      "x": 29.5,
+      "y": 20.2
+    },
+    "rules": [
+      "Same"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 34,
+    "rewards": [
+      "Lupin Card",
+      "Koja Card"
+    ],
+    "unlock": "Tiger Blood",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Master Mogzin",
+    "slug": "Master_Mogzin",
+    "location": {
+      "zone": "The Churning Mists",
+      "x": 9.8,
+      "y": 25.3
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 40,
+    "rewards": [
+      "Good King Moggle Mog XII Card",
+      "Darkscale Card",
+      "Kal Myhk Card",
+      "Hraesvelgr Card"
+    ],
+    "unlock": "The Zenith of Craftsmanship",
+    "patch": "3.3",
+    "deck": null
+  },
+  {
+    "name": "Mehryde",
+    "slug": "Mehryde",
+    "location": {
+      "zone": "Radz-at-Han",
+      "x": 10.7,
+      "y": 7.6
+    },
+    "rules": [
+      "Plus"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 34,
+    "rewards": [
+      "Arkasodara Card"
+    ],
+    "unlock": "A Bond Eternal",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "Memeroon",
+    "slug": "Memeroon",
+    "location": {
+      "zone": "Upper La Noscea",
+      "x": 14.7,
+      "y": 24.3
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 10,
+    "mgp_win": 22,
+    "rewards": [
+      "Tonberry Card",
+      "Amalj'aa Card",
+      "Memeroon Card",
+      "Manxome Molaa Ja Ja Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Mero Roggo",
+    "slug": "Mero_Roggo",
+    "location": {
+      "zone": "The Dravanian Hinterlands",
+      "x": 12.7,
+      "y": 36.9
+    },
+    "rules": [
+      "Plus",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 73,
+    "rewards": [
+      "Byblos Card",
+      "Calcabrina Card",
+      "Strix Card",
+      "Stormblood Alphinaud & Alisaie Card"
+    ],
+    "unlock": "Prelude in Violet",
+    "patch": "4.5",
+    "deck": null
+  },
+  {
+    "name": "Midnight Dew",
+    "slug": "Midnight_Dew",
+    "location": {
+      "zone": "Idyllshire",
+      "x": 5.5,
+      "y": 6.6
+    },
+    "rules": [
+      "Roulette",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 124,
+    "rewards": [
+      "Belladonna Card",
+      "Matoya Card"
+    ],
+    "unlock": "Over My Dead Gobbie",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Miitso",
+    "slug": "Miitso",
+    "location": {
+      "zone": "Lower Jeuno",
+      "x": 6.4,
+      "y": 6.0
+    },
+    "rules": [
+      "Plus",
+      "Fallen Ace"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Ark Angel HM Card",
+      "Ark Angel EV Card"
+    ],
+    "unlock": "Jeuno",
+    "patch": "7.1",
+    "deck": null
+  },
+  {
+    "name": "Mimidoa",
+    "slug": "Mimidoa",
+    "location": {
+      "zone": "Lower La Noscea",
+      "x": 25.1,
+      "y": 35.0
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 49,
+    "rewards": [
+      "Siren Card",
+      "Biggs & Wedge Card"
+    ],
+    "unlock": "History Repeating",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Mogmill",
+    "slug": "Mogmill",
+    "location": {
+      "zone": "The Churning Mists",
+      "x": 28.2,
+      "y": 35.4
+    },
+    "rules": [
+      "Roulette",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 124,
+    "rewards": [
+      "Vanu Vanu Card",
+      "Gnath Card",
+      "Vedrfolnir Card",
+      "Moglin Card"
+    ],
+    "unlock": "A Secret from Everyone",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Momodi",
+    "slug": "Momodi",
+    "location": {
+      "zone": "Ul'dah - Steps of Nald",
+      "x": 11.6,
+      "y": 9.6
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 33,
+    "rewards": [
+      "Momodi Modi Card"
+    ],
+    "unlock": "A Wild Rose by Any Other Name",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Mordyn",
+    "slug": "Mordyn",
+    "location": {
+      "zone": "Limsa Lominsa Upper Decks",
+      "x": 11.2,
+      "y": 7.9
+    },
+    "rules": [
+      "Swap",
+      "Same"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 73,
+    "rewards": [
+      "Kraken Card",
+      "Merlwyb Bloefhiswyn Card",
+      "Carvallain de Gorgagne Card"
+    ],
+    "unlock": "Licensed to Reave and Storming the Hull",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Mother Miounne",
+    "slug": "Mother_Miounne",
+    "location": {
+      "zone": "New Gridania",
+      "x": 11.7,
+      "y": 13.5
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 32,
+    "rewards": [
+      "Goobbue Card",
+      "Mother Miounne Card"
+    ],
+    "unlock": "A Wild Rose by Any Other Name",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Munglig",
+    "slug": "Munglig",
+    "location": {
+      "zone": "The Azim Steppe",
+      "x": 12.2,
+      "y": 33.7
+    },
+    "rules": [
+      "Same",
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 114,
+    "rewards": [
+      "Mammoth Card",
+      "Sadu Card"
+    ],
+    "unlock": "The Undying Ones",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Nell Half-full",
+    "slug": "Nell_Half-full",
+    "location": {
+      "zone": "The Battlehall",
+      "x": 3.3,
+      "y": 3.7
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 34,
+    "rewards": [
+      "Brendt",
+      "Brennan",
+      "& Bremondt Card"
+    ],
+    "unlock": "",
+    "patch": "3.4",
+    "deck": null
+  },
+  {
+    "name": "Nigen",
+    "slug": "Nigen",
+    "location": {
+      "zone": "The Azim Steppe",
+      "x": 31.9,
+      "y": 11.5
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 114,
+    "rewards": [
+      "Cirina Card",
+      "Mammoth Card"
+    ],
+    "unlock": "And Dzo It Goes",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Noes",
+    "slug": "Noes",
+    "location": {
+      "zone": "Old Gridania",
+      "x": 10.0,
+      "y": 5.0
+    },
+    "rules": [
+      "Descension",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Gaelicat Card",
+      "Kuribu Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Nyikweni",
+    "slug": "Nyikweni",
+    "location": {
+      "zone": "Tuliyollal",
+      "x": 15.0,
+      "y": 13.5
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Pelupelu Card"
+    ],
+    "unlock": "Knowing the Pelupelu",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "O'kalkaya",
+    "slug": "O%27kalkaya",
+    "location": {
+      "zone": "Limsa Lominsa Upper Decks",
+      "x": 12.0,
+      "y": 13.0
+    },
+    "rules": [
+      "Roulette",
+      "Plus"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 68,
+    "rewards": [
+      "Merlwyb Bloefhiswyn Card",
+      "Rhoswen Card",
+      "Mistbeard Card"
+    ],
+    "unlock": "Soothing the Savage Siren and Storming the Hull",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Ogodei",
+    "slug": "Ogodei",
+    "location": {
+      "zone": "The Azim Steppe",
+      "x": 22.0,
+      "y": 20.7
+    },
+    "rules": [
+      "Fallen Ace",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 114,
+    "rewards": [
+      "Magnai Card",
+      "Mammoth Card"
+    ],
+    "unlock": "A Warm Welcome",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Ourdilic",
+    "slug": "Ourdilic",
+    "location": {
+      "zone": "Coerthas Central Highlands",
+      "x": 6.2,
+      "y": 22.5
+    },
+    "rules": [
+      "All Open",
+      "Swap",
+      "Order"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 60,
+    "rewards": [
+      "Blue Dragon Card",
+      "Ahriman Card",
+      "Behemoth Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Pawkukwe",
+    "slug": "Pawkukwe",
+    "location": {
+      "zone": "Lower Jeuno",
+      "x": 6.6,
+      "y": 7.0
+    },
+    "rules": [
+      "Same",
+      "Swap"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Ark Angel TT Card",
+      "Ark Angel GK Card"
+    ],
+    "unlock": "Jeuno",
+    "patch": "7.1",
+    "deck": null
+  },
+  {
+    "name": "Piralnaut",
+    "slug": "Piralnaut",
+    "location": {
+      "zone": "East Shroud",
+      "x": 17.4,
+      "y": 26.5
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 50,
+    "rewards": [
+      "Succubus Card",
+      "Frixio Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Prideful Stag",
+    "slug": "Prideful_Stag",
+    "location": {
+      "zone": "The Battlehall",
+      "x": 3.7,
+      "y": 3.3
+    },
+    "rules": [
+      "Plus"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 34,
+    "rewards": [
+      "Lost Lamb Card"
+    ],
+    "unlock": "",
+    "patch": "3.4",
+    "deck": null
+  },
+  {
+    "name": "Prudence",
+    "slug": "Prudence_(NPC)",
+    "location": {
+      "zone": "Mor Dhona",
+      "x": 30.6,
+      "y": 12.3
+    },
+    "rules": [
+      "Same",
+      "Swap"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Rhalgr Card",
+      "Azeyma Card"
+    ],
+    "unlock": "The Face of an Explorer",
+    "patch": "6.1",
+    "deck": null
+  },
+  {
+    "name": "Pudeel Ja",
+    "slug": "Pudeel_Ja",
+    "location": {
+      "zone": "Yak T'el",
+      "x": 33.3,
+      "y": 36.6
+    },
+    "rules": [
+      "Ascension",
+      "Same"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": null,
+    "rewards": [
+      "Wivre Card",
+      "Doppro Card"
+    ],
+    "unlock": "The Pride of Mamook",
+    "patch": "7.25",
+    "deck": null
+  },
+  {
+    "name": "Qetanur",
+    "slug": "Qetanur",
+    "location": {
+      "zone": "Thavnair",
+      "x": 19.6,
+      "y": 9.1
+    },
+    "rules": [
+      "Same"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Pisaca Card"
+    ],
+    "unlock": "A Boy's Errand",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "R'ashaht Rhiki",
+    "slug": "R%27ashaht_Rhiki",
+    "location": {
+      "zone": "Limsa Lominsa Upper Decks",
+      "x": 13.1,
+      "y": 12.8
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 110,
+    "rewards": [
+      "Y'shtola Card",
+      "Leviathan Card",
+      "Merlwyb Bloefhiswyn Card"
+    ],
+    "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Redard",
+    "slug": "Redard",
+    "location": {
+      "zone": "The Rak'tika Greatwood",
+      "x": 20.4,
+      "y": 27.2
+    },
+    "rules": [
+      "Same",
+      "Reverse"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Qitari Card",
+      "Batsquatch Card"
+    ],
+    "unlock": "The Stewards of Note",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Redbill Storeboy",
+    "slug": "Redbill_Storeboy",
+    "location": {
+      "zone": "Idyllshire",
+      "x": 3.8,
+      "y": 4.4
+    },
+    "rules": [
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Ferdiad Card",
+      "Echidna Card",
+      "Calofisteri Card",
+      "Diabolos Hollow Card"
+    ],
+    "unlock": "A Redbill Farewell",
+    "patch": "4.5",
+    "deck": null
+  },
+  {
+    "name": "Roger",
+    "slug": "Roger",
+    "location": {
+      "zone": "Central Thanalan",
+      "x": 19.4,
+      "y": 20.6
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 10,
+    "mgp_win": 22,
+    "rewards": [
+      "Morbol Card",
+      "Pudding Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Rowena",
+    "slug": "Rowena",
+    "location": {
+      "zone": "Mor Dhona",
+      "x": 21.9,
+      "y": 5.1
+    },
+    "rules": [
+      "Roulette",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 118,
+    "rewards": [
+      "Gerolt Card",
+      "Louisoix Leveilleur Card"
+    ],
+    "unlock": "The Weaponsmith of Legend",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Ruhtwyda of the Three Hearts",
+    "slug": "Ruhtwyda_of_the_Three_Hearts",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 3.8,
+      "y": 7.5
+    },
+    "rules": [
+      "Ascension",
+      "Sudden Death"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 59,
+    "rewards": [
+      "Godbert Manderville Card",
+      "Urianger Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Ruissenaud",
+    "slug": "Ruissenaud",
+    "location": {
+      "zone": "Labyrinthos",
+      "x": 8.7,
+      "y": 27.5
+    },
+    "rules": [
+      "Same",
+      "Descension"
+    ],
+    "mgp_cost": 40,
+    "mgp_win": 64,
+    "rewards": [
+      "Proto-Carbuncle Card",
+      "Themis Card"
+    ],
+    "unlock": "Guided by the Past",
+    "patch": "6.05",
+    "deck": null
+  },
+  {
+    "name": "Saushs Koal",
+    "slug": "Saushs_Koal",
+    "location": {
+      "zone": "The Tempest",
+      "x": 31.5,
+      "y": 17.3
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 34,
+    "rewards": [
+      "Grenoldt Card"
+    ],
+    "unlock": "The Illuminated Land and Pearls of the Deep",
+    "patch": "5.0",
+    "deck": null
+  },
+  {
+    "name": "Seika",
+    "slug": "Seika",
+    "location": {
+      "zone": "Idyllshire",
+      "x": 6.7,
+      "y": 7.4
+    },
+    "rules": [
+      "Reverse",
+      "Chaos"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 82,
+    "rewards": [
+      "Crawler Card",
+      "Poroggo Card",
+      "Roundrox Card"
+    ],
+    "unlock": "Enigma",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Sezul Totoloc",
+    "slug": "Sezul_Totoloc",
+    "location": {
+      "zone": "North Shroud",
+      "x": 24.4,
+      "y": 23.4
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 52,
+    "rewards": [
+      "Biggs & Wedge Card",
+      "Behemoth Card",
+      "Cid Garlond Card",
+      "Tozol Huatotl Card"
+    ],
+    "unlock": "Spread Your Wings and Soar",
+    "patch": "2.35",
+    "deck": null
+  },
+  {
+    "name": "Sladkey",
+    "slug": "Sladkey",
+    "location": {
+      "zone": "Gangos",
+      "x": 5.7,
+      "y": 6.7
+    },
+    "rules": [
+      "Same",
+      "Swap"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "4th-make Cuchulainn Card",
+      "4th-make Shemhazai Card"
+    ],
+    "unlock": "March of the Bloody Queen",
+    "patch": "5.55",
+    "deck": null
+  },
+  {
+    "name": "Swift",
+    "slug": "Swift",
+    "location": {
+      "zone": "Ul'dah - Steps of Nald",
+      "x": 8.4,
+      "y": 8.9
+    },
+    "rules": [
+      "Chaos"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 53,
+    "rewards": [
+      "Ifrit Card",
+      "Alphinaud & Alisaie Card",
+      "Raubahn Aldynn Card",
+      "Pipin Tarupin Card"
+    ],
+    "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Tapklix",
+    "slug": "Tapklix",
+    "location": {
+      "zone": "The Dravanian Hinterlands",
+      "x": 21.9,
+      "y": 18.8
+    },
+    "rules": [
+      "Swap",
+      "Same"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 64,
+    "rewards": [
+      "Roundrox Card",
+      "Brute Justice Card",
+      "Alexander Prime Card"
+    ],
+    "unlock": "Louder than Words , A Gob in the Machine , and A Bum Rap",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Tokimori",
+    "slug": "Tokimori",
+    "location": {
+      "zone": "Kugane",
+      "x": 8.9,
+      "y": 8.8
+    },
+    "rules": [
+      "Fallen Ace",
+      "Plus"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Okuri Chochin Card"
+    ],
+    "unlock": "Mononoke Aware",
+    "patch": "6.45",
+    "deck": null
+  },
+  {
+    "name": "Tokorzur",
+    "slug": "Tokorzur",
+    "location": {
+      "zone": "Zirgorteh the Open-armed",
+      "x": 7.9,
+      "y": 4.4
+    },
+    "rules": [
+      "Plus",
+      "Same"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": null,
+    "rewards": [
+      "Rorrlo Teh Card"
+    ],
+    "unlock": "With High Spirits",
+    "patch": "7.35",
+    "deck": null
+  },
+  {
+    "name": "Trachtoum",
+    "slug": "Trachtoum",
+    "location": {
+      "zone": "Lower La Noscea",
+      "x": 35.6,
+      "y": 15.9
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 20,
+    "mgp_win": 47,
+    "rewards": [
+      "Moogle Card",
+      "Titan Card"
+    ],
+    "unlock": "All Good Things",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Triple Triad Master",
+    "slug": "Triple_Triad_Master",
+    "location": {
+      "zone": "The Gold Saucer",
+      "x": 4.0,
+      "y": 7.0
+    },
+    "rules": [
+      "All Open"
+    ],
+    "mgp_cost": 5,
+    "mgp_win": 10,
+    "rewards": [
+      "Spriggan Card"
+    ],
+    "unlock": "",
+    "patch": "2.51",
+    "deck": null
+  },
+  {
+    "name": "Tsuzura",
+    "slug": "Tsuzura",
+    "location": {
+      "zone": "The Ruby Sea",
+      "x": 28.5,
+      "y": 16.4
+    },
+    "rules": [
+      "Chaos",
+      "Roulette"
+    ],
+    "mgp_cost": 34,
+    "mgp_win": 34,
+    "rewards": [
+      "Kojin Card"
+    ],
+    "unlock": "Our Most Venerated Ancestor",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Uataaye",
+    "slug": "Uataaye",
+    "location": {
+      "zone": "Heritage Found",
+      "x": 19.4,
+      "y": 9.4
+    },
+    "rules": [
+      "Swap",
+      "Descension"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 45,
+    "rewards": [
+      "Sentry R8 Card"
+    ],
+    "unlock": "A Royal Welcome",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Umber Torrent",
+    "slug": "Umber_Torrent",
+    "location": {
+      "zone": "The Lochs",
+      "x": 16.4,
+      "y": 24.6
+    },
+    "rules": [
+      "Same",
+      "Plus"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 34,
+    "rewards": [
+      "Phoebad Card",
+      "Arenvald Lentinus Card"
+    ],
+    "unlock": "Return of the Bull",
+    "patch": "4.2",
+    "deck": null
+  },
+  {
+    "name": "Ushiogi",
+    "slug": "Ushiogi",
+    "location": {
+      "zone": "The Ruby Sea",
+      "x": 21.8,
+      "y": 7.9
+    },
+    "rules": [
+      "Swap",
+      "Order"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 34,
+    "rewards": [
+      "Hatamoto Card",
+      "Hiruko Card",
+      "Wanyudo & Katasharin Card"
+    ],
+    "unlock": "On the Shoulders of Giants",
+    "patch": "4.0",
+    "deck": null
+  },
+  {
+    "name": "Vath Deftarm",
+    "slug": "Vath_Deftarm",
+    "location": {
+      "zone": "The Dravanian Forelands",
+      "x": 23.6,
+      "y": 19.1
+    },
+    "rules": [
+      "Roulette"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 86,
+    "rewards": [
+      "Fat Chocobo Card",
+      "Ravana Card",
+      "Coeurlregina Card"
+    ],
+    "unlock": "A Symbiotic Friendship",
+    "patch": "3.2",
+    "deck": null
+  },
+  {
+    "name": "Voracious Vath",
+    "slug": "Voracious_Vath",
+    "location": {
+      "zone": "The Dravanian Forelands",
+      "x": 23.6,
+      "y": 19.8
+    },
+    "rules": [
+      "Ascension",
+      "Swap"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 98,
+    "rewards": [
+      "Bandersnatch Card",
+      "Coeurlregina Card"
+    ],
+    "unlock": "Lord of the Hive and Yellow Stones",
+    "patch": "3.0",
+    "deck": null
+  },
+  {
+    "name": "Vorsaile Heuloix",
+    "slug": "Vorsaile_Heuloix",
+    "location": {
+      "zone": "New Gridania",
+      "x": 9.7,
+      "y": 11.1
+    },
+    "rules": [
+      "Ascension"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 110,
+    "rewards": [
+      "Good King Moggle Mog XII Card",
+      "Papalymo & Yda Card",
+      "Ramuh Card",
+      "Kan-E-Senna Card"
+    ],
+    "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Warsowok",
+    "slug": "Warsowok",
+    "location": {
+      "zone": "Kozama'uka",
+      "x": 11.5,
+      "y": 27.2
+    },
+    "rules": [
+      "Same"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 48,
+    "rewards": [
+      "Moblin Card"
+    ],
+    "unlock": "A Leaking Workpot",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Wawalago",
+    "slug": "Wawalago",
+    "location": {
+      "zone": "Limsa Lominsa Lower Decks",
+      "x": 8.1,
+      "y": 15.2
+    },
+    "rules": [
+      "Swap",
+      "Chaos"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Lucia goe Junius Card"
+    ],
+    "unlock": "Players may not challenge Wawalago if they have unlocked but not completed his series of Fisher Quests , beginning with the level 60 quest Whither Wawalago Wanders and ending with Farewell, and Thanks for the Fish at level 70.",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Wopli",
+    "slug": "Wopli",
+    "location": {
+      "zone": "Urqopacha",
+      "x": 28.5,
+      "y": 12.9
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Alpaca Card"
+    ],
+    "unlock": "Knowing the Pelupelu",
+    "patch": "7.0",
+    "deck": null
+  },
+  {
+    "name": "Worldly Imperial",
+    "slug": "Worldly_Imperial",
+    "location": {
+      "zone": "Garlemald",
+      "x": 31.7,
+      "y": 16.9
+    },
+    "rules": [
+      "Roulette"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 64,
+    "rewards": [
+      "Quintus van Cinna Card"
+    ],
+    "unlock": "Strange Bedfellows",
+    "patch": "6.0",
+    "deck": null
+  },
+  {
+    "name": "Wymond",
+    "slug": "Wymond",
+    "location": {
+      "zone": "Ul'dah - Steps of Nald",
+      "x": 9.8,
+      "y": 8.7
+    },
+    "rules": [
+      "Three Open"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 33,
+    "rewards": [
+      "Coblyn Card",
+      "Lolorito Nanarito Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Wyra \"Greenhands\" Lyehga",
+    "slug": "Wyra_%22Greenhands%22_Lyehga",
+    "location": {
+      "zone": "The Battlehall",
+      "x": 3.3,
+      "y": 3.3
+    },
+    "rules": [
+      "All Open",
+      "Same"
+    ],
+    "mgp_cost": 10,
+    "mgp_win": 25,
+    "rewards": [
+      "Apkallu Card"
+    ],
+    "unlock": "",
+    "patch": "3.4",
+    "deck": null
+  },
+  {
+    "name": "Xiisal Ja",
+    "slug": "Xiisal_Ja",
+    "location": {
+      "zone": "Tuliyollal",
+      "x": 14.6,
+      "y": 11.5
+    },
+    "rules": [
+      "Roulette",
+      "Plus"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Tiisol Ja Card"
+    ],
+    "unlock": "A Dream Realized",
+    "patch": "7.51",
+    "deck": null
+  },
+  {
+    "name": "Yayake",
+    "slug": "Yayake",
+    "location": {
+      "zone": "Ul'dah - Steps of Nald",
+      "x": 7.3,
+      "y": 12.4
+    },
+    "rules": [
+      "Chaos",
+      "Roulette"
+    ],
+    "mgp_cost": 30,
+    "mgp_win": 73,
+    "rewards": [
+      "Vicegerent to the Warden Card",
+      "Aymeric Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Yellow Moon",
+    "slug": "Yellow_Moon",
+    "location": {
+      "zone": "Ul'dah - Steps of Thal",
+      "x": 14.0,
+      "y": 13.3
+    },
+    "rules": [
+      "Ascension",
+      "Swap"
+    ],
+    "mgp_cost": 25,
+    "mgp_win": 64,
+    "rewards": [
+      "Yugiri Mistwalker Card"
+    ],
+    "unlock": "",
+    "patch": "2.0",
+    "deck": null
+  },
+  {
+    "name": "Ylaire",
+    "slug": "Ylaire",
+    "location": {
+      "zone": "Old Gridania",
+      "x": 7.8,
+      "y": 10.9
+    },
+    "rules": [
+      "Swap",
+      "Same"
+    ],
+    "mgp_cost": 35,
+    "mgp_win": 48,
+    "rewards": [
+      "Nophica Card",
+      "Althyk Card",
+      "Nymeia Card"
+    ],
+    "unlock": "The Secret of the Twelve",
+    "patch": "6.5",
+    "deck": null
+  },
+  {
+    "name": "Yusui",
+    "slug": "Yusui",
+    "location": {
+      "zone": "The Ruby Sea",
+      "x": 31.5,
+      "y": 37.1
+    },
+    "rules": [
+      "Fallen Ace"
+    ],
+    "mgp_cost": 15,
+    "mgp_win": 25,
+    "rewards": [
+      "Tansui Card"
+    ],
+    "unlock": "Boys with Boats",
+    "patch": "4.0",
+    "deck": null
+  }
+]
