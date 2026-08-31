@@ -41,8 +41,6 @@ thing - engine, GUI, card art - into one double-clickable executable.
 
 ```
 gui/              browser GUI (served by scripts/gui.py, stdlib http only)
-
-```
 reference/        saved wiki pages (Cards, NPCs, Triple Triad) - dataset source
   NPCs/           saved individual NPC pages -> scraped into decks.json
   Cards @ ARR.../ saved ARR: Triple Triad page - card portraits for the GUI
@@ -333,4 +331,3 @@ Checked against the wiki's rules page (`reference/Triple Triad ... .html`):
 - Same / Plus compare **effective** (Ascension-adjusted, capped) values and are
   unaffected by Reverse / Fallen Ace.
 - Combo is always on; only Same/Plus flips seed a cascade, never a plain capture.
-```
