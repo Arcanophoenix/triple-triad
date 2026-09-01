@@ -72,3 +72,56 @@ def test_flags_a_turn_that_ignored_the_recommendation():
         prefix.append([side, card, cell])
         st = apply(st, st.hands[side].index(card), cell)
     pytest.skip("no value-differing alternative move in this matchup")
+
+
+def _chaos_game() -> dict:
+    """A full Chaos match where both sides always played the best CELL for the card
+    they were dealt.  The deal is the random part of Chaos, so it is stubbed with
+    "hand index 0" - deterministic, and irrelevant to what review checks, which is
+    only ever whether the *cell* was the best one for the card that arrived.
+
+    The NPC leads so all five of its cards get played, which keeps the fixture
+    independent of what decks.json records for the NPC.
+    """
+    from tt.data import find_npc, npc_deck_options, is_variable_deck
+    npc = find_npc("Swift")                      # match rules: Chaos
+    e = load_decks()[npc["name"]]
+    npc5 = [resolve(x).id for x in (npc_deck_options(e)[0] if is_variable_deck(e)
+                                    else e["cards"])]
+    you = [resolve(x).id for x in load_collection()["decks"]["starter"]]
+    rules = RuleSet.from_names(e.get("rules") or npc["rules"])
+    assert rules.chaos
+    st = GameState(EMPTY_BOARD, (tuple(you), tuple(npc5)), 1, rules)
+    moves = []
+    while not is_terminal(st):
+        dealt = 0                                 # stand-in for the random deal
+        _hi, cell, _v, _ranked = R._chaos_rank(st, dealt, "greedy")
+        moves.append([st.to_move, st.hands[st.to_move][dealt], cell])
+        st = apply(st, dealt, cell)
+    score_you = sum(1 for s in st.board if s and s[1] == 0) + len(st.hands[0])
+    return {"npc": npc["name"], "rules": rules.names(), "deck": you,
+            "youFirst": False, "opp": "greedy", "moves": moves,
+            "revealed": [], "scoreYou": score_you}
+
+
+@pytest.mark.slow
+def test_chaos_games_are_reviewed_instead_of_skipped():
+    """analyze() cannot rank moves you do not choose, so review used to catch the
+    ValueError and return no verdict at all: no prediction, and `followed` stuck
+    at 0/0 - a Chaos game looked reviewed but nothing had been checked.  It now
+    replays against the card the log says was dealt.
+    """
+    g = _chaos_game()
+    v = R._verdict_compute(g)
+    assert v["error"] is None
+    assert v["predicted"] is not None            # used to be None for every Chaos game
+    assert v["approx"] is True                   # ...and is honest that it is an estimate
+
+    fn, fo = v["followed"]
+    assert fo > 0                                # your turns were actually checked
+    assert fn == fo                              # each played the best cell for its card
+    assert v["npc_dev"] == 0                     # NPC ran the model review re-solves with
+
+
+def test_non_chaos_verdicts_are_not_flagged_approximate():
+    assert R._verdict_compute(_master_game(True))["approx"] is False

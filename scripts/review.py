@@ -40,6 +40,7 @@ from tt.data import (  # noqa: E402
     CARDS, find_npc, is_variable_deck, load_decks, resolve,
 )
 from tt.model import EMPTY_BOARD, GameState, RuleSet, is_terminal, value_a  # noqa: E402
+from tt.recommend import CHAOS_TAIL, screen_value  # noqa: E402
 from tt.solver import analyze, apply  # noqa: E402
 
 HISTORY = paths.user_path("history.jsonl")
@@ -50,25 +51,59 @@ _MAX_COMPS = 6           # cap NPC-hand completions weighed for the prediction b
 # --- solve memo: many logged games repeat the same positions (same NPC, same
 #     deck, same opening) so re-solving each from scratch is wasteful. ---
 
-def _pos_key(st: GameState, opp: str):
-    return (st.board, st.hands, st.to_move, tuple(st.rules.names()), opp)
+def _pos_key(st: GameState, opp: str, forced_hand_idx: int | None = None):
+    return (st.board, st.hands, st.to_move, tuple(st.rules.names()), opp,
+            forced_hand_idx)
+
+
+def _chaos_rank(st: GameState, forced: int, opp: str):
+    """Rank the cells for a dealt card under Chaos, same shape as a solved result.
+
+    Not ``analyze``: it would solve each candidate cell to a full board, and every
+    Chaos ply is an unprunable expectimax node, so ply 1 alone runs ~5 minutes and
+    review re-solves every game.  Each cell is scored with the same graded
+    estimate the recommender uses instead - which is exact once the board has
+    filled past the screen's tail, so late plies (where the interesting mistakes
+    are) are solved outright and only the opening is approximated.
+    """
+    cells = [i for i in range(9) if st.board[i] is None]
+    if len(cells) == 9:
+        cells = [0, 1, 4]
+    ranked = []
+    for c in cells:
+        child = apply(st, forced, c)
+        v = value_a(child) if is_terminal(child) else screen_value(child, CHAOS_TAIL, opp)
+        ranked.append((forced, c, v))
+    ranked.sort(key=lambda r: r[2], reverse=st.to_move == 0)
+    best = ranked[0]
+    return (best[0], best[1], best[2], tuple(ranked))
 
 
 @functools.lru_cache(maxsize=None)
 def _solve_key(key):
-    board, hands, to_move, rule_names, opp = key
-    st = GameState(board, hands, to_move, RuleSet.from_names(list(rule_names)))
+    board, hands, to_move, rule_names, opp, forced = key
+    rules = RuleSet.from_names(list(rule_names))
+    st = GameState(board, hands, to_move, rules)
+    if rules.chaos:
+        return None if forced is None else _chaos_rank(st, forced, opp)
     try:
-        a = analyze(st, opp=opp)
-    except ValueError:                       # Chaos / Roulette - can't re-solve
+        a = analyze(st, forced_hand_idx=forced, opp=opp)
+    except ValueError:
         return None
     return (a.best.hand_idx, a.best.cell, a.best.value,
             tuple((r.hand_idx, r.cell, r.value) for r in a.ranked))
 
 
-def _solve(st: GameState, opp: str):
-    """(best_hand_idx, best_cell, best_value, ranked) for a position, memoised."""
-    return _solve_key(_pos_key(st, opp))
+def _solve(st: GameState, opp: str, forced_hand_idx: int | None = None):
+    """(best_hand_idx, best_cell, best_value, ranked) for a position, memoised.
+
+    Under Chaos the mover does not choose the card, so ``analyze`` refuses to
+    rank moves without being told which one they were dealt - pass the index of
+    the card the log says was actually played and the ranking is over cells.
+    That is the only question worth asking of a Chaos turn anyway: given the card
+    you were handed, was that the best square for it?
+    """
+    return _solve_key(_pos_key(st, opp, forced_hand_idx))
 
 
 def _load() -> list[dict]:
@@ -123,6 +158,13 @@ def _opening_value(deck: list[int], npc5: list[int], first: int, rules: RuleSet,
     st = GameState(EMPTY_BOARD, (tuple(deck), tuple(npc5)), first, rules)
     if is_terminal(st):
         return None
+    if rules.chaos:
+        # No opening card was dealt yet, so there is no forced index to pass, and
+        # a full Chaos solve from an empty board is out of reach (every ply is an
+        # expectimax node - hours).  Same deep-screen estimate the recommender
+        # uses; the verdict is flagged approximate so the number is not read as a
+        # solved prediction.
+        return screen_value(st, CHAOS_TAIL, opp)
     a = _solve(st, opp)                                  # your-margin, best play both sides
     return None if a is None else a[2]
 
@@ -139,7 +181,9 @@ def _replay(g: dict, npc5: list[int]):
             note["error"] = f"move {ply} not legal for the state"
             yield ply, side, card, cell, note
             return
-        a = _solve(st, g["opp"])                         # (best_hi, best_cell, best_val, ranked)
+        # under Chaos the card was dealt, not chosen - rank cells for that card
+        forced = hand.index(card) if rules.chaos else None
+        a = _solve(st, g["opp"], forced)                 # (best_hi, best_cell, best_val, ranked)
         if a is not None:
             best_hi, best_cell, best_val, ranked = a
             if side == 0:
@@ -154,6 +198,12 @@ def _replay(g: dict, npc5: list[int]):
                 after = apply(st, hand.index(card), cell)
                 if is_terminal(after):
                     v_actual = value_a(after)
+                elif rules.chaos:
+                    # same units as best_val above, which is also a screen value;
+                    # _solve without a dealt card returns None under Chaos, and
+                    # falling back to value_a() would compare a mid-board margin
+                    # against a game value
+                    v_actual = screen_value(after, CHAOS_TAIL, g["opp"])
                 else:
                     aa = _solve(after, g["opp"])
                     v_actual = value_a(after) if aa is None else aa[2]
@@ -163,9 +213,10 @@ def _replay(g: dict, npc5: list[int]):
 
 
 # bump when the verdict maths changes.  3: the Ascension/Descension placed-card
-# exclusion and the Fallen Ace 1-vs-A correction both change capture resolution,
-# so every cached verdict from before them is stale.
-_VERDICT_VERSION = 3
+# exclusion and the Fallen Ace 1-vs-A correction both change capture resolution.
+# 4: Chaos games used to be skipped entirely (no prediction, no followed count);
+# they now replay against the card the log says was dealt.
+_VERDICT_VERSION = 4
 _VCACHE_DATA: dict | None = None
 
 
@@ -206,7 +257,8 @@ def _verdict_compute(g: dict) -> dict:
     actual = 2 * g["scoreYou"] - 10
     v = {"predicted": None, "actual": actual, "followed": [0, 0],
          "npc_dev": 0, "npc_cost": 0.0, "npc5_known": bool(comps and len(comps) == 1),
-         "error": None}
+         # Chaos cannot be solved to a full board, so its numbers are estimates
+         "approx": bool(rules.chaos), "error": None}
     if not comps:
         v["error"] = "NPC deck unknown"
         return v
@@ -344,6 +396,10 @@ def cmd_show(games, n: int) -> int:
         print(f"  NPC hand  : {', '.join(_short(c) for c in comps[0])}{tag}")
     print(f"  predicted your-margin: {_pred_txt(v['predicted'])}    "
           f"actual: {v['actual']:+d}    -> {_hit(v['predicted'], v['actual'])}")
+    if v.get("approx"):
+        print("  (Chaos: you do not pick the card, so every position here is a deep "
+              "estimate, not a solved value - and 'followed' means you played the "
+              "best cell for the card you were dealt)")
     if v["error"]:
         print(f"  ! {v['error']}")
         return 0
