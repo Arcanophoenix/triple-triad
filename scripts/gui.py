@@ -47,6 +47,28 @@ _STARTER_IDS = {resolve(n).id for n in STARTER_CARDS}
 _PARTIAL_BUDGET_S = 25   # wall-clock cap for an exact worst-case-over-unknowns sweep
 
 
+def refine_exact_k(rules) -> int:
+    """How many decks the "refine" button solves exactly.
+
+    25 (the CLI default) normally.  The screen ranks decks noisily enough that
+    the true best often sits below rank 8 and a narrow slice never reaches it:
+    measured on Mother Miounne, exact_k=8 recommends a +6 deck when a +8 one
+    exists in the collection, and both it and Jonas only converge - on the margin
+    AND on picking the same deck regardless of pool ordering - at 16+.  It is
+    close to free because the costly final pass is `top` decks x every draw,
+    which exact_k does not touch: 8 -> 25 is about +4s of a ~17s refine.
+
+    Swap is the exception and pays none of that back.  Every deck there is
+    already scored as an *average* over the 25 exchanges, which smooths out the
+    very screen-ranking noise a wider slice exists to correct - so the best deck
+    is inside the top 8 anyway - while the slice itself costs exact_k x 25 x 2
+    solves.  Measured on Kaizan: exact_k=8 gives +6.16 in 247s, exact_k=25 gives
+    +6.24 in 363s.  116 seconds for 0.08 of margin, on a button a person is sat
+    watching.
+    """
+    return 8 if rules.swap else 25
+
+
 def _norm_name(s: str) -> str:
     import re
     return re.sub(r"[^a-z0-9]", "", s.lower()).replace("card", "")
@@ -690,15 +712,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 shortlist_n=16 if refine else 14,
                 cand_cap=900 if refine else 400,
                 screen_tail=6 if refine else 4,
-                # 25 (the CLI default), not 8: the screen ranks decks noisily
-                # enough that the true best often sits below rank 8, and the exact
-                # slice never reaches it - measured on Mother Miounne, exact_k=8
-                # recommends a +6 deck when a +8 one exists, and both it and Jonas
-                # only converge (on margin AND on a stable pick across pool
-                # orderings) at 16+.  Cheap because the costly final pass is
-                # `top` decks x every draw, which exact_k does not touch: 8 -> 25
-                # is ~+4s of a ~17s refine.
-                exact_k=25 if refine else 0,
+                exact_k=refine_exact_k(rules) if refine else 0,
                 # refine fans out; so does a Swap NPC, where the estimate is 25x
                 # the work per candidate.  Otherwise the estimate is already <1s.
                 workers=0 if (refine or rules.swap) else 1,

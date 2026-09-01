@@ -348,10 +348,21 @@ It then reports single-card upgrades from your pool.
     the best of hundreds of truncated averages is a winner's curse and reads
     optimistic - the top deck's margin drifted from `+2.0` at one sample to
     `-2.2` at all 25 before this was fixed.
-  - Cost: ~25x the evaluations per candidate, so a Swap NPC's estimate runs in
-    seconds rather than under one. Swap **+ Order** (only Ushiogi) is the
-    expensive corner - the exact pass is `orderings x draws x 25 swaps x 2
-    sides` - and takes a couple of minutes.
+  - Cost: ~25x the evaluations per candidate, and it lands almost entirely on the
+    exact passes, which are `exact_k x 25 x 2` plus `top x draws x 25 x 2` solves.
+    Measured on Kaizan (Descension + Swap, 6 draws) at the GUI's own settings:
+    the estimate is **0.8s**, a refine is **~250s**. Wawalago (Swap + **Chaos**,
+    10 draws) estimates in 2.6s but does not finish a refine inside 15 minutes -
+    the two multipliers compound, and there the estimate is what you get.
+  - A wider exact slice is **not** worth it under Swap, unlike every other rule.
+    Averaging over the 25 exchanges already smooths the screen-ranking noise that
+    a wider slice exists to correct, so the best deck is inside the top 8 anyway:
+    on Kaizan `exact_k=8` gives +6.16 in 247s and `exact_k=25` gives +6.24 in
+    363s - 116 seconds for 0.08 of margin. The GUI's refine drops to 8 under Swap
+    for exactly this reason (`gui.refine_exact_k`).
+  - Do not run the CLI's defaults (`--cand-cap 0 --exact 25`) against a Swap NPC
+    unless you mean it: that is thousands of solves times 25 exchanges, i.e. tens
+    of minutes. Pass `--cand-cap 400` and a smaller `--exact`.
 - **Chaos** deals your card for you each turn, so the mover only picks a cell and
   every ply is an expectimax node - alpha-beta gets no window to prune on and a
   full-board solve is out of reach (~0.2s at six empty cells, ~4s at seven,

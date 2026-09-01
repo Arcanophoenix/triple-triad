@@ -107,3 +107,16 @@ def test_partial_state_scoring_and_terminal():
     concrete["hands"][1] = concrete["hands"][1][:3] + _ids("Ahriman Card", "Chocobo Card")
     assert not gui._is_partial(concrete)
     assert list(gui._completions(concrete))  # still enumerable (one completion)
+
+
+def test_refine_solves_fewer_decks_exactly_under_swap():
+    """exact_k is near-free for most rules (the costly pass scales with `top`,
+    not exact_k) but not under Swap, where it costs exact_k x 25 exchanges x 2
+    sides of solves.  Measured on Kaizan: 8 -> +6.16 in 247s, 25 -> +6.24 in
+    363s, i.e. 116s for 0.08 of margin.  Swap averages over the 25 exchanges
+    anyway, which smooths the screen noise a wide slice exists to correct."""
+    from tt.model import RuleSet
+    assert gui.refine_exact_k(RuleSet()) == 25
+    assert gui.refine_exact_k(RuleSet(plus=True, same=True)) == 25
+    assert gui.refine_exact_k(RuleSet(swap=True)) == 8
+    assert gui.refine_exact_k(RuleSet(swap=True, chaos=True)) == 8
