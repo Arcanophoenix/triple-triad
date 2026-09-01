@@ -4,6 +4,11 @@
 Inputs (saved "Web Page, Complete" HTML, kept in reference/):
   - "Triple Triad Cards - ... .html"   -> data/cards.json
   - "Triple Triad NPCs - ... .html"    -> data/npcs.json
+  - "Cards - FFXIV Collect.html"       -> card faction types (optional; the wiki's
+                                          own type column is unreliable, so when
+                                          this file is present it wins)
+  - "NPCs - FFXIV Collect.html"        -> NPC match rules (optional; likewise more
+                                          reliable than the wiki - it wins when present)
 
 The NPC list page has rules / location / rewards / MGP but NOT decklists;
 those are entered by hand with scripts/deck.py as you meet each NPC.
@@ -31,6 +36,66 @@ NPCS_HTML = _find("Triple Triad NPCs*.html")
 OUT = ROOT / "data"
 
 RARITY = {1: "Common", 2: "Uncommon", 3: "Rare", 4: "Epic", 5: "Legendary"}
+
+_COLLECT_TYPE = {"normal": "None", "primal": "Primal", "scion": "Scion",
+                 "society": "Society", "garlean": "Garlean"}
+
+# Last-resort faction fixes for cards that are wrong in BOTH the wiki and any
+# FFXIV Collect snapshot on disk.  Confirmed by playing the card (it took
+# Ascension / Descension).  Keyed by card name.
+_TYPE_OVERRIDES: dict[str, str] = {}
+
+
+def _collect_types() -> dict[int, str]:
+    """{card number -> faction} from a saved 'Cards - FFXIV Collect.html', if any.
+
+    FFXIV Collect's table carries a per-row ``<img class="card-type" src=".../<f>-..png">``
+    for faction cards and nothing for plain ones - so a card missing from this map
+    is simply "None"."""
+    try:
+        page = _find("Cards - FFXIV Collect*.html").read_text(encoding="utf-8", errors="replace")
+    except SystemExit:
+        return {}
+    out: dict[int, str] = {}
+    for row in re.findall(r'<tr class="collectable".*?</tr>', page, re.S):
+        num = re.search(r"No\.\s*(\d+)", row)
+        typ = re.search(r'card-type"\s+src="[^"]*?/([a-z]+)-[0-9a-f]+\.', row)
+        if num and typ:
+            out[int(num.group(1))] = _COLLECT_TYPE.get(typ.group(1), "None")
+    return out
+
+
+def _collect_npcs() -> dict[str, dict]:
+    """{npc name -> {"rules": [...], "rewards": [...]}} from a saved
+    'NPCs - FFXIV Collect.html', if any.
+
+    FFXIV Collect's rule list has been more reliable than the wiki's (which lists
+    e.g. 'All Open' where the game shows 'Three Open', or a phantom third rule);
+    its rewards also come one-per-card so names with commas survive."""
+    hits = (sorted((ROOT / "reference").glob("NPCs - FFXIV Collect*.html"))
+            + sorted((ROOT / "reference" / "NPCs").glob("NPCs - FFXIV Collect*.html")))
+    if not hits:
+        return {}
+    page = hits[0].read_text(encoding="utf-8", errors="replace")
+    quotes = str.maketrans("“”’", "\"\"'")
+    out: dict[str, dict] = {}
+    for row in re.findall(r'<tr class="npc-row[^"]*collectable">.*?</tr>', page, re.S):
+        name = re.search(r'class="name"[^>]*>([^<]+)<', row)
+        rtd = re.search(r'<td class="hide-xs" data-value="[^"]*">(.*?)</td>', row, re.S)
+        if not (name and rtd):
+            continue
+        rules = [html.unescape(x).strip() for x in re.split(r"<br\s*/?>", rtd.group(1))]
+        rewards = [html.unescape(x).strip() + " Card"
+                   for x in re.findall(r'data-original-title="([^"]+)"', row)]
+        key = html.unescape(name.group(1)).strip().translate(quotes)
+        out[key] = {"rules": [x for x in rules if x], "rewards": rewards}
+    return out
+
+
+_COLLECT_NPCS = _collect_npcs()
+
+
+_COLLECT = _collect_types()
 
 
 def strip_tags(s: str) -> str:
@@ -76,19 +141,29 @@ def parse_cards(page: str) -> list[dict]:
         if not num.isdigit():
             continue
         stars = c[3].count("\u2605")
+        name = strip_tags(c[2])
         icon = None
         m = re.search(r'([^/"]+_card_icon1\.png)', c[1])
         if m:
             icon = html.unescape(m.group(1))   # src has &amp; etc.
+        # faction type: a manual override wins, then a saved FFXIV Collect snapshot
+        # if present (authoritative for every main card - the wiki's own type
+        # column is unreliable), else the wiki column, else "None"
+        if name in _TYPE_OVERRIDES:
+            card_type = _TYPE_OVERRIDES[name]
+        elif _COLLECT and series == "main":
+            card_type = _COLLECT.get(int(num), "None")
+        else:
+            card_type = strip_tags(c[4]) or "None"
         out.append(
             {
                 "number": int(num),
                 "series": series,
-                "name": strip_tags(c[2]),
+                "name": name,
                 "slug": first_link_slug(c[2]),
                 "stars": stars,
                 "rarity": RARITY.get(stars, "?"),
-                "type": strip_tags(c[4]) or "None",
+                "type": card_type,
                 "sides": {
                     "up": side_val(c[6]),
                     "right": side_val(c[7]),
@@ -119,8 +194,11 @@ def parse_npcs(page: str) -> list[dict]:
             continue
         loc = strip_tags(c[1])
         lm = LOC_RE.match(loc)
-        rules = [x.strip() for x in strip_tags(c[2]).split(",") if x.strip()]
-        rewards = [x.strip() for x in strip_tags(c[5]).split(",") if x.strip()]
+        cn = _COLLECT_NPCS.get(name.translate(str.maketrans("“”’", "\"\"'"))) or {}
+        rules = (cn.get("rules")
+                 or [x.strip() for x in strip_tags(c[2]).split(",") if x.strip()])
+        rewards = (cn.get("rewards")
+                   or [x.strip() for x in strip_tags(c[5]).split(",") if x.strip()])
         cost = strip_tags(c[3])
         win = strip_tags(c[4])
         out.append(

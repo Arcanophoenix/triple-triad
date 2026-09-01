@@ -14,7 +14,11 @@
 /reference/Triple Triad NPCs*.html
 /reference/Triple Triad - Final*_files/
 /reference/Triple Triad NPCs*_files/
+/reference/*FFXIV Collect*.html
+/reference/*FFXIV Collect*_files/
 /reference/*.webp
+# third-party source archives kept for reference only (re-downloadable)
+/reference/FFTriadBuddy*.zip
 
 # --- build output ----------------------------------------------------------
 /build/

@@ -781,11 +781,10 @@
     "mgp_cost": 40,
     "mgp_win": 48,
     "rewards": [
-      "Argath Thadalfus Card",
-      "Rofocale Card",
+      "Ultima, the High Seraph Card",
       "Yiazmat Card",
-      "Ultima",
-      "the High Seraph Card"
+      "Argath Thadalfus Card",
+      "Rofocale Card"
     ],
     "unlock": "The City of Lost Angels",
     "patch": "5.2",
@@ -1045,7 +1044,6 @@
       "y": 11.3
     },
     "rules": [
-      "Roulette",
       "Roulette"
     ],
     "mgp_cost": 35,
@@ -1498,9 +1496,8 @@
       "y": 6.2
     },
     "rules": [
-      "Swap",
-      "Plus",
-      "Chaos"
+      "Chaos",
+      "Plus"
     ],
     "mgp_cost": 35,
     "mgp_win": 48,
@@ -1695,7 +1692,6 @@
       "y": 6.6
     },
     "rules": [
-      "Roulette",
       "Roulette"
     ],
     "mgp_cost": 30,
@@ -1760,7 +1756,6 @@
       "y": 35.4
     },
     "rules": [
-      "Roulette",
       "Roulette"
     ],
     "mgp_cost": 30,
@@ -1827,7 +1822,7 @@
       "y": 13.5
     },
     "rules": [
-      "All Open"
+      "Three Open"
     ],
     "mgp_cost": 15,
     "mgp_win": 32,
@@ -1876,9 +1871,7 @@
     "mgp_cost": 15,
     "mgp_win": 34,
     "rewards": [
-      "Brendt",
-      "Brennan",
-      "& Bremondt Card"
+      "Brendt, Brennan, & Bremondt Card"
     ],
     "unlock": "",
     "patch": "3.4",
@@ -2002,8 +1995,6 @@
       "y": 22.5
     },
     "rules": [
-      "All Open",
-      "Swap",
       "Order"
     ],
     "mgp_cost": 25,
@@ -2242,7 +2233,6 @@
       "y": 5.1
     },
     "rules": [
-      "Roulette",
       "Roulette"
     ],
     "mgp_cost": 30,
@@ -2890,7 +2880,7 @@
       "y": 37.1
     },
     "rules": [
-      "Fallen Ace"
+      "Plus"
     ],
     "mgp_cost": 15,
     "mgp_win": 25,

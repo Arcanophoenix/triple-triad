@@ -291,7 +291,7 @@
     "slug": "Sylph_Card",
     "stars": 1,
     "rarity": "Common",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 4,
@@ -329,7 +329,7 @@
     "slug": "Sahagin_Card",
     "stars": 1,
     "rarity": "Common",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 4,
       "right": 5,
@@ -367,7 +367,7 @@
     "slug": "Moogle_Card",
     "stars": 1,
     "rarity": "Common",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 1,
@@ -500,7 +500,7 @@
     "slug": "Scarface_Bugaal_Ja_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 6,
       "right": 6,
@@ -671,7 +671,7 @@
     "slug": "Mutamix_Bubblypots_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 6,
@@ -690,7 +690,7 @@
     "slug": "Memeroon_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 6,
       "right": 6,
@@ -1298,7 +1298,7 @@
     "slug": "Vanu_Vanu_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 6,
@@ -1925,7 +1925,7 @@
     "slug": "Moglin_Card",
     "stars": 3,
     "rarity": "Rare",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 8,
       "right": 5,
@@ -2212,10 +2212,10 @@
     "rarity": "Rare",
     "type": "None",
     "sides": {
-      "up": 8,
-      "right": 4,
-      "down": 1,
-      "left": 7
+      "up": 6,
+      "right": 6,
+      "down": 6,
+      "left": 3
     },
     "acquisition_type": "Triple Triad NPC",
     "acquired_by": "Mero Roggo The Antitower",
@@ -2761,7 +2761,7 @@
     "slug": "Delivery_Moogle_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 5,
       "right": 5,
@@ -4604,7 +4604,7 @@
     "slug": "Feo_Ul_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 7,
       "right": 5,
@@ -5307,7 +5307,7 @@
     "slug": "Dwarf_Card",
     "stars": 1,
     "rarity": "Common",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 4,
@@ -5991,7 +5991,7 @@
     "slug": "Arkasodara_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 4,
       "right": 4,
@@ -6428,7 +6428,7 @@
     "slug": "Daivadipa_Card",
     "stars": 4,
     "rarity": "Epic",
-    "type": "None",
+    "type": "Primal",
     "sides": {
       "up": 7,
       "right": 8,
@@ -6485,7 +6485,7 @@
     "slug": "Gajasura_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 4,
       "right": 7,
@@ -6908,7 +6908,7 @@
       "up": 6,
       "right": 8,
       "down": 4,
-      "left": 4
+      "left": 5
     },
     "acquisition_type": "Dungeons",
     "acquired_by": "The Aetherfont",
@@ -7454,7 +7454,7 @@
     "slug": "Moblin_Card",
     "stars": 2,
     "rarity": "Uncommon",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 5,
       "right": 5,
@@ -8119,7 +8119,7 @@
     "slug": "Doppro_Card",
     "stars": 3,
     "rarity": "Rare",
-    "type": "None",
+    "type": "Society",
     "sides": {
       "up": 2,
       "right": 7,

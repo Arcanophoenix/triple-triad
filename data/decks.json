@@ -95,7 +95,7 @@
     ],
     "draw": 2,
     "rules": [
-      "All Open"
+      "Three Open"
     ]
   },
   "F'hobhas": {
@@ -308,6 +308,2032 @@
     "draw": 3,
     "rules": [
       "Ascension",
+      "Swap"
+    ]
+  },
+  "Aiglephine": {
+    "fixed": [
+      "Troll Card",
+      "Mist Dragon Card"
+    ],
+    "pool": [
+      "Tokkapchi Card",
+      "Opo-opo Card",
+      "Belladonna Card",
+      "Calcabrina Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Glynard": {
+    "fixed": [
+      "Amaro Card",
+      "Chimera Card",
+      "Adamantoise Card"
+    ],
+    "pool": [
+      "Coblyn Card",
+      "Lyna Card",
+      "Colibri Card",
+      "Dodo Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Ibenart": {
+    "fixed": [
+      "Lord and Lady Chai Card",
+      "Formidable Card",
+      "Behemoth Card"
+    ],
+    "pool": [
+      "Goobbue Card",
+      "Mandragora Card",
+      "Gigantender Card",
+      "Siren Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open",
+      "Fallen Ace"
+    ]
+  },
+  "Kotokaze": {
+    "fixed": [
+      "Tioman Card",
+      "Kotokaze Card",
+      "Tonberry Card"
+    ],
+    "pool": [
+      "Momodi Modi Card",
+      "Baderon Tenfingers Card",
+      "Mother Miounne Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same"
+    ]
+  },
+  "Nyikweni": {
+    "fixed": [
+      "Pelupelu Card",
+      "Coeurl Card"
+    ],
+    "pool": [
+      "Griffin Card",
+      "Vanu Vanu Card",
+      "Poroggo Card",
+      "Magitek Death Claw Card",
+      "Namazu Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Prideful Stag": {
+    "fixed": [
+      "Godbert Manderville Card",
+      "Lost Lamb Card",
+      "Blue Dragon Card"
+    ],
+    "pool": [
+      "Momodi Modi Card",
+      "Vanu Vanu Card",
+      "Coblyn Card",
+      "Chocobo Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus"
+    ]
+  },
+  "Qetanur": {
+    "fixed": [
+      "Pisaca Card",
+      "Dodo Card"
+    ],
+    "pool": [
+      "Mammoth Card",
+      "Muud Suud Card",
+      "Dhalmel Card",
+      "Godbert Manderville Card",
+      "Archaeornis Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Same"
+    ]
+  },
+  "Saushs Koal": {
+    "fixed": [
+      "Grenoldt Card",
+      "Amaro Card",
+      "Evil Weapon Card"
+    ],
+    "pool": [
+      "Lord and Lady Chai Card",
+      "Lyna Card",
+      "Coblyn Card",
+      "Colibri Card",
+      "Runar Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open"
+    ]
+  },
+  "Wopli": {
+    "fixed": [
+      "Alpaca Card",
+      "Coblyn Card"
+    ],
+    "pool": [
+      "Lost Lamb Card",
+      "Lakshmi Card",
+      "Mother Porxie Card",
+      "Tonberry Card",
+      "Ahriman Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Yusui": {
+    "fixed": [
+      "Tansui Card",
+      "Rasho Card",
+      "Vedrfolnir Card"
+    ],
+    "pool": [
+      "Memeroon Card",
+      "Rhitahtyn sas Arvina Card",
+      "Hoary Boulder & Coultenet Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus"
+    ]
+  },
+  "Wyra \"Greenhands\" Lyehga": {
+    "fixed": [
+      "Frixio Card",
+      "Ahriman Card",
+      "Apkallu Card"
+    ],
+    "pool": [
+      "Mother Miounne Card",
+      "Pudding Card",
+      "Morbol Card",
+      "Chocobo Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "All Open",
+      "Same"
+    ]
+  },
+  "Buscarron": {
+    "fixed": [
+      "Kan-E-Senna Card",
+      "Odin Card",
+      "Good King Moggle Mog XII Card"
+    ],
+    "pool": [
+      "Papalymo & Yda Card",
+      "Garuda Card",
+      "Gilgamesh & Enkidu Card",
+      "Raya-O-Senna & A-Ruhn-Senna Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Order"
+    ]
+  },
+  "Dominiac": {
+    "fixed": [
+      "Deepeye Card",
+      "Aymeric Card"
+    ],
+    "pool": [
+      "Lucia goe Junius Card",
+      "Estinien Card",
+      "Griffin Card",
+      "Behemoth Card",
+      "Count Edmont de Fortemps Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Order"
+    ]
+  },
+  "Ercanbald": {
+    "fixed": [
+      "Papalymo & Yda Card",
+      "M'naago Card",
+      "Adamantoise Card"
+    ],
+    "pool": [
+      "Gerolt Card",
+      "Amalj'aa Card",
+      "Pudding Card"
+    ],
+    "draw": 2
+  },
+  "Arsieu": {
+    "fixed": [
+      "Dawon Card",
+      "Adrammelech Card",
+      "Rofocale Card",
+      "Armored Weapon Card"
+    ],
+    "pool": [
+      "Ultima, the High Seraph Card",
+      "Yiazmat Card",
+      "Argath Thadalfus Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Ascension"
+    ]
+  },
+  "Botan": {
+    "fixed": [
+      "Louhi Card",
+      "Pazuzu Card",
+      "Krile Card"
+    ],
+    "pool": [
+      "Happy Bunny Card",
+      "Yukinko Card",
+      "Gerolt Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Roulette"
+    ]
+  },
+  "Br'uk Noq'": {
+    "fixed": [
+      "Branchbearer Card",
+      "Tozol Huatotl Card",
+      "Magitek Predator Card"
+    ],
+    "pool": [
+      "Qiqirn Meateater Card",
+      "Scarface Bugaal Ja Card",
+      "Grynewaht Card",
+      "Magitek Vanguard Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Ascension"
+    ]
+  },
+  "Camalbusert": {
+    "fixed": [
+      "Rukhkh Card",
+      "Griffin Card",
+      "Leviathan Card",
+      "Hisui & Kurenai Card"
+    ],
+    "pool": [
+      "Genie of the Lamp Card",
+      "Nymeia Card",
+      "Genbu Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Fallen Ace",
+      "Swap"
+    ]
+  },
+  "Celia": {
+    "fixed": [
+      "Fourchenault Leveilleur Card",
+      "Matoya Card",
+      "Tokkapchi Card"
+    ],
+    "pool": [
+      "Endwalker Alphinaud & Alisaie Card",
+      "Stormblood Alphinaud & Alisaie Card",
+      "Alphinaud & Alisaie Card",
+      "Louisoix Leveilleur Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Sudden Death"
+    ]
+  },
+  "Cheatingway": {
+    "fixed": [
+      "Loporrit Card",
+      "Argos Card"
+    ],
+    "pool": [
+      "Calcabrina Card",
+      "Byblos Card",
+      "Thancred Card",
+      "Shadowbringers Urianger Card",
+      "Shadowbringers Y'shtola Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Swap",
+      "Plus"
+    ]
+  },
+  "Cobleva": {
+    "fixed": [
+      "Rolling Tankard Card",
+      "Dwarf Card",
+      "Formidable Card"
+    ],
+    "pool": [
+      "Leannan Sith Card",
+      "Amaro Card",
+      "Philia Card",
+      "Lyna Card",
+      "Gnoll Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Reverse"
+    ]
+  },
+  "Drery": {
+    "fixed": [
+      "Evil Weapon Card",
+      "Gigantender Card",
+      "Phoebad Card"
+    ],
+    "pool": [
+      "Mandragora Card",
+      "Behemoth Card",
+      "Coblyn Card",
+      "Adamantoise Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Same"
+    ]
+  },
+  "Droyn": {
+    "fixed": [
+      "Azulmagia Card",
+      "Siegfried Card",
+      "Brute Justice Card",
+      "Gilgamesh & Enkidu Card"
+    ],
+    "pool": [
+      "Great Azuro Card",
+      "Morbol Card",
+      "Ultros & Typhon Card",
+      "Chimera Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Same",
+      "Descension"
+    ]
+  },
+  "Elaisse": {
+    "fixed": [
+      "Archaeornis Card"
+    ],
+    "pool": [
+      "Hilda Card",
+      "Merlwyb Bloefhiswyn Card",
+      "Kan-E-Senna Card",
+      "Nanamo Ul Namo Card",
+      "Raubahn Aldynn Card"
+    ],
+    "draw": 4,
+    "rules": [
+      "Chaos",
+      "Plus"
+    ]
+  },
+  "Elvaan Red Mage": {
+    "fixed": [
+      "Azulmagia Card",
+      "Ysayle Card",
+      "Gogo, Master of Mimicry Card",
+      "Promathia Card"
+    ],
+    "pool": [
+      "Hephaistos Card",
+      "Raubahn & Pipin Card",
+      "Therion Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Chaos",
+      "Plus"
+    ]
+  },
+  "Eo Sigun": {
+    "fixed": [
+      "Porxie Card",
+      "Nu Mou Card"
+    ],
+    "pool": [
+      "Feo Ul Card",
+      "Belladonna Card",
+      "Titania Card",
+      "Paissa Card",
+      "Behemoth Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Plus"
+    ]
+  },
+  "Flichoirel the Lordling": {
+    "fixed": [
+      "Nael van Darnus Card",
+      "Vidofnir Card"
+    ],
+    "pool": [
+      "Byblos Card",
+      "Behemoth Card",
+      "Griffin Card",
+      "Haurchefant Card",
+      "Godbert Manderville Card"
+    ],
+    "draw": 3
+  },
+  "Furtive Former Imperial": {
+    "fixed": [
+      "Sapphire Weapon Card",
+      "Prometheus Card",
+      "Armored Weapon Card",
+      "Magitek Predator Card"
+    ],
+    "pool": [
+      "Ruby Weapon Card",
+      "Magitek Sky Armor Card",
+      "Asahi sas Brutus Card",
+      "Grynewaht Card",
+      "Ultima Weapon Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Swap",
+      "Fallen Ace"
+    ]
+  },
+  "Gamingway": {
+    "fixed": [
+      "Dreamingway Card",
+      "Loporrit Card",
+      "Shadowbringers Urianger Card"
+    ],
+    "pool": [
+      "Zodiark Card",
+      "Spriggan Card",
+      "Fenrir Card",
+      "Gold Saucer Attendant Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap"
+    ]
+  },
+  "Garima": {
+    "fixed": [
+      "F'lhaminn Card",
+      "Ananta Card",
+      "Papalymo & Yda Card"
+    ],
+    "pool": [
+      "Vedrfolnir Card",
+      "Carvallain de Gorgagne Card",
+      "Tataru Taru Card",
+      "Qiqirn Meateater Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Ascension"
+    ]
+  },
+  "Gavoll Ja": {
+    "fixed": [
+      "Gulool Ja Ja Card",
+      "Ruby Weapon Card",
+      "Aymeric Card",
+      "Emerald Weapon Card"
+    ],
+    "pool": [
+      "Yojimbo & Daigoro Card",
+      "Archbishop Thordan VII Card",
+      "Hades Card",
+      "Ultima, the High Seraph Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Chaos",
+      "Fallen Ace"
+    ]
+  },
+  "Gegeruju": {
+    "fixed": [
+      "Nanamo Ul Namo Card",
+      "Minfilia Card",
+      "Y'shtola Card"
+    ],
+    "pool": [
+      "Merlwyb Bloefhiswyn Card",
+      "Kan-E-Senna Card",
+      "Shiva Card",
+      "Livia sas Junius Card",
+      "Mother Miounne Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Sudden Death"
+    ]
+  },
+  "Ghasa": {
+    "fixed": [
+      "Daivadipa Card",
+      "Hippo Cart Card",
+      "Magus Sisters Card"
+    ],
+    "pool": [
+      "Gajasura Card",
+      "Arkasodara Card",
+      "Mammoth Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Roulette",
+      "Plus"
+    ]
+  },
+  "Gibrillont": {
+    "fixed": [
+      "Lucia goe Junius Card",
+      "Minfilia Card"
+    ],
+    "pool": [
+      "Estinien Card",
+      "Hildibrand & Nashu Mhakaracca Card",
+      "Urianger Card",
+      "Cid Garlond Card",
+      "Tataru Taru Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Grewenn": {
+    "fixed": [
+      "Jongleurs of Eulmore Card",
+      "Ran'jit Card"
+    ],
+    "pool": [
+      "Philia Card",
+      "Eros Card",
+      "Storge Card",
+      "Behemoth Card",
+      "Innocence Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Plus",
+      "Swap"
+    ]
+  },
+  "Gyoei": {
+    "fixed": [
+      "Matoya Card",
+      "Lolorito Nanarito Card",
+      "Namazu Card"
+    ],
+    "pool": [
+      "Opo-opo Card",
+      "Kobold Card",
+      "Pudding Card",
+      "Great Gold Whisker Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Reverse",
+      "Plus"
+    ]
+  },
+  "Gyuf Uin": {
+    "fixed": [
+      "Feo Ul Card",
+      "Belladonna Card",
+      "Titania Card",
+      "Paissa Card"
+    ],
+    "pool": [
+      "Colibri Card",
+      "Mandragora Card",
+      "Amaro Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Three Open",
+      "Swap"
+    ]
+  },
+  "Hab": {
+    "fixed": [
+      "Hildibrand & Nashu Mhakaracca Card",
+      "Godbert Manderville Card"
+    ],
+    "pool": [
+      "Raubahn Aldynn Card",
+      "Odin Card",
+      "Thancred Card",
+      "Gerolt Card",
+      "Sabotender Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Descension"
+    ]
+  },
+  "Hachinan": {
+    "fixed": [
+      "Asahi sas Brutus Card",
+      "Grynewaht Card",
+      "Armored Weapon Card",
+      "Magitek Sky Armor Card"
+    ],
+    "pool": [
+      "Magitek Predator Card",
+      "Yotsuyu Card",
+      "Zenos yae Galvus Card",
+      "Magitek Death Claw Card",
+      "Magitek Vanguard Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Ascension",
+      "Fallen Ace"
+    ]
+  },
+  "Hall Overseer": {
+    "fixed": [
+      "Terra Branford Card",
+      "Archbishop Thordan VII Card",
+      "Alphinaud & Alisaie Card"
+    ],
+    "pool": [
+      "Merlwyb Bloefhiswyn Card",
+      "Cid Garlond Card",
+      "Haurchefant Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ]
+  },
+  "Hanagasa": {
+    "fixed": [
+      "Argath Thadalfus Card",
+      "Rofocale Card",
+      "Moogle Card",
+      "Happy Bunny Card"
+    ],
+    "pool": [
+      "Ultima, the High Seraph Card",
+      "Yiazmat Card",
+      "Cid Garlond Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Descension"
+    ]
+  },
+  "Hargra": {
+    "fixed": [
+      "Runar Card",
+      "Shadowbringers Y'shtola Card"
+    ],
+    "pool": [
+      "Coeurl Card",
+      "Eros Card",
+      "Adamantoise Card",
+      "Bandersnatch Card",
+      "Behemoth Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Same",
+      "Roulette"
+    ]
+  },
+  "Hetsukaze": {
+    "fixed": [
+      "Ejika Tsunjika Card",
+      "Penthesilea Card",
+      "Dvergr Card",
+      "Provenance Watcher Card"
+    ],
+    "pool": [
+      "Happy Bunny Card",
+      "Pazuzu Card",
+      "Louhi Card",
+      "Yukinko Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Same"
+    ]
+  },
+  "Hokushin": {
+    "fixed": [
+      "Karakuri Hanya Card",
+      "Yojimbo & Daigoro Card",
+      "Koja Card"
+    ],
+    "pool": [
+      "Namazu Card",
+      "Kotokaze Card",
+      "Hildibrand & Nashu Mhakaracca Card",
+      "Kojin Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Swap"
+    ]
+  },
+  "House Fortemps Manservant": {
+    "cards": [
+      "Honoroit Card",
+      "Artoirel de Fortemps Card",
+      "Emmanellain de Fortemps Card",
+      "Haurchefant Card",
+      "Count Edmont de Fortemps Card"
+    ],
+    "rules": [
+      "Three Open",
+      "Plus"
+    ]
+  },
+  "Hume Black Mage": {
+    "fixed": [
+      "Kam'lanaut Card",
+      "Rasho Card",
+      "Provenance Watcher Card",
+      "Eald'narche Card"
+    ],
+    "pool": [
+      "Zenos Galvus Card",
+      "Archbishop Thordan VII Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Chaos",
+      "Same"
+    ]
+  },
+  "Hume Thief": {
+    "fixed": [
+      "Shantotto the Demon Card",
+      "Alexander Resurrected Card",
+      "Halone Card",
+      "Louisoix Leveilleur Card"
+    ],
+    "pool": [
+      "Golbez Card",
+      "Hisui & Kurenai Card",
+      "Nidhogg Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Swap",
+      "Same"
+    ]
+  },
+  "Idle Imperial": {
+    "fixed": [
+      "Gnath Card",
+      "Ravana Card"
+    ],
+    "pool": [
+      "Nero tol Scaeva Card",
+      "Ifrit Card",
+      "Hilda Card",
+      "Rhitahtyn sas Arvina Card",
+      "Matoya Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Swap",
+      "Chaos"
+    ]
+  },
+  "Imperial Deserter": {
+    "fixed": [
+      "Kan-E-Senna Card",
+      "Nael van Darnus Card",
+      "Yotsuyu Card"
+    ],
+    "pool": [
+      "Armored Weapon Card",
+      "Estinien Card",
+      "Papalymo & Yda Card",
+      "Fordola rem Lupis Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Fallen Ace"
+    ]
+  },
+  "Indolent Imperial": {
+    "fixed": [
+      "Gaius van Baelsar Card",
+      "Bahamut Card",
+      "Nero tol Scaeva Card"
+    ],
+    "pool": [
+      "Garuda Card",
+      "Livia sas Junius Card",
+      "Rhitahtyn sas Arvina Card",
+      "Memeroon Card",
+      "Scarface Bugaal Ja Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Ascension"
+    ]
+  },
+  "Ironworks Hand": {
+    "fixed": [
+      "Alpha Card",
+      "Shinryu Card",
+      "Omega Card"
+    ],
+    "pool": [
+      "Chocobo Card",
+      "Fat Chocobo Card",
+      "Biggs & Wedge Card",
+      "Cid Garlond Card",
+      "Midgardsormr Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Isobe": {
+    "fixed": [
+      "Hisui & Kurenai Card",
+      "Louisoix Leveilleur Card",
+      "Hildibrand & Nashu Mhakaracca Card"
+    ],
+    "pool": [
+      "Ango Card",
+      "Cloud of Darkness Card",
+      "Nael van Darnus Card",
+      "Tiamat Card",
+      "Calofisteri Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "Swap"
+    ]
+  },
+  "Joellaut": {
+    "fixed": [
+      "Behemoth Card",
+      "Biggs & Wedge Card",
+      "Tonberry Card"
+    ],
+    "pool": [
+      "Alphinaud & Alisaie Card",
+      "Blue Dragon Card",
+      "Amalj'aa Card",
+      "Goobbue Card",
+      "Ixal Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open"
+    ]
+  },
+  "Kaizan": {
+    "fixed": [
+      "Rasho Card",
+      "Hilda Card",
+      "Chimera Card"
+    ],
+    "pool": [
+      "Mistbeard Card",
+      "Demon Wall Card",
+      "Honoroit Card",
+      "Byblos Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Descension"
+    ]
+  },
+  "Kikimo": {
+    "fixed": [
+      "Hancock Card",
+      "Vidofnir Card",
+      "Gaius van Baelsar Card"
+    ],
+    "pool": [
+      "Cid Garlond Card",
+      "Ferdiad Card",
+      "Pipin Tarupin Card",
+      "Alexander Prime Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Fallen Ace"
+    ]
+  },
+  "Kilfufu": {
+    "fixed": [
+      "Geryon the Steer Card",
+      "Nanamo Ul Namo Card",
+      "Senor Sabotender Card"
+    ],
+    "pool": [
+      "Momodi Modi Card",
+      "Ultros & Typhon Card",
+      "Godbert Manderville Card",
+      "Roland Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Three Open",
+      "Plus"
+    ]
+  },
+  "King Elmer III": {
+    "fixed": [
+      "Bahamut Card",
+      "Urianger Card",
+      "Godbert Manderville Card"
+    ],
+    "pool": [
+      "Hildibrand & Nashu Mhakaracca Card",
+      "Titan Card",
+      "Gilgamesh & Enkidu Card",
+      "Y'shtola Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus"
+    ]
+  },
+  "Kiuka": {
+    "fixed": [
+      "Hien Card",
+      "Hraesvelgr Card",
+      "Alphinaud & Alisaie Card"
+    ],
+    "pool": [
+      "Minfilia Card",
+      "Matoya Card",
+      "Yugiri Mistwalker Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Chaos"
+    ]
+  },
+  "Klynthota": {
+    "fixed": [
+      "Cloud of Darkness Card",
+      "Xande Card",
+      "Phlegethon Card"
+    ],
+    "pool": [
+      "Cid Garlond Card",
+      "Biggs & Wedge Card",
+      "Nero tol Scaeva Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Lamlyn": {
+    "fixed": [
+      "Lyna Card"
+    ],
+    "pool": [
+      "Behemoth Card",
+      "Philia Card",
+      "Adamantoise Card",
+      "Progenitrix Card",
+      "Chimera Card"
+    ],
+    "draw": 4,
+    "rules": [
+      "Chaos"
+    ]
+  },
+  "Landenel": {
+    "fixed": [
+      "Odin Card",
+      "Titan Card",
+      "Kan-E-Senna Card"
+    ],
+    "pool": [
+      "Ifrit Card",
+      "Rhitahtyn sas Arvina Card",
+      "Chocobo Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ]
+  },
+  "Laniaitte": {
+    "fixed": [
+      "Paissa Card",
+      "Bismarck Card"
+    ],
+    "pool": [
+      "Dhalmel Card",
+      "Count Edmont de Fortemps Card",
+      "Cid Garlond Card",
+      "Lucia goe Junius Card",
+      "Aymeric Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Larisa": {
+    "fixed": [
+      "Outrunner Card",
+      "Mistbeard Card",
+      "Hiruko Card"
+    ],
+    "pool": [
+      "Valens van Varro Card",
+      "Julyan Manderville Card",
+      "Leannan Sith Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Plus",
+      "All Open"
+    ]
+  },
+  "Lewena": {
+    "fixed": [
+      "Terra Branford Card",
+      "Onion Knight Card"
+    ],
+    "pool": [
+      "Cloud Strife Card",
+      "Odin Card",
+      "Garuda Card",
+      "Ifrit Card",
+      "Titan Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Fallen Ace",
+      "Chaos"
+    ]
+  },
+  "Lewto-Sue": {
+    "fixed": [
+      "Ryne Card",
+      "Gaia Card",
+      "Storge Card",
+      "Forgiven Obscenity Card"
+    ],
+    "pool": [
+      "Shadowbringers Thancred Card",
+      "Ran'jit Card",
+      "Evil Weapon Card",
+      "Gigantender Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Fallen Ace"
+    ]
+  },
+  "Linu Vali": {
+    "fixed": [
+      "Bismarck Card",
+      "Vanu Vanu Card"
+    ],
+    "pool": [
+      "Brachiosaur Card",
+      "Paissa Card",
+      "Gaelicat Card",
+      "Griffin Card",
+      "Dhalmel Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Reverse",
+      "Chaos"
+    ]
+  },
+  "Luwyawa": {
+    "fixed": [
+      "Rroneek Card",
+      "Storge Card"
+    ],
+    "pool": [
+      "Huaca Card",
+      "Lolorito Nanarito Card",
+      "Siegfried Card",
+      "Archaeornis Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Three Open",
+      "Plus"
+    ]
+  },
+  "Maillart": {
+    "fixed": [
+      "Thaliak Card",
+      "Llymlaen Card"
+    ],
+    "pool": [
+      "Echidna Card",
+      "Argath Thadalfus Card",
+      "Shiva Card",
+      "Yotsuyu Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Chaos",
+      "Plus"
+    ]
+  },
+  "Malevolent Weasel": {
+    "fixed": [
+      "Ramuh Card",
+      "Y'shtola Card",
+      "Ollier Card",
+      "Hildibrand & Nashu Mhakaracca Card"
+    ],
+    "pool": [
+      "Behemoth Card",
+      "Thancred Card",
+      "Godbert Manderville Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Chaos",
+      "Plus"
+    ]
+  },
+  "Marcechamp": {
+    "fixed": [
+      "Amalj'aa Card",
+      "Gaelicat Card"
+    ],
+    "pool": [
+      "Ysayle Card",
+      "Sabotender Card",
+      "Shiva Card",
+      "Good King Moggle Mog XII Card",
+      "Yugiri Mistwalker Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Reverse",
+      "Plus"
+    ]
+  },
+  "Marcette": {
+    "fixed": [
+      "Odin Card",
+      "Ramuh Card",
+      "Lahabrea Card"
+    ],
+    "pool": [
+      "Raya-O-Senna & A-Ruhn-Senna Card",
+      "Nero tol Scaeva Card",
+      "Garuda Card",
+      "Behemoth Card",
+      "Frixio Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Chaos"
+    ]
+  },
+  "Marielle": {
+    "cards": [
+      "Nanamo Ul Namo Card",
+      "Griffin Card",
+      "Merlwyb Bloefhiswyn Card",
+      "Count Edmont de Fortemps Card",
+      "Aymeric Card"
+    ],
+    "rules": [
+      "Order"
+    ]
+  },
+  "Masatsuchi": {
+    "fixed": [
+      "Lupin Card",
+      "Brute Justice Card",
+      "Ravana Card"
+    ],
+    "pool": [
+      "Koja Card",
+      "Moglin Card",
+      "Brachiosaur Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same"
+    ]
+  },
+  "Master Mogzin": {
+    "fixed": [
+      "Hraesvelgr Card",
+      "Good King Moggle Mog XII Card"
+    ],
+    "pool": [
+      "Ysayle Card",
+      "Nidhogg Card",
+      "Vedrfolnir Card",
+      "Darkscale Card",
+      "Moogle Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Mehryde": {
+    "fixed": [
+      "Arkasodara Card",
+      "Magus Sisters Card"
+    ],
+    "pool": [
+      "Qitian Dasheng Card",
+      "Lakshmi Card",
+      "Ananta Card",
+      "Adamantoise Card",
+      "Pisaca Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Plus"
+    ]
+  },
+  "Mero Roggo": {
+    "fixed": [
+      "Stormblood Alphinaud & Alisaie Card",
+      "Byblos Card",
+      "Strix Card",
+      "Calcabrina Card"
+    ],
+    "pool": [
+      "Matoya Card",
+      "Poroggo Card",
+      "Crawler Card",
+      "Belladonna Card",
+      "Tokkapchi Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Roulette"
+    ]
+  },
+  "Midnight Dew": {
+    "fixed": [
+      "Estinien Card",
+      "Midgardsormr Card"
+    ],
+    "pool": [
+      "Matoya Card",
+      "Ravana Card",
+      "Griffin Card",
+      "Nidhogg Card",
+      "Y'shtola Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Miitso": {
+    "fixed": [
+      "Ark Angel HM Card",
+      "Ark Angel EV Card",
+      "Shadowbringers Urianger Card",
+      "Merlwyb Bloefhiswyn Card"
+    ],
+    "pool": [
+      "Count Edmont de Fortemps Card",
+      "Kal Myhk Card",
+      "Susano Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Fallen Ace"
+    ]
+  },
+  "Mogmill": {
+    "fixed": [
+      "Kan-E-Senna Card",
+      "Bismarck Card"
+    ],
+    "pool": [
+      "Vanu Vanu Card",
+      "Gnath Card",
+      "Ravana Card",
+      "Midgardsormr Card",
+      "Good King Moggle Mog XII Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Mordyn": {
+    "fixed": [
+      "Mistbeard Card",
+      "Carvallain de Gorgagne Card"
+    ],
+    "pool": [
+      "Baderon Tenfingers Card",
+      "Merlwyb Bloefhiswyn Card",
+      "Leviathan Card",
+      "Kraken Card",
+      "Mandragora Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Swap",
+      "Same"
+    ]
+  },
+  "Munglig": {
+    "fixed": [
+      "Ramuh Card",
+      "Cid Garlond Card",
+      "Sadu Card"
+    ],
+    "pool": [
+      "Garuda Card",
+      "Lucia goe Junius Card",
+      "Count Edmont de Fortemps Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Chaos"
+    ]
+  },
+  "Nell Half-full": {
+    "fixed": [
+      "Leviathan Card",
+      "Brendt, Brennan, & Bremondt Card",
+      "Progenitrix Card"
+    ],
+    "pool": [
+      "Urianger Card",
+      "Carvallain de Gorgagne Card",
+      "Paissa Card",
+      "Baderon Tenfingers Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Nigen": {
+    "fixed": [
+      "Minfilia Card",
+      "Bismarck Card",
+      "Cirina Card"
+    ],
+    "pool": [
+      "Fenrir Card",
+      "Strix Card",
+      "Godbert Manderville Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Noes": {
+    "fixed": [
+      "Odin Card",
+      "Garuda Card"
+    ],
+    "pool": [
+      "Gaelicat Card",
+      "Mutamix Bubblypots Card",
+      "Good King Moggle Mog XII Card",
+      "Mother Miounne Card",
+      "Frixio Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Descension",
+      "Plus"
+    ]
+  },
+  "O'kalkaya": {
+    "fixed": [
+      "Mistbeard Card",
+      "Rhoswen Card"
+    ],
+    "pool": [
+      "Baderon Tenfingers Card",
+      "Merlwyb Bloefhiswyn Card",
+      "Leviathan Card",
+      "Y'shtola Card",
+      "Goobbue Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette",
+      "Plus"
+    ]
+  },
+  "Ogodei": {
+    "fixed": [
+      "Lahabrea Card",
+      "Diabolos Hollow Card",
+      "Magnai Card"
+    ],
+    "pool": [
+      "Roundrox Card",
+      "Progenitrix Card",
+      "Waukkeon Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Fallen Ace",
+      "Plus"
+    ]
+  },
+  "Ourdilic": {
+    "fixed": [
+      "Shiva Card",
+      "Ultima Weapon Card",
+      "Urianger Card"
+    ],
+    "pool": [
+      "Raya-O-Senna & A-Ruhn-Senna Card",
+      "Behemoth Card",
+      "Blue Dragon Card",
+      "Biggs & Wedge Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Order"
+    ]
+  },
+  "Pawkukwe": {
+    "fixed": [
+      "Ark Angel TT Card",
+      "Ark Angel GK Card",
+      "Shinryu Card",
+      "Kan-E-Senna Card"
+    ],
+    "pool": [
+      "Rasho Card",
+      "Lunar Bahamut Card",
+      "Pazuzu Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Same",
+      "Swap"
+    ]
+  },
+  "Pudeel Ja": {
+    "fixed": [
+      "Wivre Card",
+      "Doppro Card",
+      "Bismarck Card",
+      "Regula van Hydrus Card"
+    ],
+    "pool": [
+      "Arenvald Lentinus Card",
+      "Lunar Bahamut Card",
+      "Nophica Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Ascension",
+      "Same"
+    ]
+  },
+  "R'ashaht Rhiki": {
+    "fixed": [
+      "Merlwyb Bloefhiswyn Card",
+      "Leviathan Card",
+      "Titan Card"
+    ],
+    "pool": [
+      "Cid Garlond Card",
+      "Urianger Card",
+      "Y'shtola Card",
+      "Behemoth Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Redard": {
+    "fixed": [
+      "Qitari Card",
+      "Batsquatch Card",
+      "Iguana Card"
+    ],
+    "pool": [
+      "Coeurlregina Card",
+      "Eros Card",
+      "Griffin Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Reverse"
+    ]
+  },
+  "Redbill Storeboy": {
+    "fixed": [
+      "Echidna Card",
+      "Calofisteri Card",
+      "Diabolos Hollow Card"
+    ],
+    "pool": [
+      "Ferdiad Card",
+      "Moglin Card",
+      "Vanu Vanu Card",
+      "Paissa Card",
+      "Gaelicat Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Chaos"
+    ]
+  },
+  "Rowena": {
+    "fixed": [
+      "Gerolt Card",
+      "Bahamut Card"
+    ],
+    "pool": [
+      "Baderon Tenfingers Card",
+      "Louisoix Leveilleur Card",
+      "Nero tol Scaeva Card",
+      "Gilgamesh & Enkidu Card",
+      "Godbert Manderville Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Ruhtwyda of the Three Hearts": {
+    "fixed": [
+      "Alphinaud & Alisaie Card",
+      "Minfilia Card",
+      "Nero tol Scaeva Card"
+    ],
+    "pool": [
+      "Lahabrea Card",
+      "Cid Garlond Card",
+      "Good King Moggle Mog XII Card",
+      "Urianger Card",
+      "Godbert Manderville Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Ascension",
+      "Sudden Death"
+    ]
+  },
+  "Ruissenaud": {
+    "fixed": [
+      "Proto-Carbuncle Card",
+      "Themis Card",
+      "Erichthonios Card",
+      "Fourchenault Leveilleur Card"
+    ],
+    "pool": [
+      "Athena Card",
+      "Hephaistos Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Same",
+      "Descension"
+    ]
+  },
+  "Seika": {
+    "fixed": [
+      "Poroggo Card",
+      "Crawler Card"
+    ],
+    "pool": [
+      "Roundrox Card",
+      "Sahagin Card",
+      "Ixal Card",
+      "Amalj'aa Card",
+      "Kobold Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Reverse",
+      "Chaos"
+    ]
+  },
+  "Sezul Totoloc": {
+    "fixed": [
+      "Cid Garlond Card",
+      "Ultima Weapon Card",
+      "Biggs & Wedge Card"
+    ],
+    "pool": [
+      "Godbert Manderville Card",
+      "Behemoth Card",
+      "Nero tol Scaeva Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Sladkey": {
+    "fixed": [
+      "4th-make Shemhazai Card",
+      "Diablo Armament Card",
+      "Rofocale Card",
+      "4th-make Cuchulainn Card"
+    ],
+    "pool": [
+      "Ultima, the High Seraph Card",
+      "Yiazmat Card",
+      "Argath Thadalfus Card",
+      "Adrammelech Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Same",
+      "Swap"
+    ]
+  },
+  "Swift": {
+    "fixed": [
+      "Raubahn Aldynn Card",
+      "Momodi Modi Card",
+      "Ultros & Typhon Card"
+    ],
+    "pool": [
+      "Alphinaud & Alisaie Card",
+      "Thancred Card",
+      "Ifrit Card",
+      "Biggs & Wedge Card",
+      "Tataru Taru Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Chaos"
+    ]
+  },
+  "Tapklix": {
+    "fixed": [
+      "Brute Justice Card",
+      "Roundrox Card"
+    ],
+    "pool": [
+      "Poroggo Card",
+      "Crawler Card",
+      "Y'shtola Card",
+      "Alphinaud & Alisaie Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Swap",
+      "Same"
+    ]
+  },
+  "Tokimori": {
+    "fixed": [
+      "Okuri Chochin Card",
+      "Yojimbo & Daigoro Card"
+    ],
+    "pool": [
+      "Wanyudo & Katasharin Card",
+      "Hatamoto Card",
+      "Suzaku Card",
+      "Seiryu Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Fallen Ace",
+      "Plus"
+    ]
+  },
+  "Tokorzur": {
+    "fixed": [
+      "Rorrlo Teh Card",
+      "Ryoqor Terteh Card",
+      "Shiva Card",
+      "Shadowbringers Warrior of Light Card"
+    ],
+    "pool": [
+      "Shishio Card",
+      "Haurchefant Card",
+      "4th-make Cuchulainn Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Plus",
+      "Same"
+    ]
+  },
+  "Tsuzura": {
+    "fixed": [
+      "Lucia goe Junius Card",
+      "Kojin Card",
+      "Behemoth Card"
+    ],
+    "pool": [
+      "Leviathan Card",
+      "Siren Card",
+      "Sahagin Card",
+      "Colibri Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Chaos",
+      "Roulette"
+    ]
+  },
+  "Uataaye": {
+    "fixed": [
+      "Sentry R8 Card",
+      "Provenance Watcher Card",
+      "Fordola rem Lupis Card"
+    ],
+    "pool": [
+      "Grynewaht Card",
+      "Manxome Molaa Ja Ja Card",
+      "Papalymo & Yda Card",
+      "Lunar Ifrit Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Descension"
+    ]
+  },
+  "Umber Torrent": {
+    "fixed": [
+      "Arenvald Lentinus Card",
+      "Aymeric Card",
+      "Sephirot Card"
+    ],
+    "pool": [
+      "Coeurlregina Card",
+      "Tozol Huatotl Card",
+      "Lava Scorpion Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
+      "Plus"
+    ]
+  },
+  "Ushiogi": {
+    "fixed": [
+      "Wanyudo & Katasharin Card",
+      "Hatamoto Card",
+      "Hiruko Card"
+    ],
+    "pool": [
+      "Ango Card",
+      "Kojin Card",
+      "Tansui Card",
+      "Rasho Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Order"
+    ]
+  },
+  "Vath Deftarm": {
+    "fixed": [
+      "Ravana Card",
+      "Gnath Card"
+    ],
+    "pool": [
+      "Coeurlregina Card",
+      "Bandersnatch Card",
+      "Ysayle Card",
+      "Alphinaud & Alisaie Card",
+      "Estinien Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Voracious Vath": {
+    "fixed": [
+      "Bandersnatch Card",
+      "Ravana Card"
+    ],
+    "pool": [
+      "Ysayle Card",
+      "Estinien Card",
+      "Alphinaud & Alisaie Card",
+      "Shiva Card",
+      "Coeurlregina Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Ascension",
+      "Swap"
+    ]
+  },
+  "Vorsaile Heuloix": {
+    "fixed": [
+      "Kan-E-Senna Card",
+      "Minfilia Card",
+      "Ramuh Card"
+    ],
+    "pool": [
+      "Nanamo Ul Namo Card",
+      "Cid Garlond Card",
+      "Papalymo & Yda Card",
+      "Good King Moggle Mog XII Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Ascension"
+    ]
+  },
+  "Warsowok": {
+    "fixed": [
+      "Moblin Card",
+      "Dawon Card"
+    ],
+    "pool": [
+      "Behemoth Card",
+      "Rampart Card",
+      "Grenoldt Card",
+      "Magnai Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Same"
+    ]
+  },
+  "Wawalago": {
+    "fixed": [
+      "Nanamo Ul Namo Card",
+      "Y'shtola Card"
+    ],
+    "pool": [
+      "Lucia goe Junius Card",
+      "Papalymo & Yda Card",
+      "Garuda Card",
+      "Terra Branford Card",
+      "Momodi Modi Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Swap",
+      "Chaos"
+    ]
+  },
+  "Worldly Imperial": {
+    "fixed": [
+      "Quintus van Cinna Card",
+      "Varis yae Galvus Card"
+    ],
+    "pool": [
+      "Asahi sas Brutus Card",
+      "Prometheus Card",
+      "Armored Weapon Card",
+      "Magitek Sky Armor Card",
+      "Magitek Predator Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Roulette"
+    ]
+  },
+  "Xiisal Ja": {
+    "fixed": [
+      "Tiisol Ja Card",
+      "Dawon Card",
+      "Ysayle Card",
+      "Ruby Weapon Card"
+    ],
+    "pool": [
+      "Raubahn Aldynn Card",
+      "Wuk Lamat Card"
+    ],
+    "draw": 1,
+    "rules": [
+      "Roulette",
+      "Plus"
+    ]
+  },
+  "Yayake": {
+    "fixed": [
+      "Bahamut Card",
+      "Shiva Card"
+    ],
+    "pool": [
+      "Aymeric Card",
+      "Ultros & Typhon Card",
+      "Ifrit Card",
+      "Thancred Card",
+      "Gaelicat Card"
+    ],
+    "draw": 3,
+    "rules": [
+      "Chaos",
+      "Roulette"
+    ]
+  },
+  "Ylaire": {
+    "fixed": [
+      "Nophica Card",
+      "Althyk Card",
+      "Nymeia Card"
+    ],
+    "pool": [
+      "Rofocale Card",
+      "Quintus van Cinna Card",
+      "Siren Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Swap",
+      "Same"
+    ]
+  },
+  "Prudence": {
+    "fixed": [
+      "Rhalgr Card",
+      "Azeyma Card",
+      "Cloud of Darkness Card"
+    ],
+    "pool": [
+      "Nald Card",
+      "Thal Card",
+      "Phlegethon Card",
+      "Xande Card"
+    ],
+    "draw": 2,
+    "rules": [
+      "Same",
       "Swap"
     ]
   }

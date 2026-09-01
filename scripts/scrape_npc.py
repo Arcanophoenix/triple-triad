@@ -34,6 +34,16 @@ def _text(frag: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(frag)).strip()
 
 
+# Wiki pages that state the wrong MATCH rules - key is the NPC name, value is the
+# Match Rules row of the in-game Match Registration screen (regional rules are
+# tracked separately in tt/regions.py, not here).  Applied over the scraped value
+# so a re-scrape keeps the correction.
+_RULE_OVERRIDES = {
+    "Ourdilic": ["Order"],   # wiki says "All Open, Swap, Order"; the game's Match
+                             # Rules row is just Order (confirmed 2026-08-31)
+}
+
+
 def parse_page(path: pathlib.Path) -> dict:
     s = path.read_text(encoding="utf-8", errors="replace")
     name = path.name.split(" - Final Fantasy XIV")[0].strip()
@@ -45,6 +55,8 @@ def parse_page(path: pathlib.Path) -> dict:
     flat = _text(s[max(0, i - 300): s.find("</table>", i) + 8 if i >= 0 else i])
     mr = re.search(r"Rules\s*:\s*([A-Za-z ,]+?)\s*(?:Cost|Requirement|Deck)", flat)
     rules = [r.strip() for r in mr.group(1).split(",")] if mr else []
+    if name in _RULE_OVERRIDES:
+        rules = list(_RULE_OVERRIDES[name])
 
     # --- deck: the "Deck" section table.  Each card row may carry a
     #     "Guaranteed in deck" marker; unmarked rows are the random pool that
