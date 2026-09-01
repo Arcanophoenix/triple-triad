@@ -12,6 +12,7 @@
   <span class="brand">Triple Triad <span class="brand-sub">solver</span></span>
   <button class="nav-btn" data-view="solver">Solver</button>
   <button class="nav-btn" data-view="manage">Manage decks</button>
+  <button class="nav-btn" data-view="npcs">NPCs</button>
 </nav>
 
 <datalist id="npclist"></datalist>
@@ -85,6 +86,21 @@
         <p class="hint">Checkbox = you own it. Row = in the deck on the left.</p>
       </div>
 
+    </div>
+  </section>
+
+  <section id="view-npcs" class="view" hidden>
+    <div class="panel">
+      <h2>NPCs <span id="npc-count" class="hint inl"></span></h2>
+      <p class="hint">Tick the ones you have beaten. <code>tt-cli import &lt;export.json&gt;</code>
+         fills this in from an FFXIV Collect export.</p>
+      <div class="row">
+        <input id="npc-filter" placeholder="filter by name, zone or rule…">
+        <label class="inl"><input type="checkbox" id="npc-unbeaten-only"> not beaten yet</label>
+        <label class="inl"><input type="checkbox" id="npc-deck-only"> deck recorded</label>
+      </div>
+      <div class="npc-msg hint" id="npc-msg"></div>
+      <div class="picker" id="npc-picker"></div>
     </div>
   </section>
 

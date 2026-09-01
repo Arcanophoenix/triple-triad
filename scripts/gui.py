@@ -2,6 +2,7 @@
 """Local web GUI for the Triple Triad solver.
 
   scripts/gui.py [port]        # default 8787, opens your browser
+  scripts/gui.py 8799 --no-browser   # don't open a tab (scripted / smoke tests)
 
 The Python engine runs behind a stdlib HTTP server; the board is rendered in the
 browser (files in gui/).  No third-party dependencies.
@@ -21,6 +22,7 @@ import webbrowser
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from tt import paths  # noqa: E402
+from tt.collect import load_beaten, set_beaten  # noqa: E402
 from tt.data import (  # noqa: E402
     CARDS, STARTER_CARDS, deck_draw, find_npc, is_variable_deck, load_collection,
     load_decks, load_npcs, npc_deck_options, resolve,
@@ -290,11 +292,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "cards": _cards_payload(),
                 "npcs": [{"name": n["name"], "rules": n["rules"],
                           "zone": n["location"]["zone"], "hasDeck": n["name"] in recorded,
-                          "region": region_for_npc(n)}
+                          "region": region_for_npc(n), "patch": n.get("patch"),
+                          "mgp": n.get("mgp_win") or 0}
                          for n in load_npcs()],
                 "decks": recorded,
                 "collectionDecks": load_collection()["decks"],
                 "ownedIds": _owned_ids(),
+                "beaten": sorted(load_beaten()),
                 "starterIds": sorted(_STARTER_IDS),
                 "regional": _regional_payload(),
             })
@@ -324,6 +328,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return self._delete_deck(body)
             if path == "/api/setowned":
                 return self._set_owned(body)
+            if path == "/api/setbeaten":
+                return self._set_beaten(body)
             if path == "/api/recommend":
                 return self._recommend(body)
             if path == "/api/loggame":
@@ -656,6 +662,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
         _write_col(col)
         self._send(200, {"ownedIds": _owned_ids()})
 
+    def _set_beaten(self, body):
+        """Tick/untick one NPC as beaten.  Matched through find_npc so the client
+        can send whatever spelling it has, then stored under the roster's own
+        name - the same names an FFXIV Collect import writes."""
+        npc = find_npc(body["npc"])
+        self._send(200, {"beaten": set_beaten(npc["name"], bool(body.get("beaten")))})
+
     def _recommend(self, body):
         rec_npc = find_npc(body["npc"])
         entry = load_decks().get(rec_npc["name"], {})
@@ -745,8 +758,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 def main() -> int:
     socketserver.ThreadingTCPServer.allow_reuse_address = True
-    want = int(sys.argv[1]) if len(sys.argv) > 1 else 8787
-    explicit = len(sys.argv) > 1
+    argv = [a for a in sys.argv[1:] if a != "--no-browser"]
+    no_browser = "--no-browser" in sys.argv     # for scripted/smoke-test runs
+    want = int(argv[0]) if argv else 8787
+    explicit = bool(argv)
     srv = None
     tried = []
     for port in ([want] if explicit else range(want, want + 20)):
@@ -765,10 +780,11 @@ def main() -> int:
     url = f"http://127.0.0.1:{port}/"
     print(f"Triple Triad GUI  ->  {url}   (Ctrl-C to stop)")
     print(f"data folder: {paths.USER_DIR}")
-    try:
-        webbrowser.open(url)
-    except Exception:  # noqa: BLE001
-        pass
+    if not no_browser:
+        try:
+            webbrowser.open(url)
+        except Exception:  # noqa: BLE001
+            pass
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

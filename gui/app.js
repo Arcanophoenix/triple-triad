@@ -3,6 +3,7 @@
 let CARDS = {};                       // id -> {name, sides, stars, kind, icon}
 let BOOT = null;
 let OWNED = new Set();                // owned card ids
+let BEATEN = new Set();               // names of NPCs you have beaten
 let STARTERS = new Set();             // starter card ids (always owned)
 let COLDECKS = {};                    // deck name -> [card names]
 
@@ -43,10 +44,11 @@ const idsToNames = (ids) => ids.map((id) => CARDS[id].name);
 
 // ---------- views ----------
 function showView(name) {
-  for (const v of ["solver", "manage", "game"]) $("view-" + v).hidden = v !== name;
+  for (const v of ["solver", "manage", "npcs", "game"]) $("view-" + v).hidden = v !== name;
   document.querySelectorAll(".nav-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === name));
   if (name === "manage") renderManage();
   if (name === "solver") renderSolver();
+  if (name === "npcs") renderNpcs();
 }
 
 // ---------- boot ----------
@@ -59,6 +61,7 @@ async function boot() {
   }
   CARDS = BOOT.cards;
   OWNED = new Set(BOOT.ownedIds || []);
+  BEATEN = new Set(BOOT.beaten || []);
   STARTERS = new Set(BOOT.starterIds || []);
   COLDECKS = BOOT.collectionDecks || {};
 
@@ -102,6 +105,9 @@ async function boot() {
   });
   $("card-filter").addEventListener("input", renderPicker);
   $("owned-only").addEventListener("change", renderPicker);
+  $("npc-filter").addEventListener("input", renderNpcs);
+  $("npc-unbeaten-only").addEventListener("change", renderNpcs);
+  $("npc-deck-only").addEventListener("change", renderNpcs);
   $("save-deck").addEventListener("click", saveEditDeck);
   $("del-deck").addEventListener("click", deleteEditDeck);
 
@@ -994,3 +1000,57 @@ function undo() {
 }
 
 boot();
+
+
+// ---------- NPCs tab: which opponents you have beaten ----------
+function renderNpcs() {
+  const q = $("npc-filter").value.toLowerCase().trim();
+  const unbeatenOnly = $("npc-unbeaten-only").checked;
+  const deckOnly = $("npc-deck-only").checked;
+  const list = BOOT.npcs || [];
+  $("npc-count").textContent = `${BEATEN.size}/${list.length} beaten`;
+
+  const box = $("npc-picker");
+  const keepScroll = box.scrollTop;
+  box.innerHTML = "";
+  let shown = 0;
+  for (const n of [...list].sort((a, b) => (a.mgp || 0) - (b.mgp || 0) || a.name.localeCompare(b.name))) {
+    const beaten = BEATEN.has(n.name);
+    if (unbeatenOnly && beaten) continue;
+    if (deckOnly && !n.hasDeck) continue;
+    const hay = `${n.name} ${n.zone} ${(n.rules || []).join(" ")}`.toLowerCase();
+    if (q && !hay.includes(q)) continue;
+    shown++;
+
+    const row = h("div", "pick-row");
+    if (beaten) row.classList.add("in");
+    const box2 = h("input"); box2.type = "checkbox"; box2.className = "own"; box2.checked = beaten;
+    box2.addEventListener("click", (e) => e.stopPropagation());
+    box2.addEventListener("change", () => setBeaten(n.name, box2.checked));
+    row.appendChild(box2);
+    row.appendChild(h("span", "pk-name", n.name));
+    row.appendChild(h("span", "pk-sides", n.zone));
+    row.appendChild(h("span", "pk-stars", (n.rules || []).join(", ") || "-"));
+    row.appendChild(h("span", "pk-sides", n.mgp ? `${n.mgp} MGP` : ""));
+    // clicking the row (not the box) takes you to the solver already targeting them
+    row.addEventListener("click", () => {
+      $("npc").value = n.name;
+      showView("solver");
+      renderSolver();
+    });
+    box.appendChild(row);
+  }
+  if (!shown) box.appendChild(h("div", "pick-more", "no NPCs match that filter"));
+  box.scrollTop = keepScroll;
+}
+
+async function setBeaten(name, beaten) {
+  try {
+    const r = await post("/api/setbeaten", { npc: name, beaten });
+    BEATEN = new Set(r.beaten || []);
+    $("npc-msg").textContent = "";
+  } catch (e) {
+    $("npc-msg").textContent = e.message;
+  }
+  renderNpcs();
+}
