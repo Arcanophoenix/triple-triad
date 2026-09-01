@@ -624,7 +624,14 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                                       f"first {res.first:+g} second {res.second:+g}")})
     finally:
         if ex is not None:
-            ex.shutdown(wait=False, cancel_futures=True)
+            # wait=True, not False: cancel_futures already drops everything still
+            # queued, so this only joins the jobs actually in flight - bounded by
+            # one job.  With wait=False the executor's manager thread and its
+            # forked workers outlive the call, and the interpreter's atexit hook
+            # then blocks joining them: a process that calls recommend() a few
+            # times prints its results and never exits.  That is the long-lived
+            # GUI server, which calls this on every Recommend / refine click.
+            ex.shutdown(wait=True, cancel_futures=True)
 
     # trust the exact slice; only fall back to estimates if nothing was solved
     ranked = _rank(exact) if exact else _rank(screened)

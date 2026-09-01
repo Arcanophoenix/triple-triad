@@ -690,7 +690,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 shortlist_n=16 if refine else 14,
                 cand_cap=900 if refine else 400,
                 screen_tail=6 if refine else 4,
-                exact_k=8 if refine else 0,
+                # 25 (the CLI default), not 8: the screen ranks decks noisily
+                # enough that the true best often sits below rank 8, and the exact
+                # slice never reaches it - measured on Mother Miounne, exact_k=8
+                # recommends a +6 deck when a +8 one exists, and both it and Jonas
+                # only converge (on margin AND on a stable pick across pool
+                # orderings) at 16+.  Cheap because the costly final pass is
+                # `top` decks x every draw, which exact_k does not touch: 8 -> 25
+                # is ~+4s of a ~17s refine.
+                exact_k=25 if refine else 0,
                 # refine fans out; so does a Swap NPC, where the estimate is 25x
                 # the work per candidate.  Otherwise the estimate is already <1s.
                 workers=0 if (refine or rules.swap) else 1,

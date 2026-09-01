@@ -352,3 +352,28 @@ def test_non_chaos_recommendations_are_still_labelled_exact():
     rec = recommend(list(pool[:5]), PLAIN, pool, shortlist_n=6, exact_k=2, top=2,
                     screen_tail=4, swaps=False, workers=1)
     assert rec.results and all(r.exact is True for r in rec.results)
+
+
+def test_recommend_does_not_leak_worker_processes():
+    """recommend() shut its pool down with `wait=False`, which returns before the
+    executor's manager thread and forked workers are gone.  They then outlive the
+    call - burning CPU next to a running game, and leaving the interpreter's
+    atexit hook to join them, which intermittently hung the process outright
+    (observed: a benchmark printed its complete results and sat there for 27
+    minutes; a 10-call loop hung 1 run in 6).
+
+    The hang is a race and so untestable directly - a subprocess test for it
+    passed happily against the broken code.  The leak underneath it is not:
+    `wait=False` leaves exactly the pool's workers alive here, `wait=True` leaves
+    none.  Assert on that.
+
+    Worth guarding because the GUI server is long-lived and calls recommend() on
+    every Recommend / refine click.
+    """
+    import multiprocessing
+    pool = _pool7()
+    npc = [_weak((5, 5, 5, 5)).id for _ in range(5)]
+    # exact_k >= 6 is what puts the run over the threshold for a real pool
+    recommend(npc, PLAIN, pool, shortlist_n=7, exact_k=6, top=3, swaps=False,
+              opp="greedy", workers=2)
+    assert multiprocessing.active_children() == []
