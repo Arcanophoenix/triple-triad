@@ -134,7 +134,20 @@ def _heur(state: GameState) -> int:
 
 def _chaos_value(state: GameState, ctx: _Ctx, depth=None) -> float:
     """Expectimax node: under Chaos the mover picks only the cell; the card is a
-    uniform draw from the hand.  Searched on a full window (no pruning)."""
+    uniform draw from the hand.  Searched on a full window (no pruning).
+
+    Every ply is such a node when Chaos is live, so alpha-beta never gets a turn
+    and the raw tree is ~28x bigger per empty cell.  The saving grace is that the
+    value here is window-independent - a plain expectation, not a bound - so it
+    memoises unconditionally, and Chaos positions transpose heavily (the same
+    board arrives via many play orders).  The transposition table is what makes a
+    full-board Chaos solve finish at all."""
+    exact = depth is None
+    if exact:
+        key = state.key()
+        hit = ctx.tt.get(key)
+        if hit is not None:
+            return hit[0]
     hand = state.hands[state.to_move]
     cells = [i for i in range(9) if state.board[i] is None]
     if len(cells) == 9:
@@ -146,6 +159,8 @@ def _chaos_value(state: GameState, ctx: _Ctx, depth=None) -> float:
         hi = hand.index(cid)
         outs = [_search(apply(state, hi, c), -INF, INF, ctx, depth) for c in cells]
         exp += (k / total) * (max(outs) if maximizing else min(outs))
+    if exact:
+        ctx.tt[key] = (exp, _EXACT)
     return exp
 
 

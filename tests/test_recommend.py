@@ -227,3 +227,128 @@ def test_swap_handles_a_card_both_decks_hold():
     for mine, theirs in ms:
         assert len(mine) == len(theirs) == 5
         assert sorted(mine + theirs) == sorted(deck + npc)   # no card conjured or lost
+
+
+# --- Chaos: no position is solvable, so nothing may claim to be solved --------
+
+def _chaos_board(cards, empty=4):
+    """A Chaos position with ``empty`` free cells, reached by a fixed opening so the
+    test is deterministic."""
+    from tt.solver import apply
+    ids = [c.id for c in cards]
+    st = GameState(EMPTY_BOARD, (tuple(ids[:5]), tuple(ids[5:])), 0,
+                   RuleSet(chaos=True))
+    for cell in (4, 0, 8, 2, 6)[:9 - empty]:
+        st = apply(st, 0, cell)
+    return st
+
+
+def _reference_chaos_value(st):
+    """Independent, memo-free expectimax straight off the rule: the mover picks the
+    cell, the card is a uniform draw from their hand."""
+    from collections import Counter
+    from tt.model import is_terminal, value_a
+    from tt.solver import apply
+    if is_terminal(st):
+        return value_a(st)
+    hand = st.hands[st.to_move]
+    cells = [i for i in range(9) if st.board[i] is None]
+    pick = max if st.to_move == 0 else min
+    exp = 0.0
+    for cid, k in Counter(hand).items():
+        hi = hand.index(cid)
+        exp += (k / len(hand)) * pick(_reference_chaos_value(apply(st, hi, c)) for c in cells)
+    return exp
+
+
+def test_chaos_solve_matches_an_independent_expectimax():
+    """Pins tt.solver._chaos_value, including its transposition-table memoisation:
+    Chaos values are window-independent expectations, so caching them must be
+    exactly value-neutral."""
+    from tt.solver import solve
+    cards = [C((3, 5, 2, 6)), C((7, 2, 4, 3)), C((2, 6, 6, 2)), C((5, 3, 3, 5)),
+             C((4, 4, 7, 1)), C((6, 2, 5, 4)), C((1, 7, 3, 5)), C((5, 5, 2, 6)),
+             C((3, 4, 6, 3)), C((6, 6, 1, 4))]
+    st = _chaos_board(cards, empty=4)
+    assert solve(st, "optimal") == pytest.approx(_reference_chaos_value(st))
+
+
+def test_chaos_exact_pass_is_a_deep_screen_not_a_greedy_playout():
+    """analyze() cannot rank cards you do not choose, so the exact pass used to fall
+    through to a single greedy playout - shallower than the screen it was meant to
+    refine, and optimistic by ~1.9 margin points."""
+    from tt.recommend import CHAOS_TAIL, _exact_value, screen_value
+    cards = [C((3, 5, 2, 6)), C((7, 2, 4, 3)), C((2, 6, 6, 2)), C((5, 3, 3, 5)),
+             C((4, 4, 7, 1)), C((6, 2, 5, 4)), C((1, 7, 3, 5)), C((5, 5, 2, 6)),
+             C((3, 4, 6, 3)), C((6, 6, 1, 4))]
+    st = _chaos_board(cards, empty=6)
+    chaos = RuleSet(chaos=True)
+    assert _exact_value(st, chaos, "optimal") == screen_value(st, CHAOS_TAIL, "optimal")
+
+
+def _positions(rules, empty):
+    """One position per coin-toss side, ``empty`` cells free, played out along a
+    fixed line so the test is deterministic."""
+    from tt.solver import apply
+    cards = [C((3, 5, 2, 6)), C((7, 2, 4, 3)), C((2, 6, 6, 2)), C((5, 3, 3, 5)),
+             C((4, 4, 7, 1)), C((6, 2, 5, 4)), C((1, 7, 3, 5)), C((5, 5, 2, 6)),
+             C((3, 4, 6, 3)), C((6, 6, 1, 4))]
+    ids = [c.id for c in cards]
+    out = []
+    for side in (0, 1):
+        st = GameState(EMPTY_BOARD, (tuple(ids[:5]), tuple(ids[5:])), side, rules)
+        for cell in (4, 0, 8, 2, 6)[:9 - empty]:
+            st = apply(st, 0, cell)
+        out.append(st)
+    return out
+
+
+NON_CHAOS = (PLAIN, RuleSet(plus=True), RuleSet(same=True), RuleSet(order=True))
+
+
+def test_exact_value_solves_fully_when_chaos_is_off():
+    """Without Chaos the exact pass is a real full-board solve - and it calls solve()
+    rather than analyze().best.value because the two agree (analyze's ranking maximum
+    IS the game value) while solve gets alpha-beta at the root."""
+    from tt.solver import analyze, solve
+    from tt.recommend import _exact_value
+    for rules in NON_CHAOS:
+        for st in _positions(rules, empty=6):
+            for opp in ("optimal", "greedy"):
+                v = _exact_value(st, rules, opp)
+                assert v == solve(st, opp) == analyze(st, opp=opp).best.value
+
+
+@pytest.mark.slow
+def test_exact_value_matches_analyze_from_an_empty_board():
+    """The same equivalence on the position the recommender actually evaluates - a
+    full opening, where analyze searches all 45 root moves on a full window."""
+    from tt.solver import analyze, solve
+    from tt.recommend import _exact_value
+    for rules in NON_CHAOS:
+        for st in _positions(rules, empty=9):
+            for opp in ("optimal", "greedy"):
+                v = _exact_value(st, rules, opp)
+                assert v == solve(st, opp) == analyze(st, opp=opp).best.value
+
+
+def test_chaos_recommendations_are_never_labelled_exact():
+    """21 NPCs play Chaos.  Their margins are estimates, and the CLI's `(est)` tag
+    keys off DeckResult.exact - so it must not read True there."""
+    cards = [C((3, 5, 2, 6)), C((7, 2, 4, 3)), C((2, 6, 6, 2)), C((5, 3, 3, 5)),
+             C((4, 4, 7, 1)), C((6, 2, 5, 4)), C((1, 7, 3, 5))]
+    pool = [c.id for c in cards]
+    npc = tuple(pool[:5])
+    rec = recommend(list(npc), RuleSet(chaos=True), pool, shortlist_n=6,
+                    exact_k=2, top=2, screen_tail=4, swaps=False, workers=1)
+    assert rec.results
+    assert all(r.exact is False for r in rec.results)
+
+
+def test_non_chaos_recommendations_are_still_labelled_exact():
+    cards = [C((3, 5, 2, 6)), C((7, 2, 4, 3)), C((2, 6, 6, 2)), C((5, 3, 3, 5)),
+             C((4, 4, 7, 1)), C((6, 2, 5, 4)), C((1, 7, 3, 5))]
+    pool = [c.id for c in cards]
+    rec = recommend(list(pool[:5]), PLAIN, pool, shortlist_n=6, exact_k=2, top=2,
+                    screen_tail=4, swaps=False, workers=1)
+    assert rec.results and all(r.exact is True for r in rec.results)

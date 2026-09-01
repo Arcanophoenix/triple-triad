@@ -131,6 +131,10 @@ def main(argv=None) -> int:
         else:
             print("note   : Roulette NPC - the roll is unknown when you build the deck, so "
                   "this is the strongest deck under plain rules (a solid all-round pick)")
+    if rules.chaos:
+        print("note   : Chaos picks your card for you each turn, so no position can be "
+              "solved to a full board - every margin below is a deep estimate (marked "
+              "'(est)'), never a guarantee")
     if rules.swap:
         print("note   : Swap trades one random card of yours for one of theirs before "
               "play, so margins below are EXPECTED values over all 25 exchanges, not "

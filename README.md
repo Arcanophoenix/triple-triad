@@ -322,8 +322,17 @@ It then reports single-card upgrades from your pool.
     seconds rather than under one. Swap **+ Order** (only Ushiogi) is the
     expensive corner - the exact pass is `orderings x draws x 25 swaps x 2
     sides` - and takes a couple of minutes.
+- **Chaos** deals your card for you each turn, so the mover only picks a cell and
+  every ply is an expectimax node - alpha-beta gets no window to prune on and a
+  full-board solve is out of reach (~0.2s at six empty cells, ~4s at seven,
+  minutes at eight). The exact pass therefore runs a *deeper screen* rather than
+  a solve, and every Chaos result is reported as `(est)`: a good estimate, never
+  a guarantee. Measured against a tail-7 reference, that estimate lands within
+  0.29 on average where the previous single-greedy-playout fallback was out by
+  1.88 on average and 3.46 at worst - always optimistically, which is the
+  direction that loses matches.
 - Roulette isn't modelled (pick the deck under the always-on rules, then re-run
-  with `--rules` once you see the roll); Chaos falls back to the screen estimate.
+  with `--rules` once you see the roll).
 
 ## Who to challenge next
 

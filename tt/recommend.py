@@ -37,7 +37,7 @@ warnings.filterwarnings("ignore", message=r".*multi-threaded.*fork\(\).*",
 from .data import CARDS, Card
 from .model import EMPTY_BOARD, GameState, RuleSet, is_terminal, value_a
 from .rules import _resolve
-from .solver import analyze, apply, legal_moves, solve
+from .solver import apply, legal_moves, solve
 
 HIGH_RARITY = 4          # cards at >= this many stars are deck-limited
 MAX_HIGH_PER_DECK = 1    # VERIFY: standard decks allow one 4/5-star card
@@ -196,6 +196,15 @@ ORDER_PROBE = 12         # hand orderings exact-solved per deck under the Order 
 # (measured: the top deck's margin drifts from +2.0 at 1 sample to -2.2 at all 25).
 # So this only narrows the field; every later phase re-scores on all 25.
 SWAP_PROBE = 5
+# Plies solved exactly at the end of a Chaos evaluation.  Chaos is the one rule
+# whose positions cannot be solved to a full board: every ply is an expectimax
+# node, alpha-beta never gets a window to prune on, and the cost runs ~0.2s at six
+# empty cells, ~4s at seven, minutes at eight.  So the "exact" pass deepens the
+# screen instead of solving outright, and says so (DeckResult.exact is False under
+# Chaos).  6 is the sweet spot: against a tail-7 reference it lands within 0.29 on
+# average, where tail 7 itself costs 17x and the old single-greedy-playout fallback
+# was out by 1.88 on average and 3.46 at worst - and always in our favour.
+CHAOS_TAIL = 6
 
 
 def _key(deck, npc_deck, side, ordered=False):
@@ -306,17 +315,43 @@ def _screen(deck, npc_deck, rules, cache, tail=6, opp="optimal", swap_probe=0):
     return DeckResult(tuple(deck), first, second, exact=False)
 
 
+def _exact_value(st, rules, opp):
+    """The exact pass's value for one opening.
+
+    Normally a full-board solve.  ``solve`` rather than ``analyze(st).best.value``:
+    the two agree exactly - analyze's ranking maximum *is* the game value - but
+    analyze searches every root move on a full window in order to rank them all,
+    while the recommender only wants the number.  Measured 5.2x faster over 24
+    openings across Plain/Plus/Same/Ascension/Reverse+Fallen Ace/Order, both NPC
+    models and both sides, with identical values.
+
+    Chaos is the exception, and the reason this is a function: ``analyze`` cannot
+    rank moves you do not get to choose, so it raises there.  A full solve is out
+    of reach too (see CHAOS_TAIL), so Chaos deepens the screen instead - greedy
+    opening, then an exact Chaos-aware expectimax tail."""
+    if rules.chaos:
+        return screen_value(st, CHAOS_TAIL, opp)
+    return solve(st, opp)
+
+
+def _exact_tag(rules) -> bool:
+    """Whether an exact-pass result really was solved to a full board.  False under
+    Chaos, where the pass is a deep estimate - claiming otherwise would put an
+    unearned `(est)`-free guarantee on 21 NPCs' recommendations."""
+    return not rules.chaos
+
+
 def _exact(deck, npc_deck, rules, cache, opp="optimal", swap_probe=0):
+    # under Chaos this shares the screen's cache entries when the tails coincide
+    tag = CHAOS_TAIL if rules.chaos else "x"
+
     def ev(st):
-        k = ("x", opp, *_key(st.hands[0], st.hands[1], st.to_move, rules.order))
+        k = (tag, opp, *_key(st.hands[0], st.hands[1], st.to_move, rules.order))
         if k not in cache:
-            try:
-                cache[k] = analyze(st, opp=opp).best.value
-            except ValueError:                       # Chaos / Roulette
-                cache[k] = greedy_playout(st)
+            cache[k] = _exact_value(st, rules, opp)
         return cache[k]
     first, second = _avg_sides(deck, npc_deck, rules, ev, swap_probe)
-    return DeckResult(tuple(deck), first, second, exact=True)
+    return DeckResult(tuple(deck), first, second, exact=_exact_tag(rules))
 
 
 def _normalize_npc_decks(npc_deck) -> list[tuple]:
@@ -361,7 +396,7 @@ def _exact_any(deck, npc_decks, rules, cache, opp="optimal", order_keep=ORDER_PR
     for perm in _probe_orders(deck, npc_decks, rules, order_keep):
         parts = [_exact(perm, nd, rules, cache, opp, swap_probe) for nd in npc_decks]
         r = DeckResult(tuple(perm), min(p.first for p in parts),
-                       min(p.second for p in parts), exact=True)
+                       min(p.second for p in parts), exact=_exact_tag(rules))
         best = r if best is None else _pick_best((best, r))
     return best
 
@@ -417,23 +452,17 @@ def _screen_any_nc(deck, npc_decks, rules, tail, opp, swap_probe=0) -> DeckResul
     return DeckResult(tuple(deck), min(fs), min(ss), exact=False)
 
 
-def _exact_one(st, opp):
-    try:
-        return analyze(st, opp=opp).best.value
-    except ValueError:                           # Chaos / Roulette
-        return greedy_playout(st)
-
-
 def _exact_any_nc(deck, npc_decks, rules, opp, order_keep=ORDER_PROBE,
                   swap_probe=0) -> DeckResult:
     best = None
     for perm in _probe_orders(deck, npc_decks, rules, order_keep):
         fs, ss = [], []
         for nd in npc_decks:
-            a, b = _avg_sides(perm, nd, rules, lambda st: _exact_one(st, opp), swap_probe)
+            a, b = _avg_sides(perm, nd, rules,
+                              lambda st: _exact_value(st, rules, opp), swap_probe)
             fs.append(a)
             ss.append(b)
-        r = DeckResult(tuple(perm), min(fs), min(ss), exact=True)
+        r = DeckResult(tuple(perm), min(fs), min(ss), exact=_exact_tag(rules))
         best = r if best is None else _pick_best((best, r))
     return best
 
@@ -488,6 +517,12 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
     coarse screen (0 = all 25); every later phase re-scores on all 25, because
     picking the best of many truncated averages biases the winner optimistic.
     Margins for a Swap NPC are expected values, not guarantees.
+
+    Under the **Chaos** rule you do not choose which card you play, so every ply
+    is an expectimax node and no position can be solved to a full board in
+    reasonable time.  The exact pass therefore runs a deeper screen instead (see
+    CHAOS_TAIL) and every result comes back with ``exact=False``; the numbers are
+    good estimates, not solved values.
 
     ``progress``, if given, is called with dict events (each carries ``msg``):
     ``{"phase":"screen","done","total"}`` through the coarse pass, then
