@@ -15,6 +15,7 @@ from .model import (
     EMPTY_BOARD, NEIGHBORS, OPP, GameState, RuleSet,
     is_terminal, value_a,
 )
+from .regions import effective_rules
 from .rules import _resolve
 
 INF = 10 ** 9
@@ -322,7 +323,7 @@ def _best_child(state: GameState, ctx: "_Ctx"):
 # --- building a match from the dataset ------------------------------------
 
 def new_match(npc: str, your_deck, you_first: bool = True,
-              npc_deck=None, rules=None) -> GameState:
+              npc_deck=None, rules=None, use_regional: bool = True) -> GameState:
     npcs = load_npcs()
     rec = find_npc(npc, npcs)
     decks = load_decks()
@@ -340,7 +341,8 @@ def new_match(npc: str, your_deck, you_first: bool = True,
             f"no deck recorded for {rec['name']!r} - add it with "
             f"scripts/deck.py add {rec['name']!r} <5 cards>"
         )
-    rnames = rules or entry.get("rules") or rec["rules"]
+    rnames = effective_rules(rec, deck_entry=entry, override=rules,
+                             use_regional=use_regional)
     rs = RuleSet.from_names(rnames)
     a = tuple(resolve(x).id for x in your_deck)
     b = tuple(resolve(x).id for x in npc_deck)

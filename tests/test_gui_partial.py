@@ -33,6 +33,61 @@ def test_partial_flags_and_completions():
         assert set(cs.hands[1][:3]) == set(st["hands"][1][:3])   # fixed cards kept
 
 
+def _swap(you_names, entry, out_name, in_name):
+    # _swap_hands only touches `self` in the fixed-deck branch, so None is fine here
+    return gui.Handler._swap_hands(
+        None, _ids(*you_names), entry, "Yellow Moon", {}, out_name, in_name)
+
+
+_YM = {
+    "fixed": ["Gaius van Baelsar Card", "Gaelicat Card"],
+    "pool": ["Yugiri Mistwalker Card", "Gerolt Card", "Rhitahtyn sas Arvina Card",
+             "Tidus Card", "Shiva Card"],
+    "draw": 3,
+}
+_MY5 = ["Dodo Card", "Sabotender Card", "Bomb Card", "Mandragora Card", "Coeurl Card"]
+
+
+def test_swap_receiving_a_pool_card():
+    you5, hand1, pool, them5 = _swap(_MY5, _YM, "Bomb Card", "Tidus Card")
+    assert them5 is None
+    assert resolve("Tidus Card").id in you5 and resolve("Bomb Card").id not in you5
+    # your Bomb is now an explicit NPC card; two holes left
+    assert hand1[:3] == _ids("Gaius van Baelsar Card", "Gaelicat Card", "Bomb Card")
+    assert hand1[3:] == [None, None]
+    assert resolve("Tidus Card").id not in pool          # you hold it now
+    assert len(pool) == 4
+
+
+def test_swap_receiving_a_fixed_card():
+    you5, hand1, pool, them5 = _swap(_MY5, _YM, "Coeurl Card", "Gaelicat Card")
+    assert them5 is None
+    assert hand1[0] == resolve("Gaius van Baelsar Card").id
+    assert hand1[1] == resolve("Coeurl Card").id         # your card took Gaelicat's slot
+    assert hand1[2:] == [None, None, None]
+    assert len(pool) == 5                                # full pool still in play
+
+
+def test_swap_rejects_a_card_you_do_not_hold():
+    import pytest
+    with pytest.raises(ValueError):
+        _swap(_MY5, _YM, "Ifrit Card", "Tidus Card")
+
+
+def test_swap_may_hand_you_a_second_copy_of_a_card_you_run():
+    # FFXIV's Swap does not prevent duplicates: you run Shiva, the NPC's Shiva
+    # comes to you, and you now hold two.  The solver collapses them.
+    mine = ["Dodo Card", "Sabotender Card", "Bomb Card", "Mandragora Card", "Shiva Card"]
+    you5, hand1, pool, them5 = _swap(mine, _YM, "Bomb Card", "Shiva Card")
+    assert you5.count(resolve("Shiva Card").id) == 2
+    from tt.model import EMPTY_BOARD, GameState, RuleSet
+    from tt.solver import legal_moves
+    st = GameState(EMPTY_BOARD, (tuple(you5), tuple(hand1[:3] + [pool[0], pool[1]])),
+                   0, RuleSet.from_names(["Ascension"]))
+    idxs = {i for i, _ in legal_moves(st)}
+    assert len(idxs) == 4          # the doubled Shiva is offered once, not twice
+
+
 def test_arr_portraits_are_matched_by_name_not_number():
     # arrtripletriad.com numbers cards differently from the wiki (it interleaves
     # the FF-crossover cards), so the portrait for Opo-opo (wiki #156) is NOT

@@ -24,6 +24,7 @@ from tt.data import (  # noqa: E402
 )
 from tt.format import render_board  # noqa: E402
 from tt.model import EMPTY_BOARD, GameState, RuleSet, is_terminal, score_a  # noqa: E402
+from tt.regions import effective_rules  # noqa: E402
 from tt.solver import analyze, apply  # noqa: E402
 
 
@@ -99,7 +100,9 @@ def main(argv=None) -> int:
     g = p.add_mutually_exclusive_group()
     g.add_argument("--first", action="store_true", help="you take turn 1")
     g.add_argument("--second", action="store_true", help="the NPC takes turn 1")
-    p.add_argument("--rules", default=None, help="override the NPC's rules")
+    p.add_argument("--rules", default=None, help="override the full rule list (regional included)")
+    p.add_argument("--no-regional", action="store_true",
+                   help="use the NPC's match rules only, skip recorded regional rules")
     p.add_argument("--opp", choices=("greedy", "optimal"), default="greedy",
                    help="NPC model (default greedy: realistic + fast)")
     args = p.parse_args(argv)
@@ -136,7 +139,8 @@ def main(argv=None) -> int:
             save_decks(decks)
             print(f"saved to data/decks.json")
 
-    rnames = (args.rules.split(",") if args.rules else None) or entry.get("rules") or npc["rules"]
+    rnames = effective_rules(npc, deck_entry=entry, override=args.rules,
+                             use_regional=not args.no_regional and not args.rules)
     rules = RuleSet.from_names([r.strip() for r in rnames if r.strip()])
 
     try:

@@ -15,6 +15,7 @@ datas = [
     (str(ROOT / "data" / "cards.json"), "data"),
     (str(ROOT / "data" / "npcs.json"), "data"),
     (str(ROOT / "data" / "decks.json"), "data"),
+    (str(ROOT / "data" / "regional.json"), "data"),
     (str(ROOT / "data" / "collection.example.json"), "data"),
     (str(ROOT / "reference" / _ICONS), f"reference/{_ICONS}"),
     (str(ROOT / "reference" / _ARR), f"reference/{_ARR}"),
@@ -24,9 +25,9 @@ datas = [
 # app.py imports sub-commands dynamically, so name them for the analysis
 hiddenimports = [
     "tt", "tt.paths", "tt.data", "tt.model", "tt.rules", "tt.solver",
-    "tt.recommend", "tt.format",
-    "gui", "play", "solve", "recommend", "difficulty", "review",
-    "scrape_npc", "deck", "extract_wiki", "ttdata",
+    "tt.recommend", "tt.regions", "tt.format",
+    "gui", "play", "solve", "recommend", "regional", "difficulty", "review",
+    "fetch_npc_pages", "scrape_npc", "deck", "extract_wiki", "ttdata",
 ]
 
 a = Analysis(

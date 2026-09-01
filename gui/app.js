@@ -80,6 +80,10 @@ async function boot() {
   });
   $("recommend-btn").addEventListener("click", () => runRecommend(false));
   $("start").addEventListener("click", start);
+  $("swap-go").addEventListener("click", swapConfirm);
+  $("swap-cancel").addEventListener("click", () => { $("swapask").hidden = true; showView("solver"); });
+  $("roulette-go").addEventListener("click", rouletteConfirm);
+  $("roulette-cancel").addEventListener("click", () => { $("rouletteask").hidden = true; showView("solver"); });
   $("undo").addEventListener("click", undo);
   $("newgame").addEventListener("click", () => { resetGame(); showView("solver"); });
 
@@ -88,7 +92,7 @@ async function boot() {
   $("autoplay").addEventListener("change", (e) => {
     G.autoplay = e.target.checked;
     try { localStorage.setItem("tt_autoplay", G.autoplay ? "1" : "0"); } catch (er) { /* ignore */ }
-    if (G.autoplay) autoMoveIfEnabled();       // it might already be your turn
+    if (G.autoplay) { autoMoveIfEnabled(); autoPlayNpcFinalCard(); }  // might already be someone's turn
   });
 
   // manage
@@ -140,8 +144,69 @@ function refreshNpcInfo() {
     else info += "  ·  deck not recorded";
   }
   $("npc-info").textContent = info;
+  renderRegionalInfo(n);
   $("npc-deck").value = "";
   $("npc-deck-wrap").hidden = !(n && !d);        // free-text: nothing recorded at all
+}
+
+// ---------- regional rules ----------
+const FIXED_REGION = "(fixed rules)";
+
+function regionalEntry(region) {
+  if (!region || region === FIXED_REGION) return null;
+  return ((BOOT.regional && BOOT.regional.current) || {})[region]
+      || { rules: [], date: null, stale: true };
+}
+function regionalRulesFor(n) {
+  const e = n && regionalEntry(n.region);
+  return e ? e.rules.slice() : [];
+}
+function combineRuleNames(match, regional) {
+  const out = [], seen = new Set();
+  for (const r of [...(match || []), ...(regional || [])]) {
+    const k = (r || "").trim().toLowerCase();
+    if (k && !seen.has(k)) { seen.add(k); out.push(r.trim()); }
+  }
+  return out;
+}
+
+function renderRegionalInfo(n) {
+  const box = $("regional-info");
+  box.innerHTML = "";
+  box.classList.remove("stale");
+  if (!n) return;
+  if (!n.region) {
+    box.textContent = `regional rules: region unknown for "${n.zone}" — not applied`;
+    return;
+  }
+  if (n.region === FIXED_REGION) {
+    box.textContent = `regional rules: none — ${n.zone} ignores them`;
+    return;
+  }
+  const e = regionalEntry(n.region);
+  const label = e.rules.length ? e.rules.join(", ") : "none set";
+  const when = e.date ? ` · ${e.date}${e.stale ? " · STALE, re-check" : ""}` : "";
+  box.appendChild(h("span", null, `regional (${n.region}): ${label}${when} `));
+  const btn = h("button", "linklike", e.rules.length ? "edit" : "set");
+  btn.type = "button";
+  btn.addEventListener("click", () => editRegional(n.region));
+  box.appendChild(btn);
+  if (e.stale && e.rules.length) box.classList.add("stale");
+}
+
+async function editRegional(region) {
+  const e = regionalEntry(region) || { rules: [] };
+  const ans = prompt(
+    `Regional rules for ${region}\n` +
+    `Comma-separated, read off the Match Registration screen. Blank clears them.`,
+    e.rules.join(", "));
+  if (ans === null) return;
+  try {
+    BOOT.regional = await post("/api/regional", { region, rules: ans });
+    refreshNpcInfo();
+  } catch (err) {
+    $("npc-info").textContent = "regional update failed: " + err.message;
+  }
 }
 
 function npcPayload() {
@@ -257,10 +322,16 @@ function renderRecResults(r) {
   out.innerHTML = "";
   out.appendChild(h("div", "hint", `${r.refined ? "exact" : "estimated"} · screened ${r.screened} decks vs ${r.npc}`));
   if (r.note) out.appendChild(h("div", "hint", r.note));
+  const ordered = (r.rules || []).some((x) => x.toLowerCase() === "order");
+  if (ordered) {
+    out.appendChild(h("div", "hint", "Order rule — the numbers are the play sequence; set your in-game deck in exactly this left-to-right order."));
+  }
   const status = h("div", "hint");
   r.results.forEach((res) => {
     const row = h("div", "rec-row");
-    row.appendChild(h("span", "rec-cards", res.cards.map(short).join(", ")));
+    row.appendChild(h("span", "rec-cards", ordered
+      ? res.cards.map((n, i) => `${i + 1}. ${short(n)}`).join("   ")
+      : res.cards.map(short).join(", ")));
     row.appendChild(h("span", "rec-mrg", `first ${fmt(res.first)} / second ${fmt(res.second)} · worst ${fmt(res.worst)}`));
     const use = h("button", "ghost", "use");
     use.addEventListener("click", () => {
@@ -301,6 +372,23 @@ async function saveRecDeck(cards, status) {
   } catch (e) { status.textContent = e.message; status.classList.add("bad"); }
 }
 
+// effective rule names for the pending match: the override field wins, else the NPC's
+function activeRuleNames() {
+  const ov = $("rules").value.trim();
+  if (ov) return ov.split(",").map((s) => s.trim()).filter(Boolean);
+  const n = npcByName($("npc").value);
+  return n ? combineRuleNames(n.rules, regionalRulesFor(n)) : [];
+}
+const ruleHas = (names, rule) => (names || []).some((r) => r.toLowerCase() === rule);
+const rulesHaveSwap = (names) => ruleHas(names, "swap");
+const rulesHaveRoulette = (names) => ruleHas(names, "roulette");
+
+// rules Roulette can roll (Same Wall is a Same sub-toggle; Combo is always on)
+const RULE_CHOICES = [
+  "All Open", "Three Open", "Same", "Plus", "Reverse", "Fallen Ace",
+  "Ascension", "Descension", "Order", "Chaos", "Swap", "Sudden Death",
+];
+
 async function start() {
   $("setup-err").textContent = "";
   if (SOLVE_IDS.length !== 5) { $("setup-err").textContent = "pick a saved deck or use Recommend (need 5 cards)"; return; }
@@ -313,11 +401,100 @@ async function start() {
     youFirst: document.querySelector("input[name=first]:checked").value === "1",
     opp: "optimal",   // in-match recommendation always uses the safe (minimax) model;
                       // the server drops to a fast estimate only for slow positions
+    baseRules: activeRuleNames(),   // pre-Roulette rule list, so a replay re-rolls
   };
+  if (rulesHaveRoulette(G.pendingCfg.baseRules)) { openRouletteAsk(); return; }
+  if (rulesHaveSwap(G.pendingCfg.baseRules)) { openSwapAsk(); return; }
+  launchMatch($("setup-err"));
+}
+
+async function launchMatch(errBox) {
   try {
     const r = await post("/api/newgame", G.pendingCfg);
+    $("swapask").hidden = true;
+    $("rouletteask").hidden = true;
     enterGame(r);
-  } catch (e) { $("setup-err").textContent = e.message; }
+  } catch (e) { errBox.textContent = e.message; }
+}
+
+// Roulette: tick the rules the game rolled, then launch (chaining to Swap if it rolled one).
+function openRouletteAsk() {
+  const fixed = (G.pendingCfg.baseRules || []).filter((r) => r.toLowerCase() !== "roulette");
+  const grid = $("rule-grid");
+  grid.innerHTML = "";
+  for (const rule of RULE_CHOICES) {
+    const locked = fixed.some((f) => f.toLowerCase() === rule.toLowerCase());
+    const lab = h("label", "rule-box" + (locked ? " fixed" : ""));
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.value = rule; cb.checked = locked; cb.disabled = locked;
+    lab.append(cb, h("span", null, rule));
+    grid.appendChild(lab);
+  }
+  const n = npcByName(G.pendingCfg.npc || G.npc);
+  $("roulette-npcname").textContent = (n && n.name) || (G.pendingCfg.npc || "this NPC");
+  $("roulette-err").textContent = "";
+  showView("game");
+  $("rouletteask").hidden = false;
+}
+
+function rouletteConfirm() {
+  const picked = [...$("rule-grid").querySelectorAll("input:checked")].map((c) => c.value);
+  G.pendingCfg = { ...G.pendingCfg, rules: picked };
+  $("rouletteask").hidden = true;
+  if (rulesHaveSwap(picked)) { openSwapAsk(); return; }   // Roulette rolled Swap -> chain
+  launchMatch($("roulette-err"));
+}
+
+// Swap: pick the two traded cards from card art, then launch with swapOut/swapIn.
+let SWAP_OUT = null;   // card id you gave the NPC
+let SWAP_IN = null;    // card id you received
+
+// every card the NPC could hold: their recorded fixed+pool, else the 5 you typed
+function swapInCandidates() {
+  const n = npcByName(G.pendingCfg.npc || G.npc);
+  const d = n ? (BOOT.decks[n.name] || null) : null;
+  if (d) return namesToIds([...(d.fixed || d.cards || []), ...(d.pool || [])]);
+  return namesToIds(G.pendingCfg.npcCards || []);
+}
+
+function swapTile(id, selectedId, onPick) {
+  const t = h("div", "swap-tile" + (id === selectedId ? " sel" : ""));
+  const art = h("div", "swap-tile-art");
+  art.appendChild(miniCard(id));
+  t.append(art, h("div", "swap-tile-name", short(CARDS[id].name)));
+  t.title = CARDS[id].name;
+  t.addEventListener("click", () => onPick(id));
+  return t;
+}
+
+function renderSwapGrids() {
+  const og = $("swap-out-grid"); og.innerHTML = "";
+  namesToIds(G.pendingCfg.deck || []).forEach((id) =>
+    og.appendChild(swapTile(id, SWAP_OUT, (x) => { SWAP_OUT = x; renderSwapGrids(); })));
+  const ig = $("swap-in-grid"); ig.innerHTML = "";
+  const cands = swapInCandidates();
+  if (!cands.length) {
+    ig.appendChild(h("div", "swapask-sub", "record this NPC's deck (or type their 5 cards) to pick here"));
+  }
+  cands.forEach((id) =>
+    ig.appendChild(swapTile(id, SWAP_IN, (x) => { SWAP_IN = x; renderSwapGrids(); })));
+}
+
+function openSwapAsk() {
+  SWAP_OUT = null; SWAP_IN = null;
+  const n = npcByName(G.pendingCfg.npc || G.npc);
+  $("swap-npcname").textContent = (n && n.name) || (G.pendingCfg.npc || "the NPC");
+  $("swap-err").textContent = "";
+  renderSwapGrids();
+  showView("game");
+  $("swapask").hidden = false;
+}
+
+async function swapConfirm() {
+  if (SWAP_OUT == null) { $("swap-err").textContent = "pick the card you gave up"; return; }
+  if (SWAP_IN == null) { $("swap-err").textContent = "pick the card you received"; return; }
+  G.pendingCfg = { ...G.pendingCfg, swapOut: CARDS[SWAP_OUT].name, swapIn: CARDS[SWAP_IN].name };
+  launchMatch($("swap-err"));
 }
 
 function enterGame(r) {
@@ -342,6 +519,8 @@ function resetGame() {
   G.rewards = []; G.logMeta = null;
   $("npc-unseen").hidden = true;
   $("postmatch").hidden = true;
+  $("swapask").hidden = true;
+  $("rouletteask").hidden = true;
 }
 
 // Rebuild the move list by diffing consecutive board states (robust to Undo).
@@ -398,10 +577,12 @@ async function addPrize(id) {
 async function replayMatch(youFirst) {
   if (!G.pendingCfg) return;
   G.pendingCfg = { ...G.pendingCfg, youFirst };
-  try {
-    const r = await post("/api/newgame", G.pendingCfg);
-    enterGame(r);
-  } catch (e) { $("tip").textContent = e.message; }
+  delete G.pendingCfg.swapOut;
+  delete G.pendingCfg.swapIn;
+  const base = G.pendingCfg.baseRules || activeRuleNames();
+  if (rulesHaveRoulette(base)) { delete G.pendingCfg.rules; openRouletteAsk(); return; }
+  if (rulesHaveSwap(base)) { openSwapAsk(); return; }
+  launchMatch($("tip"));
 }
 
 function renderPostMatch() {
@@ -589,10 +770,30 @@ function miniCard(id) {
   e.appendChild(h("span", "num n-w", face(c.sides[3])));
   return e;
 }
-function cardEl(id, owner) {
+// Ascension / Descension modifier for any card of faction `kind`, given the
+// current board: +N (Ascension) / -N (Descension), N = cards of that faction on
+// the board. Applies to board cards (self-counted, they're on the board) and to
+// hand cards alike (the rule hits cards in hand too) - the real game shows both.
+function factionDelta(kind) {
+  if (!kind || kind === "None" || !G.state) return 0;
+  const rules = G.state.rules || [];
+  const asc = rules.includes("Ascension");
+  if (!asc && !rules.includes("Descension")) return 0;
+  let n = 0;
+  for (const s of G.state.board) if (s && CARDS[s.card].kind === kind) n++;
+  return asc ? n : -n;
+}
+
+function cardEl(id, owner, delta) {
   const c = CARDS[id];
   const e = h("div", "card owner-" + owner);
   e.style.backgroundImage = `url(/card/${id}.png)`;
+  if (delta) {
+    e.appendChild(h("span", "asc-badge" + (delta < 0 ? " desc" : ""),
+      (delta > 0 ? "+" : "") + delta));
+    const capped = c.sides.map((v) => Math.max(1, Math.min(10, v + delta)));
+    e.title = `${c.name} — ${c.sides.map(face).join("/")} → ${capped.map(face).join("/")}`;
+  }
   e.appendChild(h("span", "num n-n", face(c.sides[0])));
   e.appendChild(h("span", "num n-e", face(c.sides[1])));
   e.appendChild(h("span", "num n-s", face(c.sides[2])));
@@ -619,7 +820,7 @@ function renderHand(side, recCard) {
     if (id === null) {
       slot.appendChild(h("div", "card unknown", "?"));   // NPC card not yet identified
     } else if (id != null) {
-      slot.appendChild(cardEl(id, side));
+      slot.appendChild(cardEl(id, side, factionDelta(CARDS[id].kind)));
       if (G.sel === id && side === G.state.to_move) slot.classList.add("sel");
       if (recCard != null && recCard === id) slot.classList.add("rec");
       slot.addEventListener("click", () => onHand(side, id));
@@ -643,7 +844,7 @@ function render() {
   $("grid").querySelectorAll(".cell").forEach((cell, i) => {
     cell.innerHTML = ""; cell.classList.remove("rec");
     cell.classList.toggle("empty", s.board[i] == null);
-    if (s.board[i]) cell.appendChild(cardEl(s.board[i].card, s.board[i].owner));
+    if (s.board[i]) cell.appendChild(cardEl(s.board[i].card, s.board[i].owner, factionDelta(CARDS[s.board[i].card].kind)));
   });
   renderHand(0, recFits ? a.best.card : null);
   renderHand(1, null);
@@ -696,6 +897,7 @@ async function refresh() {
     autoMoveIfEnabled();
   } else {
     G.analysis = null;
+    autoPlayNpcFinalCard();
   }
 }
 
@@ -713,6 +915,46 @@ function autoMoveIfEnabled() {
   setTimeout(() => {
     if (G.autoplay && G.state === at && !G.state.terminal && G.state.to_move === 0) onCell(cell);
   }, AUTOPLAY_DELAY);
+}
+
+// the NPC's very last card is a forced move - one card, one empty cell, no
+// choice. With auto-play on, place it for them so a solved match finishes
+// without a pointless click. Only when the card is known: named outright, or
+// the sole remaining pool card (determined by elimination).
+function autoPlayNpcFinalCard() {
+  const s = G.state;
+  if (!G.autoplay || !s || s.terminal || s.to_move !== 1) return;
+  let cell = -1, empties = 0;
+  for (let i = 0; i < 9; i++) if (s.board[i] == null) { cell = i; empties++; }
+  if (empties !== 1 || s.hands[1].length !== 1) return;
+  let card = s.hands[1][0];
+  if (card == null) {
+    const pool = s.npcPool || [];
+    if (pool.length !== 1) return;            // still ambiguous - the human names it
+    card = pool[0];
+  }
+  $("tip").textContent = "playing the NPC's forced last card…";
+  setTimeout(() => finishNpcFinalCard(s, card, cell), AUTOPLAY_DELAY);
+}
+
+async function finishNpcFinalCard(at, card, cell) {
+  if (!G.autoplay || G.state !== at || at.terminal || at.to_move !== 1) return;
+  let base = at, pushed = false;
+  try {
+    if (at.hands[1][0] == null) {             // name the elimination-known card first
+      const rv = await post("/api/reveal", { state: at, card });
+      if (!G.autoplay || G.state !== at) return;
+      G.state = base = rv.state;
+    }
+    G.history.push(base); pushed = true;
+    const r = await post("/api/apply", { state: base, card, cell });
+    if (G.state !== base) { G.history.pop(); return; }   // superseded (undo, new game, manual entry)
+    G.state = r.state; G.sel = null; G.analysis = null;
+    await refresh();
+  } catch (e) {
+    if (pushed && G.history[G.history.length - 1] === base) G.history.pop();
+    $("tip").textContent = "couldn't place the NPC's last card: " + e.message;
+  }
 }
 
 // ---------- interaction ----------

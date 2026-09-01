@@ -27,6 +27,10 @@ from tt.data import (  # noqa: E402
 )
 from tt.model import EMPTY_BOARD, GameState, RuleSet, is_terminal, score_a  # noqa: E402
 from tt.recommend import recommend  # noqa: E402
+from tt.regions import (  # noqa: E402
+    REGIONS, clear_regional, effective_rules, is_stale, load_regional,
+    region_for_npc, set_regional,
+)
 from tt.solver import analyze, apply  # noqa: E402
 
 GUI = paths.GUI_DIR
@@ -112,6 +116,19 @@ def _reward_cards(rec: dict) -> list[dict]:
 def _cards_payload() -> dict:
     return {c.id: {"name": c.name, "sides": list(c.sides), "stars": c.stars,
                    "kind": c.kind, "icon": _RAW[c.id]["icon"]} for c in CARDS}
+
+
+def _regional_payload() -> dict:
+    """Current regional rules for the front-end: every region, the rules recorded
+    for it, when, and whether that predates the last daily reset."""
+    saved = load_regional()["regions"]
+    return {
+        "regions": list(REGIONS),
+        "current": {r: {"rules": list((saved.get(r) or {}).get("rules") or []),
+                        "date": (saved.get(r) or {}).get("date"),
+                        "stale": is_stale((saved.get(r) or {}).get("date"))}
+                    for r in REGIONS},
+    }
 
 
 def _split_deck(spec) -> list[str]:
@@ -250,13 +267,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(200, {
                 "cards": _cards_payload(),
                 "npcs": [{"name": n["name"], "rules": n["rules"],
-                          "zone": n["location"]["zone"], "hasDeck": n["name"] in recorded}
+                          "zone": n["location"]["zone"], "hasDeck": n["name"] in recorded,
+                          "region": region_for_npc(n)}
                          for n in load_npcs()],
                 "decks": recorded,
                 "collectionDecks": load_collection()["decks"],
                 "ownedIds": _owned_ids(),
                 "starterIds": sorted(_STARTER_IDS),
+                "regional": _regional_payload(),
             })
+        if path == "/api/regional":
+            return self._send(200, _regional_payload())
         return self._send(404, {"error": "not found"})
 
     def do_POST(self):
@@ -285,14 +306,28 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return self._recommend(body)
             if path == "/api/loggame":
                 return self._log_game(body)
+            if path == "/api/regional":
+                return self._set_regional(body)
         except (KeyError, ValueError) as e:
             return self._send(400, {"error": str(e)})
         return self._send(404, {"error": "not found"})
 
     @staticmethod
     def _npc_rules(body, entry, rec):
-        rules = body.get("rules") or entry.get("rules") or rec["rules"]
-        return RuleSet.from_names([r.strip() for r in rules if r.strip()])
+        names = effective_rules(rec, deck_entry=entry, override=body.get("rules"),
+                                use_regional=not body.get("noRegional"))
+        return RuleSet.from_names([r.strip() for r in names if r.strip()])
+
+    def _set_regional(self, body):
+        region = (body.get("region") or "").strip()
+        raw = body.get("rules", [])
+        rules = [r.strip() for r in (raw.split(",") if isinstance(raw, str) else raw)
+                 if r and r.strip()]
+        if body.get("clear") or not rules:
+            clear_regional(region)
+        else:
+            set_regional(region, rules)          # validates region + rule names
+        return self._send(200, _regional_payload())
 
     @staticmethod
     def _npc_deck_names(body, entry, rec):
@@ -322,6 +357,35 @@ class Handler(http.server.BaseHTTPRequestHandler):
             raise ValueError("the NPC deck needs exactly 5 cards")
         return rec["name"], them, self._npc_rules(body, entry, rec)
 
+    def _swap_hands(self, you_ids, entry, rec_name, body, out_q, in_q):
+        """Apply the Swap rule: your ``out`` card went to the NPC, their ``in``
+        card came to you.  Returns ``(you5, hand1, npc_pool, them5)`` - a partial
+        NPC hand + shrunken pool for a variable deck (``them5`` None), or a full
+        ``them5`` for a fixed one (``hand1``/``npc_pool`` None)."""
+        out_id, in_id = resolve(out_q).id, resolve(in_q).id
+        if out_id not in you_ids:
+            raise ValueError("the card you swapped away isn't in your deck")
+        # Swap can legitimately hand you a second copy of a card you already run
+        # (the game allows the duplicate); the solver collapses identical hand
+        # cards in legal_moves, so a doubled id is fine.
+        you5 = [c for c in you_ids if c != out_id] + [in_id]
+        if is_variable_deck(entry):
+            fixed = [resolve(x).id for x in entry["fixed"]]
+            pool = [resolve(x).id for x in entry["pool"]]
+            draw = deck_draw(entry)
+            if in_id in fixed:
+                hand1 = [out_id if f == in_id else f for f in fixed] + [None] * draw
+                npc_pool = [p for p in pool if p != out_id]
+            else:                      # a pool card they drew (or, fallback, unknown)
+                hand1 = fixed + [out_id] + [None] * (draw - 1)
+                npc_pool = [p for p in pool if p not in (in_id, out_id)]
+            return you5, hand1, npc_pool, None
+        them = [resolve(x).id
+                for x in self._npc_deck_names(body, entry, {"name": rec_name})]
+        if in_id not in them:
+            raise ValueError(f"{rec_name} doesn't hold that card")
+        return you5, None, None, [c for c in them if c != in_id] + [out_id]
+
     def _new_game(self, body):
         rec = find_npc(body["npc"])
         entry = load_decks().get(rec["name"], {})
@@ -333,6 +397,24 @@ class Handler(http.server.BaseHTTPRequestHandler):
         # in-match analysis always uses the safe minimax model; _analyze drops to a
         # fast estimate on its own for the slow near-empty / unknown-card positions
         opp = _opp_of(body)
+
+        swap_out, swap_in = body.get("swapOut"), body.get("swapIn")
+        if rules.swap and swap_out and swap_in:
+            you5, hand1, npc_pool, them5 = self._swap_hands(
+                you, entry, rec["name"], body, swap_out, swap_in)
+            if them5 is not None:
+                s = GameState(EMPTY_BOARD, (tuple(you5), tuple(them5)), first, rules)
+                return self._send(200, {"npc": rec["name"], "state": _state_to(s, opp),
+                                        "rewards": _reward_cards(rec)})
+            state = _partial_state({"rules": rules.names()}, (None,) * 9,
+                                   you5, hand1, npc_pool, first, opp)
+            resp = {"npc": rec["name"], "state": state, "rewards": _reward_cards(rec)}
+            resp["poolInfo"] = {
+                "fixed": [CARDS[c].name for c in hand1 if c is not None],
+                "pool": [CARDS[c].name for c in npc_pool],
+                "draw": sum(1 for c in hand1 if c is None),
+            }
+            return self._send(200, resp)
 
         if not body.get("npcCards") and is_variable_deck(entry):
             # start with the pool cards unknown; the human names them as the NPC
@@ -558,13 +640,19 @@ class Handler(http.server.BaseHTTPRequestHandler):
         rules = self._npc_rules(body, entry, rec_npc)
 
         note = ""
+        if rules.roulette:
+            fixed = [n for n in rules.names() if n != "Roulette"]
+            note = ("Roulette NPC — deck picked under "
+                    + (f"the always-on rules ({', '.join(fixed)})" if fixed else "plain rules")
+                    + "; the roll is only known at match start")
         if not body.get("npcCards") and not body.get("npcPool") and is_variable_deck(entry):
             # deck only known up to the random draw: score every possibility, worst case
             opts = npc_deck_options(entry)
             npc_arg = [[resolve(x).id for x in o] for o in opts]
-            note = (f"worst case across {rec_npc['name']}'s {len(opts)} possible decks "
-                    f"({len(entry['fixed'])} fixed + {deck_draw(entry)} of "
-                    f"{len(entry['pool'])})")
+            drawn = (f"worst case across {rec_npc['name']}'s {len(opts)} possible decks "
+                     f"({len(entry['fixed'])} fixed + {deck_draw(entry)} of "
+                     f"{len(entry['pool'])})")
+            note = f"{note}  ·  {drawn}" if note else drawn
         else:
             npc_names = self._npc_deck_names(body, entry, rec_npc)
             npc_arg = [resolve(x).id for x in npc_names]

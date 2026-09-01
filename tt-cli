@@ -8,8 +8,10 @@ commands:
   play       interactive match in the terminal, recommendation each of your turns
   solve      solve.py: `solve move ...` mid-game  |  `solve plan <NPC> ...` whole match
   recommend  best 5-card deck vs an NPC from the cards you own
+  regional   show / set the current regional rules (reset daily, per region)
   difficulty rank NPCs by rough difficulty - who to challenge in what order
   review     replay logged matches and check the solver against the results
+  fetch      download NPC wiki pages listed on the saved "Triple Triad NPCs" index
   scrape     import NPC decks + rules from reference/NPCs/*.html
   deck       add | show | list recorded NPC decks (manual)
   data       rebuild data/cards.json + data/npcs.json from reference/
@@ -25,8 +27,10 @@ CMDS = {
     "play": "play.py",
     "solve": "solve.py",
     "recommend": "recommend.py",
+    "regional": "regional.py",
     "difficulty": "difficulty.py",
     "review": "review.py",
+    "fetch": "fetch_npc_pages.py",
     "scrape": "scrape_npc.py",
     "deck": "deck.py",
     "data": "extract_wiki.py",

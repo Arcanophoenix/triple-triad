@@ -64,6 +64,11 @@ button.ghost:hover { background: #43375c; }
 .hint { font-size: 11px; color: #8f83a6; margin-top: 4px; }
 .hint.inl { display: inline; margin: 0; }
 .hint.bad, .err { color: #ff9a9a; }
+.regional-info.stale { color: #e0a458; }
+button.linklike {
+  background: none; border: 0; padding: 0 2px; margin: 0;
+  font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer;
+}
 .err { font-size: 12px; margin-top: 10px; min-height: 14px; }
 
 .row.radios { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
@@ -229,6 +234,14 @@ button.ghost:hover { background: #43375c; }
 .card .n-s { bottom: 3px; left: 50%; transform: translateX(-50%); }
 .card .n-w { left: 5px; top: 50%; transform: translateY(-50%); }
 .card .n-e { right: 5px; top: 50%; transform: translateY(-50%); }
+.card .asc-badge {
+  position: absolute; z-index: 3; top: 24%; left: 50%; transform: translateX(-50%);
+  font-weight: 800; font-size: 14px; line-height: 1; color: #fff;
+  padding: 2px 6px; border-radius: 9px; background: #2f9e44;
+  border: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: 0 0 4px #000, 0 1px 3px rgba(0, 0, 0, .7); text-shadow: 0 0 2px #000;
+}
+.card .asc-badge.desc { background: #d63b3b; }
 
 .slot .card { cursor: pointer; }
 .slot.sel .card { border-color: #ffd45e; box-shadow: 0 0 0 3px #ffd45e, 0 3px 10px rgba(0, 0, 0, .5); }
@@ -274,6 +287,44 @@ button.ghost:hover { background: #43375c; }
 
 .tip { width: var(--bw); max-width: 100%; text-align: center; font-size: 12px; color: var(--muted); min-height: 16px; }
 
+/* ---- Swap prompt (over the board on Start) ---- */
+.swapask {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10, 8, 14, .66);
+}
+.swapask-card {
+  width: 470px; max-width: calc(100vw - 32px); max-height: 92vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid #4a3c60; border-radius: 12px;
+  padding: 20px 22px; display: flex; flex-direction: column; gap: 13px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+}
+.swapask-card h3 { font-size: 16px; letter-spacing: .3px; }
+.swapask-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.swap-sect { display: flex; flex-direction: column; gap: 6px; }
+.swap-sect-h { font-size: 12px; color: #b7a9cc; }
+.swap-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.swap-tile {
+  width: 60px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 4px; border-radius: 7px; border: 1px solid transparent;
+  transition: background .08s, border-color .08s;
+}
+.swap-tile:hover { background: #2c2340; }
+.swap-tile.sel { border-color: #ffd45e; background: #37406b; }
+.swap-tile-art { position: relative; width: 52px; height: 66px; }
+.swap-tile-name { font-size: 9.5px; color: #c9bde0; text-align: center; line-height: 1.15; }
+.swapask-err { color: #ff9a9a; font-size: 12px; min-height: 0; }
+.swapask-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 2px; }
+.rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px; }
+.rule-box {
+  display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink);
+  cursor: pointer; padding: 3px 4px; border-radius: 5px;
+}
+.rule-box:hover { background: #2c2340; }
+.rule-box input { accent-color: var(--accent); width: 15px; height: 15px; flex: none; }
+.rule-box.fixed { opacity: .6; cursor: default; }
+.rule-box.fixed:hover { background: none; }
+
 @media (max-width: 1320px) {
   :root { --scale: 1.5; --bw: 960px; --bh: 468px; }
   .grid {
@@ -284,6 +335,7 @@ button.ghost:hover { background: #43375c; }
   .hand-you { left: 30px; top: 45px; } .hand-npc { right: 30px; top: 45px; }
   .name-you { left: 26px; top: 112px; } .name-npc { right: 26px; top: 112px; }
   .card .num { font-size: 15px; }
+  .card .asc-badge { font-size: 11px; padding: 1px 5px; }
 }
 
 @media (max-width: 900px) {

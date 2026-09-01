@@ -1,0 +1,17 @@
+{
+  "_note": "Current Triple Triad regional rules, per region, read off the in-game Match Registration screen. Regionals reset daily at 15:00 UTC. The solver unions these onto an NPC's match rules. Edit via the GUI setup panel or `tt-cli regional`. The `date` is when you last recorded it - entries older than the last reset are treated as stale.",
+  "regions": {
+    "Coerthas and Mor Dhona": {
+      "rules": [
+        "Same"
+      ],
+      "date": "2026-08-31"
+    },
+    "The Black Shroud": {
+      "rules": [
+        "Same"
+      ],
+      "date": "2026-08-31"
+    }
+  }
+}

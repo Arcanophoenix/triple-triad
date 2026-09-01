@@ -24,6 +24,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from tt.data import CARDS, find_npc, load_collection, load_decks, resolve  # noqa: E402
 from tt.format import parse_board, parse_deck, render_board, render_hand  # noqa: E402
 from tt.model import EMPTY_BOARD, GameState, RuleSet  # noqa: E402
+from tt.regions import effective_rules  # noqa: E402
 from tt.solver import analyze, new_match  # noqa: E402
 
 
@@ -47,7 +48,9 @@ def _rules_for(args) -> RuleSet:
     if getattr(args, "npc_name", None):
         npc = find_npc(args.npc_name)
         entry = load_decks().get(npc["name"], {})
-        return RuleSet.from_names(entry.get("rules") or npc["rules"])
+        names = effective_rules(npc, deck_entry=entry,
+                                use_regional=not getattr(args, "no_regional", False))
+        return RuleSet.from_names(names)
     return RuleSet()
 
 
@@ -147,6 +150,8 @@ def main(argv=None) -> int:
     m.add_argument("--turn", choices=("you", "npc"), default="you")
     m.add_argument("--rules", default=None, help="comma-separated rule names")
     m.add_argument("--npc-name", default=None, help="look up rules from this NPC")
+    m.add_argument("--no-regional", action="store_true",
+                   help="with --npc-name: match rules only, skip recorded regional rules")
     m.add_argument("--card", default=None, help="under Chaos: the card you were dealt")
     m.add_argument("--opp", choices=("optimal", "greedy"), default="optimal",
                    help="NPC model: optimal minimax (safe) or greedy (realistic, exploitable)")

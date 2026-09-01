@@ -26,6 +26,7 @@
       <label for="npc">Opponent</label>
       <input id="npc" list="npclist" placeholder="type an NPC name">
       <div id="npc-info" class="hint"></div>
+      <div id="regional-info" class="hint regional-info"></div>
       <div id="npc-deck-wrap" hidden>
         <label for="npc-deck">Their 5 cards (deck not recorded)</label>
         <input id="npc-deck" placeholder="Chocobo, Mandragora, Tonberry, Pudding, Spriggan">
@@ -40,7 +41,7 @@
       <div id="rec-out" class="rec-out"></div>
 
       <label for="rules">Rules override</label>
-      <input id="rules" placeholder="(blank = use the NPC's)">
+      <input id="rules" placeholder="(blank = NPC match rules + regional)">
 
       <div class="row radios">
         <label><input type="radio" name="first" value="1" checked> I go first</label>
@@ -112,6 +113,39 @@
     <div class="unseen" id="npc-unseen" hidden></div>
     <div class="postmatch" id="postmatch" hidden></div>
     <div class="tip" id="tip"></div>
+
+    <div class="swapask" id="rouletteask" hidden>
+      <div class="swapask-card">
+        <h3>Roulette &mdash; which rules did it roll?</h3>
+        <p class="swapask-sub">Roulette randomises the rule set at match start. Tick what the game shows for the match against <span id="roulette-npcname">this NPC</span>. Rules this NPC always plays are pre-ticked and locked.</p>
+        <div class="rule-grid" id="rule-grid"></div>
+        <div class="swapask-err" id="roulette-err"></div>
+        <div class="swapask-btns">
+          <button id="roulette-cancel" class="ghost" type="button">Back</button>
+          <button id="roulette-go" class="primary" type="button">Start match</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="swapask" id="swapask" hidden>
+      <div class="swapask-card">
+        <h3>Swap &mdash; which cards were exchanged?</h3>
+        <p class="swapask-sub">Swap trades one random card between the two decks before the match. Click what the game showed you; the solver takes it from there.</p>
+        <div class="swap-sect">
+          <div class="swap-sect-h">Your card that went to <span id="swap-npcname">the NPC</span></div>
+          <div class="swap-grid" id="swap-out-grid"></div>
+        </div>
+        <div class="swap-sect">
+          <div class="swap-sect-h">The card you received</div>
+          <div class="swap-grid" id="swap-in-grid"></div>
+        </div>
+        <div class="swapask-err" id="swap-err"></div>
+        <div class="swapask-btns">
+          <button id="swap-cancel" class="ghost" type="button">Back</button>
+          <button id="swap-go" class="primary" type="button">Start match</button>
+        </div>
+      </div>
+    </div>
   </section>
 
 </main>
