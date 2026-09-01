@@ -154,9 +154,39 @@ Read the "Regional Rules" row off the in-game Match Registration screen, then:
 ```
 ./tt-cli regional                              # every region + what's recorded
 ./tt-cli regional "The Black Shroud" Same Plus # set it (dated today)
+./tt-cli regional "The Black Shroud" --none    # record that it has NO regionals today
 ./tt-cli regional "The Black Shroud" --clear   # forget it
 ./tt-cli regional --npc Buscarron              # which region an NPC is in
 ```
+
+`--none` matters: a screen reading of "None / None" is an *observation*, not a
+gap, and is kept distinct from a region you simply haven't looked at.
+
+### Looking for a pattern
+
+`regional.json` only ever holds today's rules, so every reading is also appended
+to `data/regional_history.jsonl` - one line per (rule-day, region, rules), by the
+CLI and the GUI alike.
+
+```
+./tt-cli regional --today       # what you still haven't read off today
+./tt-cli regional --history     # the log, most recent last
+./tt-cli regional --pattern     # frequencies, repeat rate, weekday, cross-region
+```
+
+Observations are filed by **rule-day**, not calendar date: regionals roll at
+15:00 UTC, so a rule-day runs 15:00-15:00 and is named after the day it starts
+on. A plain local date would split one rule-day across two names depending on
+what time you happened to look, which would scramble exactly the pattern you're
+trying to find.
+
+`--pattern` reports its sample size next to every finding and stays silent on
+claims it can't support yet - with a handful of days, any ruleset can look
+"favoured" by chance. It needs ~10 days per region before frequencies mean much,
+and ~8 back-to-back day pairs before the repeat rate does. Two questions it is
+built to answer: does a region ever keep yesterday's rules, and do two regions
+ever roll the same rules on the same day (i.e. one global roll or one per
+region)?
 
 The GUI shows the selected NPC's region and its regional rules under the opponent
 box with an inline **edit**. Entries older than the last daily reset are flagged

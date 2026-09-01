@@ -8,10 +8,19 @@
       "date": "2026-08-31"
     },
     "The Black Shroud": {
+      "rules": [],
+      "date": "2026-09-01"
+    },
+    "La Noscea": {
       "rules": [
-        "Same"
+        "Fallen Ace",
+        "Roulette"
       ],
-      "date": "2026-08-31"
+      "date": "2026-09-01"
+    },
+    "Thanalan": {
+      "rules": [],
+      "date": "2026-09-01"
     }
   }
 }
