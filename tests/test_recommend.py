@@ -149,3 +149,81 @@ def test_recommend_parallel_matches_serial():
     parallel = recommend(npc, PLAIN, pool, workers=2, **kw)
     assert [r.cards for r in serial.results] == [r.cards for r in parallel.results]
     assert [r.worst for r in serial.results] == [r.worst for r in parallel.results]
+
+
+# --- Swap rule --------------------------------------------------------------
+
+def test_matchups_is_identity_without_swap():
+    from tt.recommend import _matchups
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 8, 9, 10)
+    assert _matchups(deck, npc, PLAIN) == [(deck, npc)]
+
+
+def test_swap_matchups_cover_every_pairing_exactly_once():
+    from tt.recommend import _matchups
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 8, 9, 10)
+    ms = _matchups(deck, npc, RuleSet(swap=True))
+    assert len(ms) == 25
+    assert len(set(ms)) == 25
+    for mine, theirs in ms:
+        # exactly one card crossed each way, and both hands stay five cards
+        assert len(mine) == len(theirs) == 5
+        gained = set(mine) - set(deck)
+        lost = set(deck) - set(mine)
+        assert len(gained) == len(lost) == 1
+        # the card you gained is the one they lost, and vice versa
+        assert gained == set(npc) - set(theirs)
+        assert lost == set(theirs) - set(npc)
+
+
+def test_swap_keeps_the_swapped_card_in_the_slot_it_replaced():
+    # matters under Order, where the hand plays strictly left-to-right
+    from tt.recommend import _matchups
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 8, 9, 10)
+    for mine, _ in _matchups(deck, npc, RuleSet(swap=True)):
+        moved = [i for i, c in enumerate(mine) if c != deck[i]]
+        assert len(moved) == 1
+        assert mine[:moved[0]] == deck[:moved[0]]
+        assert mine[moved[0] + 1:] == deck[moved[0] + 1:]
+
+
+def test_swap_sample_is_stratified_over_your_slots():
+    """A truncated probe must cover every card of yours before repeating one -
+    losing your best card is the dominant risk, so a sample that missed a slot
+    would systematically misjudge decks built around that slot."""
+    from tt.recommend import _matchups
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 8, 9, 10)
+    first5 = _matchups(deck, npc, RuleSet(swap=True), limit=5)
+    assert len(first5) == 5
+    given_up = [next(c for c in deck if c not in mine) for mine, _ in first5]
+    assert sorted(given_up) == list(deck)
+
+
+def test_swap_margin_is_the_average_over_outcomes_not_the_worst():
+    from tt.recommend import _avg_sides
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 8, 9, 10)
+    rules = RuleSet(swap=True)
+    seen = []
+    def ev(st):
+        seen.append(st.hands)
+        return len(seen)                      # distinct, increasing values
+    first, second = _avg_sides(deck, npc, rules, ev)
+    assert len(seen) == 50                    # 25 outcomes x 2 coin-toss sides
+    # the mean of the values handed back, not their min
+    assert first == sum(range(1, 50, 2)) / 25
+    assert second == sum(range(2, 51, 2)) / 25
+
+
+def test_swap_handles_a_card_both_decks_hold():
+    """Decks can share a card (you and the NPC both field Papalymo & Yda).  Trading
+    it for itself is a legitimate no-op, and every outcome must still be a 5-card
+    hand - this is the case a naive 'exactly one slot changed' assumption breaks."""
+    from tt.recommend import _matchups
+    deck, npc = (1, 2, 3, 4, 5), (6, 7, 3, 8, 9)      # card 3 in both
+    ms = _matchups(deck, npc, RuleSet(swap=True))
+    assert len(ms) == 25
+    noops = [(m, t) for m, t in ms if m == deck]
+    assert len(noops) == 1 and noops[0][1] == npc     # only 3-for-3, and it's clean
+    for mine, theirs in ms:
+        assert len(mine) == len(theirs) == 5
+        assert sorted(mine + theirs) == sorted(deck + npc)   # no card conjured or lost

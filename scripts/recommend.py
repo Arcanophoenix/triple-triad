@@ -102,6 +102,9 @@ def main(argv=None) -> int:
     p.add_argument("--opp", choices=("optimal", "greedy"), default="optimal",
                    help="NPC model: optimal minimax (safe) or greedy (realistic vs the real NPC)")
     p.add_argument("--no-swaps", action="store_true", help="skip the upgrade analysis")
+    p.add_argument("--swap-probe", type=int, default=None,
+                   help="Swap rule: outcomes sampled in the coarse screen "
+                        "(default 5, 0 = all 25); later phases always use all 25")
     args = p.parse_args(argv)
 
     try:
@@ -128,6 +131,10 @@ def main(argv=None) -> int:
         else:
             print("note   : Roulette NPC - the roll is unknown when you build the deck, so "
                   "this is the strongest deck under plain rules (a solid all-round pick)")
+    if rules.swap:
+        print("note   : Swap trades one random card of yours for one of theirs before "
+              "play, so margins below are EXPECTED values over all 25 exchanges, not "
+              "guarantees - any single match can land better or worse")
     t0 = time.time()
 
     def _progress(e):
@@ -138,7 +145,9 @@ def main(argv=None) -> int:
     rec = recommend(npc_ids, rules, pool, shortlist_n=args.shortlist,
                     exact_k=args.exact, top=args.top, screen_tail=args.screen_tail,
                     cand_cap=args.cand_cap, workers=args.workers, opp=args.opp,
-                    swaps=not args.no_swaps, progress=_progress)
+                    swaps=not args.no_swaps, progress=_progress,
+                    **({"swap_probe": args.swap_probe}
+                       if args.swap_probe is not None else {}))
 
     print(f"\ndone in {time.time() - t0:.0f}s\n")
     print(f"{'deck':<4} {'first':>6} {'second':>7} {'worst':>6}  cards")

@@ -691,7 +691,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 cand_cap=900 if refine else 400,
                 screen_tail=6 if refine else 4,
                 exact_k=8 if refine else 0,
-                workers=0 if refine else 1,   # refine fans out; the estimate is already <1s
+                # refine fans out; so does a Swap NPC, where the estimate is 25x
+                # the work per candidate.  Otherwise the estimate is already <1s.
+                workers=0 if (refine or rules.swap) else 1,
                 progress=lambda e: emit({"type": "progress", **e}),
             )
         except _Gone:

@@ -176,7 +176,8 @@ class Recommendation:
     npc_deck: tuple
     screened: int
     results: list                      # DeckResult, best first
-    swaps: list = field(default_factory=list)   # (slot, out_name, in_name, delta)
+    # (slot, out_name, in_name, delta) - deck-editing advice, NOT the Swap rule
+    swaps: list = field(default_factory=list)
 
     @property
     def best(self) -> DeckResult:
@@ -186,6 +187,15 @@ class Recommendation:
 # --- orchestration -----------------------------------------------------
 
 ORDER_PROBE = 12         # hand orderings exact-solved per deck under the Order rule
+# Swap outcomes sampled per NPC draw during the *coarse* screen only.  There are
+# 25 (5x5); _matchups emits them stratified by which of YOUR cards is given up, so
+# the first 5 already cover every slot of yours once.  All 24 Swap NPCs also have
+# variable decks, so scoring the full 25 across the whole candidate field is far
+# too slow - but a truncated sample must never decide the final answer: taking the
+# best of hundreds of noisy averages is a winner's curse and reads optimistic
+# (measured: the top deck's margin drifts from +2.0 at 1 sample to -2.2 at all 25).
+# So this only narrows the field; every later phase re-scores on all 25.
+SWAP_PROBE = 5
 
 
 def _key(deck, npc_deck, side, ordered=False):
@@ -193,10 +203,51 @@ def _key(deck, npc_deck, side, ordered=False):
     return (our, tuple(sorted(npc_deck)), side)
 
 
-def _states(deck, npc_deck, rules):
-    hands = (tuple(deck), tuple(npc_deck))
-    return (GameState(EMPTY_BOARD, hands, 0, rules),
-            GameState(EMPTY_BOARD, hands, 1, rules))
+def _matchups(deck, npc_deck, rules, limit: int = 0) -> list[tuple]:
+    """The ``(your hand, their hand)`` pairs a match can actually start from.
+
+    Without Swap that is just the two decks as chosen.  Under **Swap** the game
+    exchanges one random card from each deck before play ("the cards to be
+    swapped are chosen at random... rarity is ignored"), so the deck you pick is
+    never the hand you play: all 5x5 pairings are equally likely and the deck has
+    to be judged across them.  The swapped-in card takes the slot of the card it
+    replaced, which is what keeps this correct under Order.
+
+    Pairs are emitted stratified by *which of your cards you give up* - the
+    dominant source of variance, since losing your best card hurts far more than
+    which of theirs you happen to receive.  So a truncated sample (``limit``)
+    still covers every one of your slots before it repeats any.  ``limit=0``
+    yields all 25.
+    """
+    if not rules.swap:
+        return [(tuple(deck), tuple(npc_deck))]
+    d, n = list(deck), list(npc_deck)
+    out = []
+    for off in range(len(n)):
+        for i in range(len(d)):
+            j = (i + off) % len(n)
+            mine, theirs = d.copy(), n.copy()
+            mine[i], theirs[j] = n[j], d[i]
+            out.append((tuple(mine), tuple(theirs)))
+    return out[:limit] if limit else out
+
+
+def _avg_sides(deck, npc_deck, rules, evaluate, limit: int = 0):
+    """``(first, second)`` margins for ``deck`` against one NPC draw.
+
+    ``evaluate(state) -> margin``.  Under Swap the outcomes are **averaged**, not
+    worst-cased: the exchange is random and you cannot influence it, so the
+    honest number is its expectation.  Worst-casing a coin you don't get to flip
+    would rate every deck by its unluckiest swap and flatten the ranking.
+    """
+    pairs = _matchups(deck, npc_deck, rules, limit)
+    firsts = seconds = 0.0
+    for mine, theirs in pairs:
+        hands = (mine, theirs)
+        firsts += evaluate(GameState(EMPTY_BOARD, hands, 0, rules))
+        seconds += evaluate(GameState(EMPTY_BOARD, hands, 1, rules))
+    n = len(pairs)
+    return firsts / n, seconds / n
 
 
 def _order_variants(deck) -> list[tuple]:
@@ -206,7 +257,13 @@ def _order_variants(deck) -> list[tuple]:
 
 def _greedy_order_key(perm, npc_decks, rules):
     """(worst-case, average) margin for one fixed hand order under a pure greedy
-    playout - cheap enough to rank all 120 orderings of a deck."""
+    playout - cheap enough to rank all 120 orderings of a deck.
+
+    Deliberately swap-blind: this only *ranks* orderings, and folding the 25 Swap
+    outcomes in here would multiply the 120-permutation sweep by 25.  A swap
+    leaves four of the five cards in place, so the un-swapped hand is a fair proxy
+    for which sequences are worth an exact solve - and those solves are swap-aware.
+    """
     f = min(greedy_playout(GameState(EMPTY_BOARD, (perm, nd), 0, rules)) for nd in npc_decks)
     s = min(greedy_playout(GameState(EMPTY_BOARD, (perm, nd), 1, rules)) for nd in npc_decks)
     return (min(f, s), (f + s) / 2)
@@ -239,27 +296,27 @@ def _pick_best(results):
     return max(results, key=lambda r: (r.worst, r.avg))
 
 
-def _screen(deck, npc_deck, rules, cache, tail=6, opp="optimal"):
-    out = []
-    for side, st in zip((0, 1), _states(deck, npc_deck, rules)):
-        k = (tail, opp, *_key(deck, npc_deck, side, rules.order))
+def _screen(deck, npc_deck, rules, cache, tail=6, opp="optimal", swap_probe=0):
+    def ev(st):
+        k = (tail, opp, *_key(st.hands[0], st.hands[1], st.to_move, rules.order))
         if k not in cache:
             cache[k] = screen_value(st, tail, opp)
-        out.append(cache[k])
-    return DeckResult(tuple(deck), out[0], out[1], exact=False)
+        return cache[k]
+    first, second = _avg_sides(deck, npc_deck, rules, ev, swap_probe)
+    return DeckResult(tuple(deck), first, second, exact=False)
 
 
-def _exact(deck, npc_deck, rules, cache, opp="optimal"):
-    vals = []
-    for side, st in zip((0, 1), _states(deck, npc_deck, rules)):
-        k = ("x", opp, *_key(deck, npc_deck, side, rules.order))
+def _exact(deck, npc_deck, rules, cache, opp="optimal", swap_probe=0):
+    def ev(st):
+        k = ("x", opp, *_key(st.hands[0], st.hands[1], st.to_move, rules.order))
         if k not in cache:
             try:
                 cache[k] = analyze(st, opp=opp).best.value
             except ValueError:                       # Chaos / Roulette
                 cache[k] = greedy_playout(st)
-        vals.append(cache[k])
-    return DeckResult(tuple(deck), vals[0], vals[1], exact=True)
+        return cache[k]
+    first, second = _avg_sides(deck, npc_deck, rules, ev, swap_probe)
+    return DeckResult(tuple(deck), first, second, exact=True)
 
 
 def _normalize_npc_decks(npc_deck) -> list[tuple]:
@@ -284,22 +341,25 @@ def _hardest_npc_deck(npc_decks, rules: RuleSet) -> tuple:
     return max(npc_decks, key=strength)
 
 
-def _screen_any(deck, npc_decks, rules, cache, tail=6, opp="optimal"):
+def _screen_any(deck, npc_decks, rules, cache, tail=6, opp="optimal", swap_probe=0):
     """Screen ``deck`` against every possible NPC deck; keep the worst side-margins.
-    Under Order the deck is screened in its greedy-best arrangement."""
+    Under Order the deck is screened in its greedy-best arrangement.  The two
+    kinds of uncertainty are aggregated differently: their random *draw* is
+    worst-cased (a safety floor), the random *swap* is averaged (see _avg_sides)."""
     deck = _screen_order(deck, npc_decks, rules)
-    parts = [_screen(deck, nd, rules, cache, tail, opp) for nd in npc_decks]
+    parts = [_screen(deck, nd, rules, cache, tail, opp, swap_probe) for nd in npc_decks]
     return DeckResult(tuple(deck), min(p.first for p in parts),
                       min(p.second for p in parts), exact=False)
 
 
-def _exact_any(deck, npc_decks, rules, cache, opp="optimal", order_keep=ORDER_PROBE):
+def _exact_any(deck, npc_decks, rules, cache, opp="optimal", order_keep=ORDER_PROBE,
+               swap_probe=0):
     """Exact-solve ``deck`` vs every possible NPC deck.  Under Order the promising
     hand orderings are each solved and the best-scoring one is returned, so
     ``.cards`` is the arrangement to play."""
     best = None
     for perm in _probe_orders(deck, npc_decks, rules, order_keep):
-        parts = [_exact(perm, nd, rules, cache, opp) for nd in npc_decks]
+        parts = [_exact(perm, nd, rules, cache, opp, swap_probe) for nd in npc_decks]
         r = DeckResult(tuple(perm), min(p.first for p in parts),
                        min(p.second for p in parts), exact=True)
         best = r if best is None else _pick_best((best, r))
@@ -346,39 +406,43 @@ def _make_pool(nw: int):
         return None
 
 
-def _screen_any_nc(deck, npc_decks, rules, tail, opp) -> DeckResult:
+def _screen_any_nc(deck, npc_decks, rules, tail, opp, swap_probe=0) -> DeckResult:
     deck = _screen_order(deck, npc_decks, rules)
     fs, ss = [], []
     for nd in npc_decks:
-        a, b = (screen_value(st, tail, opp) for st in _states(deck, nd, rules))
+        a, b = _avg_sides(deck, nd, rules,
+                          lambda st: screen_value(st, tail, opp), swap_probe)
         fs.append(a)
         ss.append(b)
     return DeckResult(tuple(deck), min(fs), min(ss), exact=False)
 
 
-def _exact_any_nc(deck, npc_decks, rules, opp, order_keep=ORDER_PROBE) -> DeckResult:
+def _exact_one(st, opp):
+    try:
+        return analyze(st, opp=opp).best.value
+    except ValueError:                           # Chaos / Roulette
+        return greedy_playout(st)
+
+
+def _exact_any_nc(deck, npc_decks, rules, opp, order_keep=ORDER_PROBE,
+                  swap_probe=0) -> DeckResult:
     best = None
     for perm in _probe_orders(deck, npc_decks, rules, order_keep):
         fs, ss = [], []
         for nd in npc_decks:
-            vv = []
-            for st in _states(perm, nd, rules):
-                try:
-                    vv.append(analyze(st, opp=opp).best.value)
-                except ValueError:               # Chaos / Roulette
-                    vv.append(greedy_playout(st))
-            fs.append(vv[0])
-            ss.append(vv[1])
+            a, b = _avg_sides(perm, nd, rules, lambda st: _exact_one(st, opp), swap_probe)
+            fs.append(a)
+            ss.append(b)
         r = DeckResult(tuple(perm), min(fs), min(ss), exact=True)
         best = r if best is None else _pick_best((best, r))
     return best
 
 
-def _screen_job(job):                            # (deck, npc_decks, rules, tail, opp)
+def _screen_job(job):                    # (deck, npc_decks, rules, tail, opp, swap_probe)
     return _screen_any_nc(*job)
 
 
-def _exact_job(job):                             # (deck, npc_decks, rules, opp, order_keep)
+def _exact_job(job):             # (deck, npc_decks, rules, opp, order_keep, swap_probe)
     return _exact_any_nc(*job)
 
 
@@ -396,7 +460,8 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
               shortlist_n: int = 16, exact_k: int = 25, top: int = 5,
               screen_tail: int = 6, opp: str = "optimal", swaps: bool = True,
               cand_cap: int = 0, worstcase_n: int = 0, workers: int = 0,
-              order_probe: int = ORDER_PROBE, progress=None) -> Recommendation:
+              order_probe: int = ORDER_PROBE, swap_probe: int = SWAP_PROBE,
+              progress=None) -> Recommendation:
     """``npc_deck`` is the NPC's 5 card ids, or - when their deck is only known up
     to a random draw - a list of the possible 5-card decks; decks are then scored
     by their worst case across all of them.
@@ -414,6 +479,15 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
     arrangement matters: screening scores the greedy-best order, then the exact
     pass solves the ``order_probe`` most promising orderings of each finalist and
     keeps the winner - ``result.cards`` is the sequence to set in-game.
+
+    Under the **Swap** rule one random card of yours is exchanged with one of
+    theirs before play, so the deck you pick is never the hand you play.  Decks
+    are scored across the 25 possible exchanges, **averaged** - the swap is
+    random and uncontrollable, so its expectation is the honest number, unlike
+    their deck draw which is still worst-cased.  ``swap_probe`` samples only the
+    coarse screen (0 = all 25); every later phase re-scores on all 25, because
+    picking the best of many truncated averages biases the winner optimistic.
+    Margins for a Swap NPC are expected values, not guarantees.
 
     ``progress``, if given, is called with dict events (each carries ``msg``):
     ``{"phase":"screen","done","total"}`` through the coarse pass, then
@@ -439,13 +513,15 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
     npc_t = tuple(npc_decks)
 
     nw = _resolve_workers(workers)
-    big = len(cands) >= 500 or exact_k >= 6   # else the pool's startup outweighs the work
+    # else the pool's startup outweighs the work.  Swap always qualifies: it costs
+    # ~25 evaluations per candidate where every other rule costs one.
+    big = len(cands) >= 500 or exact_k >= 6 or rules.swap
     ex = _make_pool(nw) if nw > 1 and big else None
     try:
         # phase 1: coarse-screen the whole field against the representative draw
         total = len(cands)
         step = max(1, total // 100)
-        jobs = [(d, reps, rules, screen_tail, opp) for d in cands]
+        jobs = [(d, reps, rules, screen_tail, opp, swap_probe) for d in cands]
         coarse = []
         for i, res in enumerate(_imap(ex, _screen_job, jobs), 1):
             coarse.append(res)
@@ -457,7 +533,8 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
         # phase 2: re-score the best survivors against every possible NPC draw
         if multi:
             wc_n = min(worstcase_n or max(top * 4, exact_k * 3, 24), len(coarse))
-            jobs = [(dr.cards, npc_t, rules, screen_tail, opp) for dr in coarse[:wc_n]]
+            jobs = [(dr.cards, npc_t, rules, screen_tail, opp, 0)
+                    for dr in coarse[:wc_n]]
             rescored = []
             for i, res in enumerate(_imap(ex, _screen_job, jobs), 1):
                 rescored.append(res)
@@ -481,7 +558,8 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
         okeep = order_probe if rules.order else 1
         exact = []
         if k and multi:
-            jobs = [(dr.cards, reps[:1], rules, opp, okeep) for dr in screened[:k]]
+            jobs = [(dr.cards, reps[:1], rules, opp, okeep, 0)
+                    for dr in screened[:k]]
             rep_ranked = []
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 rep_ranked.append(res)
@@ -491,7 +569,7 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                               "msg": (f"[{n}/{k}] {', '.join(res.names())}  "
                                       f"first {res.first:+g} second {res.second:+g}")})
             final = _rank(rep_ranked)[:min(top, k)]
-            jobs = [(dr.cards, npc_t, rules, opp, okeep) for dr in final]
+            jobs = [(dr.cards, npc_t, rules, opp, okeep, 0) for dr in final]
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 exact.append(res)
                 if progress:
@@ -500,7 +578,8 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                               "msg": (f"[{n}/{len(final)}] {', '.join(res.names())}  "
                                       f"first {res.first:+g} second {res.second:+g}")})
         elif k:
-            jobs = [(dr.cards, npc_t, rules, opp, okeep) for dr in screened[:k]]
+            jobs = [(dr.cards, npc_t, rules, opp, okeep, 0)
+                    for dr in screened[:k]]
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 exact.append(res)
                 if progress:
@@ -518,15 +597,20 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                          screened=len(cands), results=ranked[:top])
     if swaps:
         rec.swaps = _swap_analysis(rec.best, pool, npc_decks, rules, cache,
-                                   verify=exact_k > 0, tail=screen_tail, opp=opp)
+                                   verify=exact_k > 0, tail=screen_tail, opp=opp,
+                                   swap_probe=0)
     return rec
 
 
 def _swap_analysis(base: DeckResult, pool, npc_decks, rules, cache,
-                   verify=True, tail=6, opp="optimal"):
+                   verify=True, tail=6, opp="optimal", swap_probe=SWAP_PROBE):
     """For each slot in the recommended deck, the single best replacement from the
     pool, as (slot, out_name, in_name, margin_delta).  Candidates are picked by
     the greedy screen; when ``verify`` the winner is re-checked with an exact solve.
+
+    Note the name clash: this is *deck editing* advice (swap a card of yours for a
+    better one you own), nothing to do with the in-game **Swap rule** - that is
+    handled by _matchups / _avg_sides and reaches here only as ``swap_probe``.
     """
     out = []
     base_worst = base.worst

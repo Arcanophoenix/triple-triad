@@ -306,7 +306,24 @@ It then reports single-card upgrades from your pool.
 - `--opp greedy` (default `optimal`) models the real NPC: realistic win margins
   and a much faster search, so `--exact` can cover a far larger slice. `optimal`
   is the safe lower bound.
-- Swap / Roulette aren't modelled; Chaos falls back to the screen estimate.
+- **Swap is modelled in deck selection.** The rule trades one random card of
+  yours for one of theirs before play, so the deck you pick is never the hand you
+  play - it hits the recommender squarely. Each deck is scored across the 25
+  possible exchanges and **averaged**: the swap is random and uncontrollable, so
+  its expectation is the honest number (their deck *draw* is still worst-cased,
+  which is a floor you can plan around). Margins for a Swap NPC are therefore
+  expected values, not guarantees.
+  - `--swap-probe N` samples only the coarse screen (default 5, `0` = all 25).
+    Every later phase re-scores on all 25 regardless, and that matters: taking
+    the best of hundreds of truncated averages is a winner's curse and reads
+    optimistic - the top deck's margin drifted from `+2.0` at one sample to
+    `-2.2` at all 25 before this was fixed.
+  - Cost: ~25x the evaluations per candidate, so a Swap NPC's estimate runs in
+    seconds rather than under one. Swap **+ Order** (only Ushiogi) is the
+    expensive corner - the exact pass is `orderings x draws x 25 swaps x 2
+    sides` - and takes a couple of minutes.
+- Roulette isn't modelled (pick the deck under the always-on rules, then re-run
+  with `--rules` once you see the roll); Chaos falls back to the screen estimate.
 
 ## Who to challenge next
 
