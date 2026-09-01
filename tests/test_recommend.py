@@ -34,6 +34,19 @@ def test_card_score_inverts_under_reverse():
     assert card_score(weak, RuleSet(reverse=True)) > card_score(strong, RuleSet(reverse=True))
 
 
+def test_card_score_under_fallen_ace_keeps_high_is_good():
+    fa = RuleSet(fallen_ace=True)
+    strong = C((9, 9, 9, 8))
+    weak = C((2, 1, 2, 1))
+    # Fallen Ace alone must NOT flip to "low is good" the way Reverse does
+    assert card_score(strong, fa) > card_score(weak, fa)
+    # ...but a card carrying a 1 (can capture an A) outranks an otherwise-equal card without one
+    one = C((5, 1, 5, 7))
+    none = C((5, 3, 3, 7))
+    assert card_score(one, PLAIN) == card_score(none, PLAIN)   # equal without the rule
+    assert card_score(one, fa) > card_score(none, fa)          # the 1 is worth something under it
+
+
 def test_greedy_playout_returns_a_bounded_margin():
     a = tuple(_weak((5, 5, 5, 5)).id for _ in range(5))
     b = tuple(_weak((4, 4, 4, 4)).id for _ in range(5))
@@ -70,6 +83,47 @@ def test_recommend_scores_worst_case_over_multiple_npc_decks():
     assert vs_both.best.worst <= vs_strong.best.worst + 1e-9
     worsts = [r.worst for r in vs_both.results]
     assert worsts == sorted(worsts, reverse=True)
+
+
+@pytest.mark.slow
+def test_order_rule_makes_recommend_optimise_the_hand_arrangement():
+    from tt.recommend import _order_variants
+    from tt.solver import solve
+
+    ORDER = RuleSet(order=True)
+    # lopsided sides: which edges are exposed - and captured - depends heavily on
+    # the sequence the cards are forced out in.
+    pool = [_weak(s).id for s in
+            [(9, 1, 1, 9), (1, 9, 9, 1), (9, 9, 1, 1), (1, 1, 9, 9),
+             (6, 4, 6, 4), (4, 6, 4, 6), (5, 5, 5, 5)]]
+    npc = tuple(_weak((5, 5, 5, 5)).id for _ in range(5))
+
+    rec = recommend(npc, ORDER, pool, shortlist_n=7, exact_k=4, top=3,
+                    workers=1, swaps=False, order_probe=120)
+    best = rec.best
+    assert best.exact
+
+    # the reported margins belong to exactly this left-to-right arrangement
+    f = solve(GameState(EMPTY_BOARD, (best.cards, npc), 0, ORDER))
+    s = solve(GameState(EMPTY_BOARD, (best.cards, npc), 1, ORDER))
+    assert (f, s) == (best.first, best.second)
+
+    # and it is the best arrangement of those five cards on worst case
+    variants = _order_variants(best.cards)
+    worsts = [min(solve(GameState(EMPTY_BOARD, (p, npc), 0, ORDER)),
+                  solve(GameState(EMPTY_BOARD, (p, npc), 1, ORDER))) for p in variants]
+    assert best.worst == max(worsts)
+    assert min(worsts) < max(worsts)          # order genuinely mattered here
+
+
+def test_order_probe_is_a_noop_when_order_is_off():
+    from tt.recommend import _probe_orders, _screen_order
+
+    deck = tuple(_weak((3, 5, 7, 2)).id for _ in range(1)) + \
+        tuple(_weak(s).id for s in [(4, 4, 4, 4), (6, 2, 6, 2), (2, 6, 2, 6), (5, 5, 1, 9)])
+    npc = [tuple(_weak((5, 5, 5, 5)).id for _ in range(5))]
+    assert _probe_orders(deck, npc, PLAIN, keep=12) == [deck]
+    assert _screen_order(deck, npc, PLAIN) == deck
 
 
 @pytest.mark.slow

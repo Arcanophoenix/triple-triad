@@ -46,8 +46,9 @@ reference/        saved wiki pages (Cards, NPCs, Triple Triad) - dataset source
   Cards @ ARR.../ saved ARR: Triple Triad page - card portraits for the GUI
 data/
   cards.json      475 cards - stats, type, stars, acquisition, icon (generated)
-  npcs.json       134 NPCs  - rules, location, MGP, rewards (generated)
+  npcs.json       134 NPCs  - match rules, location, MGP, rewards (generated)
   decks.json      NPC -> 5 cards, entered by hand as you meet them
+  regional.json   current regional rules per region (reset daily; `tt-cli regional`)
   collection.json cards you own + named player decks (seeded with the 5 starters)
   collection.example.json  blank template a packaged app seeds on first run
   history.jsonl   finished matches, appended by the GUI (read by `tt-cli review`)
@@ -56,11 +57,13 @@ TripleTriad.spec  PyInstaller build recipe  (see "Sharing a build")
 scripts/
   gui.py          local web server + engine behind the browser GUI
   extract_wiki.py rebuild cards.json + npcs.json from the saved wiki pages
+  fetch_npc_pages.py  download NPC wiki pages from the saved "Triple Triad NPCs" list
   scrape_npc.py   pull NPC decks + rules from saved reference/NPCs/*.html
   deck.py         add / show / list recorded NPC decks (manual alternative)
   solve.py        move (mid-game best move) and plan (solve a match from empty)
   play.py         interactive: recommendation each of your turns, tracks the board
   recommend.py    best 5-card deck vs an NPC from the cards you own
+  regional.py     show / set the current regional rules (per region)
   difficulty.py   rank NPCs by rough difficulty - who to challenge in what order
   review.py       replay logged matches; check the solver's call against the result
 tt/               the engine: data, model, rules resolver, alpha-beta solver
@@ -78,21 +81,37 @@ globs there, then the project root). The `Triple Triad` page in that folder is
 the rules reference for the `VERIFY` items below. `cards.json` is the source of truth for
 card stats; boards and hands store a card's index in that file as its id.
 
+The wiki's **card faction column and NPC rule lists are unreliable**. When these
+[FFXIV Collect](https://ffxivcollect.com) pages are saved (Web Page, Complete),
+`extract_wiki.py` prefers them:
+
+- `reference/Cards - FFXIV Collect.html` -> every card's faction type
+- `reference/NPCs/NPCs - FFXIV Collect.html` -> every NPC's match rules + rewards
+
+Collect has no decklists or MGP, so those still come from the wiki. `_TYPE_OVERRIDES`
+and `_RULE_OVERRIDES` (in `scrape_npc.py`) patch anything wrong in both sources.
+An in-game Match Registration screenshot beats everything.
+
 ## Recording an NPC deck
 
-The NPC list gives each NPC's rules but not their 5 cards. Two ways to fill that in:
+The NPC list gives each NPC's rules but not their 5 cards. To fill that in:
 
-**Scrape a saved page** (preferred). Save the NPC's wiki page as "Web Page,
-Complete" into `reference/NPCs/`, then:
+**Bulk-fetch, then scrape.** Save the "Triple Triad NPCs" list page into
+`reference/`, then:
 
 ```
-scripts/scrape_npc.py                       # every page in reference/NPCs/
-scripts/scrape_npc.py "Triple Triad Master" # just one
+./tt-cli fetch     # download every roster NPC's wiki page it doesn't already have
+./tt-cli scrape    # import decks + rules from reference/NPCs/*.html
 ```
 
-It reads the deck + rules from the page, checks the rules against
-`data/npcs.json`, and writes `data/decks.json`. `play.py` also prompts for an
-unrecorded NPC's cards on the fly and offers to save them.
+`fetch` reads the wiki URLs out of the saved list page and pulls each NPC page
+(stdlib only, ~1s apart; `--only <name>`, `--limit N`, `--dry-run`, `--force`).
+`scrape` reads the deck + rules from each page, checks the rules against
+`data/npcs.json`, and writes `data/decks.json`.
+
+**Or one at a time.** Save a single NPC's wiki page into `reference/NPCs/` and
+run `./tt-cli scrape "Name"`. `play.py` also prompts for an unrecorded NPC's
+cards on the fly and offers to save them.
 
 Some NPCs don't have a fixed five - a few cards are marked "Guaranteed in deck"
 and the rest are a pool the game draws from to reach five. Those are stored as
@@ -120,7 +139,31 @@ scripts/deck.py show Aiglephine
 ```
 
 Names are loose (case-insensitive, "Card" optional, `&`/`and`, bare number).
-Rules default to the wiki's; `--rules "Three Open,Plus"` overrides.
+Rules default to the NPC's match rules plus any recorded regional rules (below);
+`--rules "Three Open,Plus"` overrides the lot.
+
+## Regional rules
+
+An NPC match runs the NPC's **match rules** (fixed, stored in `data/`) plus up to
+two **regional rules** that vary by area and reset daily at 15:00 UTC. Only match
+rules live in `npcs.json` / `decks.json`; the regional half is tracked per region
+in `data/regional.json` and unioned onto the match rules at solve time.
+
+Read the "Regional Rules" row off the in-game Match Registration screen, then:
+
+```
+./tt-cli regional                              # every region + what's recorded
+./tt-cli regional "The Black Shroud" Same Plus # set it (dated today)
+./tt-cli regional "The Black Shroud" --clear   # forget it
+./tt-cli regional --npc Buscarron              # which region an NPC is in
+```
+
+The GUI shows the selected NPC's region and its regional rules under the opponent
+box with an inline **edit**. Entries older than the last daily reset are flagged
+stale. `zone -> region` grouping lives in `tt/regions.py` (best-effort - split a
+region there if two of its NPCs show different regionals); the Gold Saucer and a
+few other spots are marked regional-immune. `--no-regional` on the CLIs (and the
+Rules-override field in the GUI) bypasses regional rules entirely.
 
 ## Solving
 
@@ -322,12 +365,19 @@ play") has tended to end +2 to +8. `greedy` is the optimistic model; trust
 Checked against the wiki's rules page (`reference/Triple Triad ... .html`):
 
 - **Ascension / Descension** - each faction card on the board gives every card of
-  that faction +1 / -1, stacking, the just-placed card included (N on board => +/-N).
-  Ascension results cap at "A" (10); Descension results floor at 1.
-- **Fallen Ace** - `FALLEN_ACE_MODE = "hard"`: the 1-vs-A pairing is fixed
-  regardless of who placed, and Reverse inverts it so an A captures a 1. The
-  wiki confirms this; the one untested sub-case is a *placed* A onto a defending
-  1 with Reverse off ("hard" says no capture).
+  that faction +1 / -1, stacking (N on board => +/-N). While a placement is being
+  resolved the just-placed card is NOT yet counted toward its faction's total -
+  not for itself, and not for its same-faction neighbours either; the counter
+  only ticks up once captures settle. Ascension results cap at "A" (10);
+  Descension results floor at 1. Confirmed against in-game play (Yellow Moon,
+  Noes) and cross-checked against FFTriadBuddy's reference implementation.
+- **Fallen Ace** - whichever side is the ATTACKER in a printed 1-vs-A matchup
+  always captures the other, in both normal and Reverse play: without Reverse a
+  placed 1 gains the ability to capture a defending A; with Reverse the roles
+  swap and a placed A gains the ability to capture a defending 1. Cross-checked
+  against FFTriadBuddy's `TriadGameModifierFallenAce` - an earlier "hard" reading
+  of the wiki wording (which blocked a placed A from capturing a defending 1)
+  was wrong and has been corrected.
 - Same / Plus compare **effective** (Ascension-adjusted, capped) values and are
   unaffected by Reverse / Fallen Ace.
 - Combo is always on; only Same/Plus flips seed a cascade, never a plain capture.

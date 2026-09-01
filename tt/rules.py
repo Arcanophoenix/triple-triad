@@ -20,33 +20,77 @@ from .data import CARDS
 from .model import NEIGHBORS, OPP, WALLS, RuleSet
 
 # Ascension / Descension (per the FFXIV wiki): each faction card on the board
-# gives every card of that faction +1 / -1, stacking, the just-placed card
-# included.  So N faction cards on the board => +/-N.  Ascension results of "11"
-# or higher are treated as an "A" (capped at 10); Descension results of "0" or
-# less are treated as a "1".
+# gives every card of that faction +1 / -1, stacking.  So N faction cards on the
+# board => +/-N (board cards and cards still in hand alike).  Ascension results of
+# "11" or higher are treated as an "A" (capped at 10); Descension results of "0"
+# or less are treated as a "1".
+#
+# While a placement is being resolved the card just placed is NOT yet counted
+# toward its faction's total - not for itself, and not for its same-faction
+# neighbours either.  Every card of that faction sees the pre-placement count
+# during the whole resolution (captures + Combo); the counter only ticks up once
+# things settle.  So:
+#   * a lone placed Primal captures with printed values (Yellow Moon: a placed
+#     Garlean stays 9, ties an established lone ascended Primal at 9 - no capture);
+#   * a Society card placed next to an established Society card and the card it
+#     attacks BOTH still use "1 Society on the board", so printed 6-vs-6 stays a
+#     tie under Descension (Noes: Memeroon does not capture Frixio), then both
+#     drop to -2 afterwards.
 _ASCENSION_MAX = 10
 
-# Fallen Ace, the 1-vs-A pairing.  Wiki: "the all-powerful 'A' becomes
-# susceptible to capture by the lowly '1.'  If the 'Reverse' rule is also in
-# play, a '1' will then become vulnerable to capture by an 'A.'"
-#   "hard" - that pairing's outcome is fixed regardless of who placed the card,
-#            and Reverse inverts it.  (Matches the wiki wording.)
-#   "vuln" - Fallen Ace only ADDS "a placed 1 captures an A"; a placed A still
-#            captures a 1 normally.  VERIFY: only the placed-A-onto-1 sub-case
-#            distinguishes the two, and the wiki doesn't spell it out.
-FALLEN_ACE_MODE = "hard"
+# Fallen Ace, the 1-vs-A pairing.  Cross-checked against FFTriadBuddy's
+# reference implementation (TriadGameModifierFallenAce, sources/gamelogic/
+# TriadGameModifier.cs): whichever side is the ATTACKER in a printed 1-vs-A
+# matchup always captures the other - in both normal and Reverse play.
+#
+# Without Reverse: a placed 1 gains the ability to capture a defending A
+# (ordinarily impossible, 1 < 10); a placed A capturing a defending 1 already
+# happens under plain higher-wins, so Fallen Ace doesn't need to touch it.
+# With Reverse: the roles swap - a placed A gains the ability to capture a
+# defending 1 (ordinarily impossible once lower wins), while a placed 1
+# capturing a defending A already happens under reversed math.  Net effect
+# either way: the attacker wins a 1-vs-A pairing, full stop.
 
 
 def _type_count(board, kind: str) -> int:
     return sum(1 for s in board if s is not None and CARDS[s[0]].kind == kind)
 
 
-def eff(rules: RuleSet, board, cell: int, d: int) -> int:
-    """Effective value of ``board[cell]``'s side ``d`` given the current board."""
+def kind_counts(board) -> dict[str, int]:
+    """Every faction's card count on ``board``, in a single pass.
+
+    Resolution only ever flips owners - it never adds, removes or changes a card -
+    so these counts are constant for a whole ``_resolve`` and can be computed once
+    and shared by every ``eff`` call instead of rescanning the board per query.
+    """
+    counts: dict[str, int] = {}
+    for s in board:
+        if s is not None:
+            k = CARDS[s[0]].kind
+            if k != "None":
+                counts[k] = counts.get(k, 0) + 1
+    return counts
+
+
+def eff(rules: RuleSet, board, cell: int, d: int, *, placed_kind: str | None = None,
+        counts: dict[str, int] | None = None) -> int:
+    """Effective value of ``board[cell]``'s side ``d`` given the current board.
+
+    Pass ``placed_kind`` (the faction of the card being placed this turn) while
+    resolving a placement: cards of that faction don't yet count the just-placed
+    card toward their total, so a printed value is compared using the
+    pre-placement faction count.
+
+    ``counts`` is an optional prebuilt ``kind_counts(board)``; supply it to avoid
+    rescanning the board on every call.
+    """
     card = CARDS[board[cell][0]]
     v = card.sides[d]
-    if (rules.ascension or rules.descension) and card.kind != "None":
-        n = _type_count(board, card.kind)          # faction cards on the board, self included
+    kind = card.kind
+    if (rules.ascension or rules.descension) and kind != "None":
+        n = _type_count(board, kind) if counts is None else counts.get(kind, 0)
+        if kind == placed_kind:           # the card just placed isn't counted yet
+            n -= 1
         if rules.descension:
             v = max(1, v - n)
         else:
@@ -60,12 +104,8 @@ def attacker_wins(rules: RuleSet, ea: int, ed: int, pa: int, pd: int) -> bool:
     ``ea``/``ed`` are effective values (Ascension applied); ``pa``/``pd`` are the
     printed values, used only to detect the Fallen Ace pairing.
     """
-    if rules.fallen_ace and ((pa == 10 and pd == 1) or (pd == 10 and pa == 1)):
-        one_beats_ace = not rules.reverse          # Reverse cancels Fallen Ace here
-        attacker_has_one = pa == 1
-        if FALLEN_ACE_MODE == "vuln" and not attacker_has_one:
-            return (ea < ed) if rules.reverse else (ea > ed)
-        return one_beats_ace if attacker_has_one else not one_beats_ace
+    if rules.fallen_ace and ((pa == 10 and pd == 1) or (pa == 1 and pd == 10)):
+        return True
     return (ea < ed) if rules.reverse else (ea > ed)
 
 
@@ -88,6 +128,7 @@ def _resolve(rules: RuleSet, b: list, cell: int, log=None) -> None:
     psides = CARDS[b[cell][0]].sides
     asc = rules.ascension or rules.descension
     plain = not rules.reverse and not rules.fallen_ace   # ordinary "higher wins"
+    placed_kind = CARDS[b[cell][0]].kind                 # excluded from faction counts this turn
 
     # occupied neighbours as (dir, cell, defender facing value)
     occ = []
@@ -95,12 +136,22 @@ def _resolve(rules: RuleSet, b: list, cell: int, log=None) -> None:
         t = b[nc]
         if t is not None:
             occ.append((d, nc, CARDS[t[0]].sides[OPP[d]]))
-
     if asc:
-        pe = (eff(rules, b, cell, 0), eff(rules, b, cell, 1),
-              eff(rules, b, cell, 2), eff(rules, b, cell, 3))
-        occ = [(d, nc, eff(rules, b, nc, OPP[d])) for (d, nc, _v) in occ]
+        # card ids are fixed for the whole resolution, so count factions once
+        counts = kind_counts(b)
+        # all four sides of the placed card share one faction adjustment (and it
+        # never counts itself), so shift them directly instead of per-side eff()
+        n = 0 if placed_kind == "None" else counts.get(placed_kind, 0) - 1
+        if n == 0:
+            pe = psides
+        elif rules.descension:
+            pe = tuple(max(1, v - n) for v in psides)
+        else:
+            pe = tuple(min(_ASCENSION_MAX, v + n) for v in psides)
+        occ = [(d, nc, eff(rules, b, nc, OPP[d], placed_kind=placed_kind, counts=counts))
+               for (d, nc, _v) in occ]
     else:
+        counts = None
         pe = psides
 
     same_caps = ()
@@ -169,7 +220,8 @@ def _resolve(rules: RuleSet, b: list, cell: int, log=None) -> None:
                 if t is not None and t[1] != owner:
                     dv = CARDS[t[0]].sides[OPP[d]]
                     if asc:
-                        av, xv = eff(rules, b, src, d), eff(rules, b, nc, OPP[d])
+                        av = eff(rules, b, src, d, placed_kind=placed_kind, counts=counts)
+                        xv = eff(rules, b, nc, OPP[d], placed_kind=placed_kind, counts=counts)
                         win = (av > xv) if plain else attacker_wins(rules, av, xv, av, xv)
                     else:
                         av = ss[d]

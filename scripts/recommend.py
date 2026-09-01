@@ -25,6 +25,9 @@ from tt.data import (  # noqa: E402
 )
 from tt.model import RuleSet  # noqa: E402
 from tt.recommend import recommend  # noqa: E402
+from tt.regions import (  # noqa: E402
+    effective_rules, is_stale, region_for_npc, regional_rules,
+)
 
 
 def _ids(names):
@@ -34,8 +37,21 @@ def _ids(names):
 def _npc_setup(args):
     npc = find_npc(args.npc)
     entry = load_decks().get(npc["name"], {})
-    rnames = (args.rules.split(",") if args.rules else None) or entry.get("rules") or npc["rules"]
+    use_regional = not args.no_regional and not args.rules
+    rnames = effective_rules(npc, deck_entry=entry, override=args.rules,
+                             use_regional=use_regional)
     rules = RuleSet.from_names([r.strip() for r in rnames if r.strip()])
+
+    if use_regional:
+        region = region_for_npc(npc)
+        reg, on = regional_rules(region)
+        if reg:
+            warn = "  (STALE - re-check in game)" if is_stale(on) else ""
+            print(f"note: +regional rules for {region}: {', '.join(reg)} "
+                  f"(recorded {on}){warn}")
+        elif region and region != "(fixed rules)":
+            print(f"note: no regional rules recorded for {region} - run "
+                  f"`tt-cli regional {region!r} <rules>` or pass --rules")
 
     if args.npc_deck:
         return npc["name"], _ids(args.npc_deck.split(",")), rules
@@ -68,7 +84,10 @@ def main(argv=None) -> int:
     p.add_argument("npc")
     p.add_argument("--pool", choices=("owned", "all"), default="owned")
     p.add_argument("--npc-deck", default=None)
-    p.add_argument("--rules", default=None)
+    p.add_argument("--rules", default=None,
+                   help="override the full rule list (regional included), comma-separated")
+    p.add_argument("--no-regional", action="store_true",
+                   help="use the NPC's match rules only, skip the recorded regional rules")
     p.add_argument("--shortlist", type=int, default=16, help="top cards considered (default 16)")
     p.add_argument("--screen-tail", type=int, default=6,
                    help="plies solved exactly after a greedy opening, when screening (default 6)")
@@ -101,7 +120,14 @@ def main(argv=None) -> int:
         print(f"npc    : {_fmt(npc_ids)}")
     print(f"pool   : {len(pool)} cards ({args.pool})")
     if rules.roulette:
-        print("note   : Roulette is active - pass --rules with the actual roll", file=sys.stderr)
+        fixed = [n for n in rules.names() if n != "Roulette"]
+        if fixed:
+            print(f"note   : Roulette rolls extra rules at match start - deck picked under "
+                  f"the always-on rule(s) only ({', '.join(fixed)}); re-run with --rules "
+                  f"once you see the roll for a match-specific pick")
+        else:
+            print("note   : Roulette NPC - the roll is unknown when you build the deck, so "
+                  "this is the strongest deck under plain rules (a solid all-round pick)")
     t0 = time.time()
 
     def _progress(e):
@@ -123,6 +149,10 @@ def main(argv=None) -> int:
     b = rec.best
     verdict = "win" if b.worst > 0 else "draw" if b.worst == 0 else "loss"
     print(f"\nrecommended: {', '.join(b.names())}")
+    if rules.order:
+        seq = "  ".join(f"{n}.{CARDS[i].name}" for n, i in enumerate(b.cards, 1))
+        print(f"  deck order   : {seq}")
+        print("  (Order rule - set your in-game deck in exactly this left-to-right order)")
     print(f"  going first  : {b.first:+g}")
     print(f"  going second : {b.second:+g}   ->  worst case {verdict} by {abs(b.worst):g}")
     if rec.swaps:

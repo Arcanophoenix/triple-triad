@@ -162,7 +162,10 @@ def _replay(g: dict, npc5: list[int]):
         yield ply, side, card, cell, note
 
 
-_VERDICT_VERSION = 2                      # bump when the verdict maths changes
+# bump when the verdict maths changes.  3: the Ascension/Descension placed-card
+# exclusion and the Fallen Ace 1-vs-A correction both change capture resolution,
+# so every cached verdict from before them is stale.
+_VERDICT_VERSION = 3
 _VCACHE_DATA: dict | None = None
 
 

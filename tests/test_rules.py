@@ -135,6 +135,52 @@ def test_ascension_boosts_sides_by_type_count():
     assert owners(b2)[1] == 1
 
 
+def test_ascension_placed_card_does_not_count_itself():
+    from tt.rules import eff
+    # a lone Garlean placed next to a lone (already-ascended) Primal: the Primal
+    # is +1 from itself, the placed Garlean is +0 (it doesn't count itself yet),
+    # so a printed 9-vs-8 becomes 9-vs-9 and there is NO capture.
+    garlean = C((1, 1, 1, 9), kind="Garlean")   # W 9
+    primal = C((1, 8, 1, 1), kind="Primal")     # E 8 -> +1 self -> 9
+    layout = {1: (primal, 1)}                    # placed card at cell 2: its W faces cell 1's E
+    b, _ = place(RuleSet(ascension=True), layout, 2, garlean, 0)
+    assert owners(b)[1] == 1                     # 9 vs 9 tie -> Primal keeps it
+
+    # but once the Garlean is an established card it DOES count itself
+    bb = list((None,) * 9)
+    bb[2] = (garlean.id, 0)
+    assert eff(RuleSet(ascension=True), tuple(bb), 2, 3) == 10                     # 9 + 1 self
+    assert eff(RuleSet(ascension=True), tuple(bb), 2, 3, placed_kind="Garlean") == 9
+
+
+def test_ascension_placed_card_still_gets_bonus_from_others_on_board():
+    from tt.rules import eff
+    g1 = C((1, 1, 1, 7), kind="Garlean")
+    g2 = C((1, 1, 1, 7), kind="Garlean")
+    b = list((None,) * 9)
+    b[0], b[1] = (g1.id, 1), (g2.id, 0)
+    # placing g2 with one other Garlean down: 7 + 1 (from g1), not +2
+    assert eff(RuleSet(ascension=True), tuple(b), 1, 3, placed_kind="Garlean") == 8
+
+
+def test_descension_placed_card_is_excluded_for_its_same_faction_neighbour_too():
+    """Noes: Memeroon (Society, N 6) placed onto Frixio (Society, S 6) under
+    Descension.  During resolution BOTH see just one Society card on the board, so
+    6-vs-6 stays a tie and nothing flips - then both settle at -2."""
+    from tt.rules import eff
+    memeroon = C((6, 1, 1, 1), kind="Society")   # N 6
+    frixio = C((1, 1, 6, 1), kind="Society")     # S 6
+    layout = {0: (frixio, 1)}                     # placed card at cell 3: its N faces cell 0's S
+    b, _ = place(RuleSet(descension=True), layout, 3, memeroon, 0)
+    assert owners(b)[0] == 1                      # 5 vs 5 during resolution -> no capture
+
+    # the neighbour's own count also drops the just-placed card
+    bb = list((None,) * 9)
+    bb[0], bb[3] = (frixio.id, 1), (memeroon.id, 0)
+    assert eff(RuleSet(descension=True), tuple(bb), 0, 2) == 4                       # 2 Society, resting
+    assert eff(RuleSet(descension=True), tuple(bb), 0, 2, placed_kind="Society") == 5  # pre-placement
+
+
 def test_ascension_delta_is_the_faction_count_and_caps_at_ten():
     from tt.rules import eff
     prim = C((2, 1, 1, 9), kind="Primal")
@@ -156,8 +202,10 @@ def test_fallen_ace_one_beats_ace():
     assert owners(b)[1] == 0
     b2, _ = place(PLAIN, {1: (ace, 1)}, 4, atk, 0)
     assert owners(b2)[1] == 1
+    # Under Reverse, plain math already lets the attacking 1 capture (1 < 10)
+    # - Fallen Ace doesn't need to intervene here, it just stays captured.
     b3, _ = place(RuleSet(fallen_ace=True, reverse=True), {1: (ace, 1)}, 4, atk, 0)
-    assert owners(b3)[1] == 1        # Reverse cancels Fallen Ace on this pairing
+    assert owners(b3)[1] == 0
 
 
 def test_ace_beats_one_normally():
@@ -165,9 +213,17 @@ def test_ace_beats_one_normally():
     one = C((1, 1, 1, 1))            # S printed 1
     b, _ = place(PLAIN, {1: (one, 1)}, 4, atk, 0)
     assert owners(b)[1] == 0
-    # DISPUTED: under Fallen Ace "hard" mode a placed A does NOT capture a 1.
+    # Fallen Ace only ADDS "a placed 1 captures an A"; a placed A still
+    # captures a 1 normally (confirmed against FFTriadBuddy's reference rules).
     b2, _ = place(RuleSet(fallen_ace=True), {1: (one, 1)}, 4, atk, 0)
-    assert owners(b2)[1] == 1
+    assert owners(b2)[1] == 0
+    # Under Reverse, plain math would let the defending 1 survive (10 is not
+    # < 1) - Fallen Ace's role swaps to cover this case instead, so the
+    # attacking A still captures.
+    b3, _ = place(RuleSet(fallen_ace=True, reverse=True), {1: (one, 1)}, 4, atk, 0)
+    assert owners(b3)[1] == 0
+    b4, _ = place(RuleSet(reverse=True), {1: (one, 1)}, 4, atk, 0)
+    assert owners(b4)[1] == 1        # without Fallen Ace, the defending 1 survives Reverse
 
 
 def test_terminal_scoring_counts_the_unplayed_hand_card():

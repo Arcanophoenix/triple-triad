@@ -9,6 +9,13 @@ solves), so this works in two passes:
 
 Decks are ranked by the worst of the two coin-toss outcomes, then by the average
 margin.  The margin is always from your perspective (positive = you win).
+
+Under the **Order** rule the hand is played strictly left-to-right, so a deck's
+arrangement is itself a decision - the same five cards can win in one order and
+lose in another.  Screening picks the greedy-best order per deck; the exact pass
+then re-solves the most promising orderings and returns the winning one.  The
+recommended ``DeckResult.cards`` is therefore the exact left-to-right sequence to
+set in-game.
 """
 from __future__ import annotations
 
@@ -17,7 +24,7 @@ import os
 import warnings
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, field
-from itertools import combinations
+from itertools import combinations, permutations
 
 # Workers are forked: they inherit the loaded card dataset (and any test cards),
 # start instantly, and never re-import __main__ - which keeps this working when
@@ -29,6 +36,7 @@ warnings.filterwarnings("ignore", message=r".*multi-threaded.*fork\(\).*",
 
 from .data import CARDS, Card
 from .model import EMPTY_BOARD, GameState, RuleSet, is_terminal, value_a
+from .rules import _resolve
 from .solver import analyze, apply, legal_moves, solve
 
 HIGH_RARITY = 4          # cards at >= this many stars are deck-limited
@@ -40,14 +48,18 @@ MAX_HIGH_PER_DECK = 1    # VERIFY: standard decks allow one 4/5-star card
 def card_score(c: Card, rules: RuleSet) -> float:
     s = c.sides
     total = sum(s)
-    low_is_good = rules.reverse or rules.fallen_ace
     adj = (s[0] + s[1], s[1] + s[2], s[2] + s[3], s[3] + s[0])  # corner pairs
-    if low_is_good:
+    if rules.reverse:
         base = 44 - total + 0.5 * (20 - min(adj))
-        if rules.fallen_ace:
-            base += 3 * sum(v == 1 for v in s) - 2 * sum(v == 10 for v in s)
     else:
         base = total + 1.5 * sum(v == 10 for v in s) + 0.5 * max(adj)
+    if rules.fallen_ace:
+        # Fallen Ace doesn't make low cards good in general - it only lets the
+        # weak number in a 1-vs-A pairing capture the strong one (Reverse swaps
+        # which is which).  So the weak number gains threat value, the strong
+        # one becomes a small liability.
+        weak, strong = (10, 1) if rules.reverse else (1, 10)
+        base += 3 * sum(v == weak for v in s) - 2 * sum(v == strong for v in s)
     if (rules.ascension or rules.descension) and c.kind != "None":
         base += 3 if rules.ascension else -1
     if rules.same or rules.plus:
@@ -81,10 +93,25 @@ def legal_decks(pool: list[int]):
 
 # --- fast screening: greedy opening, then an exact endgame ----------------
 
-def _board_margin(state: GameState) -> int:
-    a = sum(1 for s in state.board if s is not None and s[1] == 0)
-    b = sum(1 for s in state.board if s is not None and s[1] == 1)
-    return a - b
+def _margin_after(state: GameState, hand_idx: int, cell: int) -> int:
+    """Board margin (A minus B) after playing ``(hand_idx, cell)``.
+
+    Resolves the board only: ``_greedy_step`` scores every legal move and then
+    throws all but one away, so building a full successor GameState (hand
+    slicing, dataclass construction) for each candidate is wasted work.
+    """
+    owner = state.to_move
+    b = list(state.board)
+    b[cell] = (state.hands[owner][hand_idx], owner)
+    _resolve(state.rules, b, cell)
+    a = n = 0
+    for s in b:
+        if s is not None:
+            if s[1] == 0:
+                a += 1
+            else:
+                n += 1
+    return a - n
 
 
 def _greedy_step(state: GameState) -> GameState:
@@ -92,7 +119,7 @@ def _greedy_step(state: GameState) -> GameState:
     want_max = state.to_move == 0
     best_m, best_v = None, None
     for m in legal_moves(state):
-        v = _board_margin(apply(state, *m))
+        v = _margin_after(state, *m)
         v = v if want_max else -v
         if best_v is None or v > best_v:
             best_v, best_m = v, m
@@ -100,8 +127,10 @@ def _greedy_step(state: GameState) -> GameState:
 
 
 def greedy_playout(state: GameState) -> int:
+    # not is_terminal => a free cell and cards in hand => legal_moves is non-empty,
+    # so there is no need to build the move list just to test it
     s = state
-    while not is_terminal(s) and legal_moves(s):
+    while not is_terminal(s):
         s = _greedy_step(s)
     return value_a(s)
 
@@ -114,8 +143,7 @@ def screen_value(state: GameState, tail: int = 6, opp: str = "optimal") -> int:
     good one."""
     s = state
     limit = 9 - tail
-    while (not is_terminal(s) and legal_moves(s)
-           and sum(1 for x in s.board if x is not None) < limit):
+    while not is_terminal(s) and 9 - s.board.count(None) < limit:
         s = _greedy_step(s)
     return solve(s, opp)
 
@@ -157,8 +185,12 @@ class Recommendation:
 
 # --- orchestration -----------------------------------------------------
 
-def _key(deck, npc_deck, side):
-    return (tuple(sorted(deck)), tuple(sorted(npc_deck)), side)
+ORDER_PROBE = 12         # hand orderings exact-solved per deck under the Order rule
+
+
+def _key(deck, npc_deck, side, ordered=False):
+    our = tuple(deck) if ordered else tuple(sorted(deck))
+    return (our, tuple(sorted(npc_deck)), side)
 
 
 def _states(deck, npc_deck, rules):
@@ -167,10 +199,50 @@ def _states(deck, npc_deck, rules):
             GameState(EMPTY_BOARD, hands, 1, rules))
 
 
+def _order_variants(deck) -> list[tuple]:
+    """Every distinct hand ordering of ``deck`` (fewer than 120 when a card repeats)."""
+    return list(dict.fromkeys(permutations(deck)))
+
+
+def _greedy_order_key(perm, npc_decks, rules):
+    """(worst-case, average) margin for one fixed hand order under a pure greedy
+    playout - cheap enough to rank all 120 orderings of a deck."""
+    f = min(greedy_playout(GameState(EMPTY_BOARD, (perm, nd), 0, rules)) for nd in npc_decks)
+    s = min(greedy_playout(GameState(EMPTY_BOARD, (perm, nd), 1, rules)) for nd in npc_decks)
+    return (min(f, s), (f + s) / 2)
+
+
+def _screen_order(deck, npc_decks, rules) -> tuple:
+    """The single hand order to screen ``deck`` in: the deck as given unless Order
+    is live, in which case the greedy-best ordering - so a strong deck is not
+    filtered out for a bad arrangement before the exact pass can reorder it."""
+    if not rules.order:
+        return tuple(deck)
+    return max(_order_variants(deck), key=lambda p: _greedy_order_key(p, npc_decks, rules))
+
+
+def _probe_orders(deck, npc_decks, rules, keep=ORDER_PROBE) -> list[tuple]:
+    """Hand orderings worth an exact solve.  Not Order: just the deck.  Order:
+    the ``keep`` orderings that look best under a greedy playout (exact-solving all
+    120 is wasteful and the greedy ranking puts the true best near the top)."""
+    if not rules.order:
+        return [tuple(deck)]
+    variants = _order_variants(deck)
+    if len(variants) <= keep:
+        return variants
+    variants.sort(key=lambda p: _greedy_order_key(p, npc_decks, rules), reverse=True)
+    return variants[:keep]
+
+
+def _pick_best(results):
+    """The DeckResult with the best (worst-case, average) margin."""
+    return max(results, key=lambda r: (r.worst, r.avg))
+
+
 def _screen(deck, npc_deck, rules, cache, tail=6, opp="optimal"):
     out = []
     for side, st in zip((0, 1), _states(deck, npc_deck, rules)):
-        k = (tail, opp, *_key(deck, npc_deck, side))
+        k = (tail, opp, *_key(deck, npc_deck, side, rules.order))
         if k not in cache:
             cache[k] = screen_value(st, tail, opp)
         out.append(cache[k])
@@ -180,7 +252,7 @@ def _screen(deck, npc_deck, rules, cache, tail=6, opp="optimal"):
 def _exact(deck, npc_deck, rules, cache, opp="optimal"):
     vals = []
     for side, st in zip((0, 1), _states(deck, npc_deck, rules)):
-        k = ("x", opp, *_key(deck, npc_deck, side))
+        k = ("x", opp, *_key(deck, npc_deck, side, rules.order))
         if k not in cache:
             try:
                 cache[k] = analyze(st, opp=opp).best.value
@@ -203,8 +275,9 @@ def _hardest_npc_deck(npc_decks, rules: RuleSet) -> tuple:
     """The single toughest-looking draw, used as a stand-in when screening the
     whole candidate field (screening against every possible draw is the same work
     times len(npc_decks)).  "Toughest" = most raw stat total, flipped under
-    Reverse / Fallen Ace where low sides win."""
-    low = rules.reverse or rules.fallen_ace
+    Reverse where low sides win.  (Fallen Ace alone doesn't flip it - high sides
+    still win everything outside the 1-vs-A pairing.)"""
+    low = rules.reverse
     def strength(nd):
         t = sum(sum(CARDS[c].sides) for c in nd)
         return -t if low else t
@@ -212,16 +285,25 @@ def _hardest_npc_deck(npc_decks, rules: RuleSet) -> tuple:
 
 
 def _screen_any(deck, npc_decks, rules, cache, tail=6, opp="optimal"):
-    """Screen ``deck`` against every possible NPC deck; keep the worst side-margins."""
+    """Screen ``deck`` against every possible NPC deck; keep the worst side-margins.
+    Under Order the deck is screened in its greedy-best arrangement."""
+    deck = _screen_order(deck, npc_decks, rules)
     parts = [_screen(deck, nd, rules, cache, tail, opp) for nd in npc_decks]
     return DeckResult(tuple(deck), min(p.first for p in parts),
                       min(p.second for p in parts), exact=False)
 
 
-def _exact_any(deck, npc_decks, rules, cache, opp="optimal"):
-    parts = [_exact(deck, nd, rules, cache, opp) for nd in npc_decks]
-    return DeckResult(tuple(deck), min(p.first for p in parts),
-                      min(p.second for p in parts), exact=True)
+def _exact_any(deck, npc_decks, rules, cache, opp="optimal", order_keep=ORDER_PROBE):
+    """Exact-solve ``deck`` vs every possible NPC deck.  Under Order the promising
+    hand orderings are each solved and the best-scoring one is returned, so
+    ``.cards`` is the arrangement to play."""
+    best = None
+    for perm in _probe_orders(deck, npc_decks, rules, order_keep):
+        parts = [_exact(perm, nd, rules, cache, opp) for nd in npc_decks]
+        r = DeckResult(tuple(perm), min(p.first for p in parts),
+                       min(p.second for p in parts), exact=True)
+        best = r if best is None else _pick_best((best, r))
+    return best
 
 
 def _rank(results):
@@ -265,6 +347,7 @@ def _make_pool(nw: int):
 
 
 def _screen_any_nc(deck, npc_decks, rules, tail, opp) -> DeckResult:
+    deck = _screen_order(deck, npc_decks, rules)
     fs, ss = [], []
     for nd in npc_decks:
         a, b = (screen_value(st, tail, opp) for st in _states(deck, nd, rules))
@@ -273,25 +356,29 @@ def _screen_any_nc(deck, npc_decks, rules, tail, opp) -> DeckResult:
     return DeckResult(tuple(deck), min(fs), min(ss), exact=False)
 
 
-def _exact_any_nc(deck, npc_decks, rules, opp) -> DeckResult:
-    fs, ss = [], []
-    for nd in npc_decks:
-        vv = []
-        for st in _states(deck, nd, rules):
-            try:
-                vv.append(analyze(st, opp=opp).best.value)
-            except ValueError:                   # Chaos / Roulette
-                vv.append(greedy_playout(st))
-        fs.append(vv[0])
-        ss.append(vv[1])
-    return DeckResult(tuple(deck), min(fs), min(ss), exact=True)
+def _exact_any_nc(deck, npc_decks, rules, opp, order_keep=ORDER_PROBE) -> DeckResult:
+    best = None
+    for perm in _probe_orders(deck, npc_decks, rules, order_keep):
+        fs, ss = [], []
+        for nd in npc_decks:
+            vv = []
+            for st in _states(perm, nd, rules):
+                try:
+                    vv.append(analyze(st, opp=opp).best.value)
+                except ValueError:               # Chaos / Roulette
+                    vv.append(greedy_playout(st))
+            fs.append(vv[0])
+            ss.append(vv[1])
+        r = DeckResult(tuple(perm), min(fs), min(ss), exact=True)
+        best = r if best is None else _pick_best((best, r))
+    return best
 
 
 def _screen_job(job):                            # (deck, npc_decks, rules, tail, opp)
     return _screen_any_nc(*job)
 
 
-def _exact_job(job):                             # (deck, npc_decks, rules, opp)
+def _exact_job(job):                             # (deck, npc_decks, rules, opp, order_keep)
     return _exact_any_nc(*job)
 
 
@@ -309,7 +396,7 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
               shortlist_n: int = 16, exact_k: int = 25, top: int = 5,
               screen_tail: int = 6, opp: str = "optimal", swaps: bool = True,
               cand_cap: int = 0, worstcase_n: int = 0, workers: int = 0,
-              progress=None) -> Recommendation:
+              order_probe: int = ORDER_PROBE, progress=None) -> Recommendation:
     """``npc_deck`` is the NPC's 5 card ids, or - when their deck is only known up
     to a random draw - a list of the possible 5-card decks; decks are then scored
     by their worst case across all of them.
@@ -322,6 +409,11 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
 
     ``workers``: 0 = auto (half the logical CPUs, at idle priority), 1 = serial,
     N = that many worker processes.
+
+    Under the **Order** rule the hand plays left-to-right, so each deck's
+    arrangement matters: screening scores the greedy-best order, then the exact
+    pass solves the ``order_probe`` most promising orderings of each finalist and
+    keeps the winner - ``result.cards`` is the sequence to set in-game.
 
     ``progress``, if given, is called with dict events (each carries ``msg``):
     ``{"phase":"screen","done","total"}`` through the coarse pass, then
@@ -386,9 +478,10 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
         # phase 3: exact solves.  For a variable-deck NPC, rank the top k against
         # the representative draw first, then pay the full every-draw cost on only
         # the final `top`.
+        okeep = order_probe if rules.order else 1
         exact = []
         if k and multi:
-            jobs = [(dr.cards, reps[:1], rules, opp) for dr in screened[:k]]
+            jobs = [(dr.cards, reps[:1], rules, opp, okeep) for dr in screened[:k]]
             rep_ranked = []
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 rep_ranked.append(res)
@@ -398,7 +491,7 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                               "msg": (f"[{n}/{k}] {', '.join(res.names())}  "
                                       f"first {res.first:+g} second {res.second:+g}")})
             final = _rank(rep_ranked)[:min(top, k)]
-            jobs = [(dr.cards, npc_t, rules, opp) for dr in final]
+            jobs = [(dr.cards, npc_t, rules, opp, okeep) for dr in final]
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 exact.append(res)
                 if progress:
@@ -407,7 +500,7 @@ def recommend(npc_deck, rules: RuleSet, pool: list[int], *,
                               "msg": (f"[{n}/{len(final)}] {', '.join(res.names())}  "
                                       f"first {res.first:+g} second {res.second:+g}")})
         elif k:
-            jobs = [(dr.cards, npc_t, rules, opp) for dr in screened[:k]]
+            jobs = [(dr.cards, npc_t, rules, opp, okeep) for dr in screened[:k]]
             for n, res in enumerate(_imap(ex, _exact_job, jobs), 1):
                 exact.append(res)
                 if progress:

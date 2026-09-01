@@ -118,7 +118,10 @@ def score_a(state: GameState) -> int:
 
     Total is always 10 (9 on the board + 1 left in hand).  A wins at >=6, 5-5 draws.
     """
-    on_board = sum(1 for s in state.board if s is not None and s[1] == 0)
+    on_board = 0
+    for s in state.board:                  # plain loop: no generator frame per leaf
+        if s is not None and s[1] == 0:
+            on_board += 1
     return on_board + len(state.hands[0])
 
 
