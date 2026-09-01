@@ -383,12 +383,38 @@ scripts/difficulty.py --reverse           # hardest first
 scripts/difficulty.py --zone "Gold Saucer"
 scripts/difficulty.py --challenge         # only NPCs you can beat right now
 scripts/difficulty.py --no-solve          # instant (skip the solver column)
+scripts/difficulty.py --progress ShB      # record story progress (once)
 ```
+
+**Set `--progress` once.** NPCs live all over the world, and one in Old Sharlayan
+is not a suggestion for someone still in La Noscea however winnable the matchup
+looks. Give it an expansion (`ARR HW SB ShB EW DT`) or an exact patch (`6.3`);
+it's stored in `collection.json`, and everything added by later content is hidden
+until you move it. `--everywhere` ignores it for one run.
+
+The gate is the NPC's **patch**, not their zone, and that is deliberate: an NPC
+cannot stand in a zone that did not exist when they were added, so the patch is
+never earlier than the zone (verified across the roster, and pinned by a test).
+The patch also catches NPCs standing in an early zone who arrived with much later
+content - Ylaire is in Old Gridania but came in 6.5, Kilfufu is in Ul'dah but
+came in 6.25 - which a zone map cannot see at all.
 
 The game has no difficulty rating, so the `score` (0-100, five tiers
 intro/easy/moderate/hard/brutal) is a heuristic from the NPC's MGP payout,
 reward-card rarity, release patch, and ruleset (variance rules like Chaos/Swap
 push it up, All/Three Open pull it down). It's only a rough ordering.
+
+The solver column is a deliberately cheap screen, and it is **biased low, not
+just noisy**: measured against a config with a real exact slice over 13 NPCs, its
+mean absolute error is 4.00 (max 6.00) and it understated in every single case,
+never once the other way. So `--challenge`, which filters on "margin >= 0", was
+hiding matchups you can already win. It now re-scores the band where that bias
+could cross zero with a more accurate pass before filtering, which is why it
+pauses to say `re-checking N borderline matchup(s)`. That pass is fanned out over
+a worker pool and capped at the 40 most promising rows - unbounded and serial it
+ran 17+ minutes, which nobody waits for; bounded it is about 4. Running the
+accurate config across all 134 NPCs would be ~12 minutes even so, hence the plain
+listing stays on the cheap screen, and `--fast` skips the re-check entirely.
 
 When the NPC's **deck is recorded** (`data/decks.json`), the last column shows
 the solver's real verdict - the best worst-case margin for a deck built from your
