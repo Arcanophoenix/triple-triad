@@ -33,6 +33,7 @@ _COMMANDS = {
     "fetch": "fetch_npc_pages",
     "scrape": "scrape_npc",
     "deck": "deck",
+    "import": "collect_import",
     "data": "extract_wiki",
 }
 

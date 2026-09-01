@@ -14,6 +14,7 @@ commands:
   fetch      download NPC wiki pages listed on the saved "Triple Triad NPCs" index
   scrape     import NPC decks + rules from reference/NPCs/*.html
   deck       add | show | list recorded NPC decks (manual)
+  import     import an FFXIV Collect export (cards owned + NPCs beaten)
   data       rebuild data/cards.json + data/npcs.json from reference/
 
 Run a command with -h for its own options, e.g. `./tt-cli play -h`.
@@ -33,6 +34,7 @@ CMDS = {
     "fetch": "fetch_npc_pages.py",
     "scrape": "scrape_npc.py",
     "deck": "deck.py",
+    "import": "collect_import.py",
     "data": "extract_wiki.py",
 }
 

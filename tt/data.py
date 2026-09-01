@@ -148,6 +148,27 @@ def npc_deck_options(entry: dict) -> list[list[str]]:
 STARTER_CARDS = ["Dodo Card", "Sabotender Card", "Bomb Card", "Mandragora Card", "Coeurl Card"]
 
 
+def read_collection() -> dict:
+    """collection.json exactly as stored - no defaults applied, unknown keys kept.
+
+    ``load_collection`` normalises for readers (starters folded in, decks
+    defaulted) and so cannot be written back; anything that *edits* the file must
+    go through this instead or it will drop keys it did not know about."""
+    p = paths.user_path("collection.json")
+    if not p.is_file():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def write_collection(col: dict) -> None:
+    paths.ensure_user_dir()
+    paths.user_path("collection.json").write_text(
+        json.dumps(col, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def load_collection() -> dict:
     p = paths.user_path("collection.json")
     data = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}

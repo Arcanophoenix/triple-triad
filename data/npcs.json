@@ -17,7 +17,8 @@
     ],
     "unlock": "Glorified Ratcatcher",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293874
   },
   {
     "name": "Arsieu",
@@ -39,7 +40,8 @@
     ],
     "unlock": "The Lady of Blades",
     "patch": "5.35",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293862
   },
   {
     "name": "Aurifort of the Three Clubs",
@@ -61,7 +63,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293773
   },
   {
     "name": "Baderon",
@@ -82,7 +85,8 @@
     ],
     "unlock": "A Wild Rose by Any Other Name",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293777
   },
   {
     "name": "Botan",
@@ -106,7 +110,8 @@
     ],
     "unlock": "And We Shall Call It Pyros",
     "patch": "4.45",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293843
   },
   {
     "name": "Br'uk Noq'",
@@ -126,7 +131,8 @@
     ],
     "unlock": "The Feat of the Brotherhood",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293891
   },
   {
     "name": "Buscarron",
@@ -148,7 +154,8 @@
     ],
     "unlock": "Into the Beast's Maw",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293783
   },
   {
     "name": "Camalbusert",
@@ -170,7 +177,8 @@
     ],
     "unlock": "A Spellbinding Read",
     "patch": "7.45",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293902
   },
   {
     "name": "Celia",
@@ -192,7 +200,8 @@
     ],
     "unlock": "Endwalker",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293879
   },
   {
     "name": "Cheatingway",
@@ -214,7 +223,8 @@
     ],
     "unlock": "Her Children, One and All",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293878
   },
   {
     "name": "Cobleva",
@@ -236,7 +246,8 @@
     ],
     "unlock": "Tanks for the Memory",
     "patch": "5.3",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293860
   },
   {
     "name": "Dominiac",
@@ -257,7 +268,8 @@
     ],
     "unlock": "A War without End",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293807
   },
   {
     "name": "Drery",
@@ -279,7 +291,8 @@
     ],
     "unlock": "Have a Heart and Mystery Miners",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293852
   },
   {
     "name": "Droyn",
@@ -301,7 +314,8 @@
     ],
     "unlock": "Blue Cheese",
     "patch": "5.45",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293871
   },
   {
     "name": "Elaisse",
@@ -323,7 +337,8 @@
     ],
     "unlock": "Caught in the Act",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293806
   },
   {
     "name": "Elvaan Red Mage",
@@ -344,7 +359,8 @@
     ],
     "unlock": "Distant Promises",
     "patch": "7.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293904
   },
   {
     "name": "Eo Sigun",
@@ -365,7 +381,8 @@
     ],
     "unlock": "Manic Pixie Dream Realm",
     "patch": "5.1",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293857
   },
   {
     "name": "Ercanbald",
@@ -384,7 +401,8 @@
     ],
     "unlock": "A Haven for the Bold",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293825
   },
   {
     "name": "F'hobhas",
@@ -404,7 +422,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293770
   },
   {
     "name": "Flichoirel the Lordling",
@@ -423,7 +442,8 @@
     ],
     "unlock": "",
     "patch": "3.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293823
   },
   {
     "name": "Fufulupa",
@@ -444,7 +464,8 @@
     ],
     "unlock": "A Wild Rose by Any Other Name",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293778
   },
   {
     "name": "Furtive Former Imperial",
@@ -465,7 +486,8 @@
     ],
     "unlock": "Ruby Doomsday",
     "patch": "5.3",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293861
   },
   {
     "name": "Gamingway",
@@ -485,7 +507,8 @@
     ],
     "unlock": "Dreams Come True",
     "patch": "6.35",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293883
   },
   {
     "name": "Garima",
@@ -507,7 +530,8 @@
     ],
     "unlock": "Delicate as a Flower",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293834
   },
   {
     "name": "Gavoll Ja",
@@ -528,7 +552,8 @@
     ],
     "unlock": "No Time for Tears",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293895
   },
   {
     "name": "Gegeruju",
@@ -550,7 +575,8 @@
     ],
     "unlock": "All Good Things",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293792
   },
   {
     "name": "Ghasa",
@@ -571,7 +597,8 @@
     ],
     "unlock": "Leader to Leader",
     "patch": "6.15",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293880
   },
   {
     "name": "Gibrillont",
@@ -591,7 +618,8 @@
     ],
     "unlock": "Drinking the Pain Away",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293799
   },
   {
     "name": "Glynard",
@@ -611,7 +639,8 @@
     ],
     "unlock": "Warrior of Darkness",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293849
   },
   {
     "name": "Grewenn",
@@ -633,7 +662,8 @@
     ],
     "unlock": "Shadowbringers",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293856
   },
   {
     "name": "Guhtwint of the Three Diamonds",
@@ -655,7 +685,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293766
   },
   {
     "name": "Gyoei",
@@ -677,7 +708,8 @@
     ],
     "unlock": "Criminal Phrenology",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293829
   },
   {
     "name": "Gyuf Uin",
@@ -698,7 +730,8 @@
     ],
     "unlock": "Acht-la Ormh Inn",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293850
   },
   {
     "name": "Hab",
@@ -720,7 +753,8 @@
     ],
     "unlock": "Zombies Are People Too",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293789
   },
   {
     "name": "Hachinan",
@@ -742,7 +776,8 @@
     ],
     "unlock": "The Primary Agreement",
     "patch": "4.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293842
   },
   {
     "name": "Hall Overseer",
@@ -764,7 +799,8 @@
     ],
     "unlock": "",
     "patch": "3.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293824
   },
   {
     "name": "Hanagasa",
@@ -788,7 +824,8 @@
     ],
     "unlock": "The City of Lost Angels",
     "patch": "5.2",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293859
   },
   {
     "name": "Hargra",
@@ -810,7 +847,8 @@
     ],
     "unlock": "Bearing With It and An Express Delivery",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293851
   },
   {
     "name": "Helmhart",
@@ -831,7 +869,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293779
   },
   {
     "name": "Hetsukaze",
@@ -855,7 +894,8 @@
     ],
     "unlock": "And We Shall Call It Hydatos",
     "patch": "4.55",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293848
   },
   {
     "name": "Hokushin",
@@ -877,7 +917,8 @@
     ],
     "unlock": "Good Swords, Good Dogs",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293841
   },
   {
     "name": "House Fortemps Manservant",
@@ -900,7 +941,8 @@
     ],
     "unlock": "Heavensward and The Paths We Walk",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293816
   },
   {
     "name": "Hume Black Mage",
@@ -921,7 +963,8 @@
     ],
     "unlock": "Apocalypse Nigh",
     "patch": "7.3",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293900
   },
   {
     "name": "Hume Thief",
@@ -943,7 +986,8 @@
     ],
     "unlock": "Distant Promises",
     "patch": "7.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293903
   },
   {
     "name": "Ibenart",
@@ -964,7 +1008,8 @@
     ],
     "unlock": "That None Shall Ever Again",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293853
   },
   {
     "name": "Idle Imperial",
@@ -988,7 +1033,8 @@
     ],
     "unlock": "The First Flight of the Excelsior",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293803
   },
   {
     "name": "Imperial Deserter",
@@ -1010,7 +1056,8 @@
     ],
     "unlock": "Stormblood",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293835
   },
   {
     "name": "Indolent Imperial",
@@ -1033,7 +1080,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293790
   },
   {
     "name": "Ironworks Hand",
@@ -1055,7 +1103,8 @@
     ],
     "unlock": "To Kweh under Distant Skies",
     "patch": "4.2",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293847
   },
   {
     "name": "Isobe",
@@ -1077,7 +1126,8 @@
     ],
     "unlock": "The Two Princesses of Sui-no-Sato",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293837
   },
   {
     "name": "Joellaut",
@@ -1098,7 +1148,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293772
   },
   {
     "name": "Jonas of the Three Spades",
@@ -1120,7 +1171,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293763
   },
   {
     "name": "Kaizan",
@@ -1141,7 +1193,8 @@
     ],
     "unlock": "A Dance with Snakes",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293827
   },
   {
     "name": "Kikimo",
@@ -1162,7 +1215,8 @@
     ],
     "unlock": "By the Grace of Lord Lolorito",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293839
   },
   {
     "name": "Kilfufu",
@@ -1183,7 +1237,8 @@
     ],
     "unlock": "A Key to the Past",
     "patch": "6.25",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293882
   },
   {
     "name": "King Elmer III",
@@ -1204,7 +1259,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293786
   },
   {
     "name": "Kiuka",
@@ -1224,7 +1280,8 @@
     ],
     "unlock": "The World Turned Upside Down",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293833
   },
   {
     "name": "Klynthota",
@@ -1248,7 +1305,8 @@
     ],
     "unlock": "Moon Sliver and Me , Of Errant Epistles , and The Light of Hope",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293814
   },
   {
     "name": "Kotokaze",
@@ -1268,7 +1326,8 @@
     ],
     "unlock": "By the Grace of Lord Lolorito",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293826
   },
   {
     "name": "Lamlyn",
@@ -1288,7 +1347,8 @@
     ],
     "unlock": "Reassuring the Masses",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293854
   },
   {
     "name": "Landenel",
@@ -1310,7 +1370,8 @@
     ],
     "unlock": "All Good Things",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293785
   },
   {
     "name": "Laniaitte",
@@ -1332,7 +1393,8 @@
     ],
     "unlock": "An Engineering Enterprise and Honoring the Past",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293808
   },
   {
     "name": "Larisa",
@@ -1353,7 +1415,8 @@
     ],
     "unlock": "In Serenity and Sorrow",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293894
   },
   {
     "name": "Lewena",
@@ -1398,7 +1461,8 @@
     ],
     "unlock": "Where I Belong",
     "patch": "5.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293872
   },
   {
     "name": "Linu Vali",
@@ -1421,7 +1485,8 @@
     ],
     "unlock": "The Nest of Honor",
     "patch": "3.1",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293812
   },
   {
     "name": "Luwyawa",
@@ -1442,7 +1507,8 @@
     ],
     "unlock": "The Long Road to Xak Tural",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293892
   },
   {
     "name": "Maillart",
@@ -1464,7 +1530,8 @@
     ],
     "unlock": "Embraced by Gods",
     "patch": "6.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293887
   },
   {
     "name": "Maisenta",
@@ -1485,7 +1552,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293764
   },
   {
     "name": "Malevolent Weasel",
@@ -1506,7 +1574,8 @@
     ],
     "unlock": "",
     "patch": "7.2",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293898
   },
   {
     "name": "Marcechamp",
@@ -1527,7 +1596,8 @@
     ],
     "unlock": "Gifts for the Outcasts",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293800
   },
   {
     "name": "Marcette",
@@ -1548,7 +1618,8 @@
     ],
     "unlock": "Fungal Frolic",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293782
   },
   {
     "name": "Marielle",
@@ -1569,7 +1640,8 @@
     ],
     "unlock": "A Reward Long in Coming",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293801
   },
   {
     "name": "Masatsuchi",
@@ -1590,7 +1662,8 @@
     ],
     "unlock": "Tiger Blood",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293836
   },
   {
     "name": "Master Mogzin",
@@ -1614,7 +1687,8 @@
     ],
     "unlock": "The Zenith of Craftsmanship",
     "patch": "3.3",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293817
   },
   {
     "name": "Mehryde",
@@ -1634,7 +1708,8 @@
     ],
     "unlock": "A Bond Eternal",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293877
   },
   {
     "name": "Memeroon",
@@ -1657,7 +1732,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293762
   },
   {
     "name": "Mero Roggo",
@@ -1681,7 +1757,8 @@
     ],
     "unlock": "Prelude in Violet",
     "patch": "4.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293845
   },
   {
     "name": "Midnight Dew",
@@ -1702,7 +1779,8 @@
     ],
     "unlock": "Over My Dead Gobbie",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293802
   },
   {
     "name": "Miitso",
@@ -1724,7 +1802,8 @@
     ],
     "unlock": "Jeuno",
     "patch": "7.1",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293897
   },
   {
     "name": "Mimidoa",
@@ -1745,7 +1824,8 @@
     ],
     "unlock": "History Repeating",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293776
   },
   {
     "name": "Mogmill",
@@ -1768,7 +1848,8 @@
     ],
     "unlock": "A Secret from Everyone",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293804
   },
   {
     "name": "Momodi",
@@ -1788,7 +1869,8 @@
     ],
     "unlock": "A Wild Rose by Any Other Name",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293769
   },
   {
     "name": "Mordyn",
@@ -1811,7 +1893,8 @@
     ],
     "unlock": "Licensed to Reave and Storming the Hull",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293819
   },
   {
     "name": "Mother Miounne",
@@ -1832,7 +1915,8 @@
     ],
     "unlock": "A Wild Rose by Any Other Name",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293767
   },
   {
     "name": "Munglig",
@@ -1854,7 +1938,8 @@
     ],
     "unlock": "The Undying Ones",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293832
   },
   {
     "name": "Nell Half-full",
@@ -1875,7 +1960,8 @@
     ],
     "unlock": "",
     "patch": "3.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293822
   },
   {
     "name": "Nigen",
@@ -1897,7 +1983,8 @@
     ],
     "unlock": "And Dzo It Goes",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293830
   },
   {
     "name": "Noes",
@@ -1919,7 +2006,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293795
   },
   {
     "name": "Nyikweni",
@@ -1939,7 +2027,8 @@
     ],
     "unlock": "Knowing the Pelupelu",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293888
   },
   {
     "name": "O'kalkaya",
@@ -1962,7 +2051,8 @@
     ],
     "unlock": "Soothing the Savage Siren and Storming the Hull",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293818
   },
   {
     "name": "Ogodei",
@@ -1984,7 +2074,8 @@
     ],
     "unlock": "A Warm Welcome",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293831
   },
   {
     "name": "Ourdilic",
@@ -2006,7 +2097,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293780
   },
   {
     "name": "Pawkukwe",
@@ -2028,7 +2120,8 @@
     ],
     "unlock": "Jeuno",
     "patch": "7.1",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293896
   },
   {
     "name": "Piralnaut",
@@ -2049,7 +2142,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293774
   },
   {
     "name": "Prideful Stag",
@@ -2069,7 +2163,8 @@
     ],
     "unlock": "",
     "patch": "3.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293821
   },
   {
     "name": "Prudence",
@@ -2091,7 +2186,8 @@
     ],
     "unlock": "The Face of an Explorer",
     "patch": "6.1",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293881
   },
   {
     "name": "Pudeel Ja",
@@ -2113,7 +2209,8 @@
     ],
     "unlock": "The Pride of Mamook",
     "patch": "7.25",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293899
   },
   {
     "name": "Qetanur",
@@ -2133,7 +2230,8 @@
     ],
     "unlock": "A Boy's Errand",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293875
   },
   {
     "name": "R'ashaht Rhiki",
@@ -2156,7 +2254,8 @@
     ],
     "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293793
   },
   {
     "name": "Redard",
@@ -2178,7 +2277,8 @@
     ],
     "unlock": "The Stewards of Note",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293858
   },
   {
     "name": "Redbill Storeboy",
@@ -2201,7 +2301,8 @@
     ],
     "unlock": "A Redbill Farewell",
     "patch": "4.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293844
   },
   {
     "name": "Roger",
@@ -2222,7 +2323,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293765
   },
   {
     "name": "Rowena",
@@ -2243,7 +2345,8 @@
     ],
     "unlock": "The Weaponsmith of Legend",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293791
   },
   {
     "name": "Ruhtwyda of the Three Hearts",
@@ -2265,7 +2368,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293781
   },
   {
     "name": "Ruissenaud",
@@ -2287,7 +2391,8 @@
     ],
     "unlock": "Guided by the Past",
     "patch": "6.05",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293884
   },
   {
     "name": "Saushs Koal",
@@ -2307,7 +2412,8 @@
     ],
     "unlock": "The Illuminated Land and Pearls of the Deep",
     "patch": "5.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293855
   },
   {
     "name": "Seika",
@@ -2330,7 +2436,8 @@
     ],
     "unlock": "Enigma",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293810
   },
   {
     "name": "Sezul Totoloc",
@@ -2354,7 +2461,8 @@
     ],
     "unlock": "Spread Your Wings and Soar",
     "patch": "2.35",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293784
   },
   {
     "name": "Sladkey",
@@ -2376,7 +2484,8 @@
     ],
     "unlock": "March of the Bloody Queen",
     "patch": "5.55",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293873
   },
   {
     "name": "Swift",
@@ -2399,7 +2508,8 @@
     ],
     "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293788
   },
   {
     "name": "Tapklix",
@@ -2422,7 +2532,8 @@
     ],
     "unlock": "Louder than Words , A Gob in the Machine , and A Bum Rap",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293815
   },
   {
     "name": "Tokimori",
@@ -2443,7 +2554,8 @@
     ],
     "unlock": "Mononoke Aware",
     "patch": "6.45",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293885
   },
   {
     "name": "Tokorzur",
@@ -2464,7 +2576,8 @@
     ],
     "unlock": "With High Spirits",
     "patch": "7.35",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293901
   },
   {
     "name": "Trachtoum",
@@ -2485,7 +2598,8 @@
     ],
     "unlock": "All Good Things",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293775
   },
   {
     "name": "Triple Triad Master",
@@ -2505,7 +2619,8 @@
     ],
     "unlock": "",
     "patch": "2.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293771
   },
   {
     "name": "Tsuzura",
@@ -2526,7 +2641,8 @@
     ],
     "unlock": "Our Most Venerated Ancestor",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293828
   },
   {
     "name": "Uataaye",
@@ -2547,7 +2663,8 @@
     ],
     "unlock": "A Royal Welcome",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293893
   },
   {
     "name": "Umber Torrent",
@@ -2569,7 +2686,8 @@
     ],
     "unlock": "Return of the Bull",
     "patch": "4.2",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293840
   },
   {
     "name": "Ushiogi",
@@ -2592,7 +2710,8 @@
     ],
     "unlock": "On the Shoulders of Giants",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293846
   },
   {
     "name": "Vath Deftarm",
@@ -2614,7 +2733,8 @@
     ],
     "unlock": "A Symbiotic Friendship",
     "patch": "3.2",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293813
   },
   {
     "name": "Voracious Vath",
@@ -2636,7 +2756,8 @@
     ],
     "unlock": "Lord of the Hive and Yellow Stones",
     "patch": "3.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293809
   },
   {
     "name": "Vorsaile Heuloix",
@@ -2659,7 +2780,8 @@
     ],
     "unlock": "One of the following quests: Wood's Will Be Done , Till Sea Swallows All , or For Coin and Country",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293787
   },
   {
     "name": "Warsowok",
@@ -2679,7 +2801,8 @@
     ],
     "unlock": "A Leaking Workpot",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293890
   },
   {
     "name": "Wawalago",
@@ -2700,7 +2823,8 @@
     ],
     "unlock": "Players may not challenge Wawalago if they have unlocked but not completed his series of Fisher Quests , beginning with the level 60 quest Whither Wawalago Wanders and ending with Farewell, and Thanks for the Fish at level 70.",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293797
   },
   {
     "name": "Wopli",
@@ -2720,7 +2844,8 @@
     ],
     "unlock": "Knowing the Pelupelu",
     "patch": "7.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293889
   },
   {
     "name": "Worldly Imperial",
@@ -2740,7 +2865,8 @@
     ],
     "unlock": "Strange Bedfellows",
     "patch": "6.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293876
   },
   {
     "name": "Wymond",
@@ -2761,7 +2887,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293768
   },
   {
     "name": "Wyra \"Greenhands\" Lyehga",
@@ -2782,7 +2909,8 @@
     ],
     "unlock": "",
     "patch": "3.4",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293820
   },
   {
     "name": "Xiisal Ja",
@@ -2803,7 +2931,8 @@
     ],
     "unlock": "A Dream Realized",
     "patch": "7.51",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293905
   },
   {
     "name": "Yayake",
@@ -2825,7 +2954,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293798
   },
   {
     "name": "Yellow Moon",
@@ -2846,7 +2976,8 @@
     ],
     "unlock": "",
     "patch": "2.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293796
   },
   {
     "name": "Ylaire",
@@ -2869,7 +3000,8 @@
     ],
     "unlock": "The Secret of the Twelve",
     "patch": "6.5",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293886
   },
   {
     "name": "Yusui",
@@ -2889,6 +3021,7 @@
     ],
     "unlock": "Boys with Boats",
     "patch": "4.0",
-    "deck": null
+    "deck": null,
+    "collect_id": 2293838
   }
 ]
