@@ -6,6 +6,7 @@ let OWNED = new Set();                // owned card ids
 let BEATEN = new Set();               // names of NPCs you have beaten
 let STARTERS = new Set();             // starter card ids (always owned)
 let COLDECKS = {};                    // deck name -> [card names]
+let REG = null;                       // /api/regionaloverview payload (Regional tab)
 
 const G = { state: null, history: [], npc: "", sel: null, analysis: null, rewards: [], autoplay: false };
 const EDIT = { name: "", ids: [] };   // Manage: the deck being edited
@@ -44,11 +45,12 @@ const idsToNames = (ids) => ids.map((id) => CARDS[id].name);
 
 // ---------- views ----------
 function showView(name) {
-  for (const v of ["solver", "manage", "npcs", "game"]) $("view-" + v).hidden = v !== name;
+  for (const v of ["solver", "manage", "npcs", "regional", "game"]) $("view-" + v).hidden = v !== name;
   document.querySelectorAll(".nav-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === name));
   if (name === "manage") renderManage();
   if (name === "solver") renderSolver();
   if (name === "npcs") renderNpcs();
+  if (name === "regional") renderRegional();
 }
 
 // ---------- boot ----------
@@ -205,7 +207,8 @@ async function editRegional(region) {
   const e = regionalEntry(region) || { rules: [] };
   const ans = prompt(
     `Regional rules for ${region}\n` +
-    `Comma-separated, read off the Match Registration screen. Blank clears them.`,
+    `Comma-separated, read off the Match Registration screen. ` +
+    `Blank = None/None (no regional rules today). The Regional tab has chips + Clear.`,
     e.rules.join(", "));
   if (ans === null) return;
   try {
@@ -214,6 +217,186 @@ async function editRegional(region) {
   } catch (err) {
     $("npc-info").textContent = "regional update failed: " + err.message;
   }
+}
+
+// ---------- regional tab ----------
+const REG_WD = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+async function renderRegional() {
+  const board = $("reg-board");
+  try {
+    REG = await (await fetch("/api/regionaloverview")).json();
+  } catch (e) {
+    board.textContent = NO_SERVER;
+    return;
+  }
+  BOOT.regional = REG;                         // keep the Solver tab's inline view in sync
+  $("reg-ruleday").textContent = `— rule-day ${REG.ruleDay}, rolls 15:00 UTC`;
+  renderRegToday();
+  renderRegBoard();
+  renderRegPattern();
+  renderRegHistory();
+}
+
+function renderRegToday() {
+  const box = $("reg-today");
+  box.innerHTML = "";
+  const miss = (REG.today && REG.today.missing) || [];
+  if (!miss.length) {
+    box.textContent = "every region logged for this rule-day ✓";
+    return;
+  }
+  box.appendChild(h("span", null, `still to check today (${miss.length}): `));
+  box.appendChild(h("strong", null, miss.join(", ")));
+}
+
+function renderRegBoard() {
+  const board = $("reg-board");
+  board.innerHTML = "";
+  for (const region of REG.regions) {
+    const cur = (REG.current || {})[region] || { rules: [], date: null, stale: true };
+    const row = h("div", "reg-row");
+
+    row.appendChild(h("div", "reg-name", region));
+
+    const rules = h("div", "reg-rules");
+    if (cur.rules.length) {
+      cur.rules.forEach((r) => rules.appendChild(h("span", "reg-tag", r)));
+    } else if (cur.date) {
+      rules.appendChild(h("span", "reg-tag empty", "None / None"));
+    } else {
+      rules.appendChild(h("span", "reg-unset", "not recorded"));
+    }
+    row.appendChild(rules);
+
+    const when = h("div", "reg-when");
+    if (cur.date) {
+      when.textContent = cur.stale ? `${cur.date} · stale` : cur.date;
+      if (cur.stale) when.classList.add("stale");
+    }
+    row.appendChild(when);
+
+    const edit = h("div", "reg-edit");
+    edit.hidden = true;
+    const toggle = h("button", "linklike", "edit");
+    toggle.type = "button";
+    toggle.addEventListener("click", () => { edit.hidden = !edit.hidden; });
+    row.appendChild(toggle);
+
+    const picked = new Set(cur.rules);
+    const chips = h("div", "reg-chips");
+    (REG.vocab || []).forEach((name) => {
+      const c = h("button", "reg-chip" + (picked.has(name) ? " on" : ""), name);
+      c.type = "button";
+      c.addEventListener("click", () => {
+        if (picked.has(name)) picked.delete(name); else picked.add(name);
+        c.classList.toggle("on");
+      });
+      chips.appendChild(c);
+    });
+    edit.appendChild(chips);
+
+    const acts = h("div", "reg-acts");
+    const save = h("button", "primary", "Save");
+    save.type = "button";
+    save.addEventListener("click", () => saveRegional(region, [...picked]));
+    const none = h("button", "ghost", "None / None");
+    none.type = "button";
+    none.addEventListener("click", () => saveRegional(region, []));
+    const clr = h("button", "ghost", "Clear");
+    clr.type = "button";
+    clr.addEventListener("click", () => saveRegional(region, null));
+    acts.appendChild(save); acts.appendChild(none); acts.appendChild(clr);
+    edit.appendChild(acts);
+
+    row.appendChild(edit);
+    board.appendChild(row);
+  }
+}
+
+async function saveRegional(region, rules) {
+  // rules: array to record ([] = a real None/None reading); null = forget the region
+  try {
+    REG = await post("/api/regional", rules === null ? { region, clear: true } : { region, rules });
+    BOOT.regional = REG;
+    $("reg-ruleday").textContent = `— rule-day ${REG.ruleDay}, rolls 15:00 UTC`;
+    renderRegToday();
+    renderRegBoard();
+    renderRegPattern();
+    renderRegHistory();
+  } catch (err) {
+    $("reg-today").textContent = "regional update failed: " + err.message;
+  }
+}
+
+function renderRegPattern() {
+  const box = $("reg-pattern");
+  box.innerHTML = "";
+  const p = REG.pattern || {};
+  if (!p.observations) { box.textContent = "no observations logged yet."; return; }
+
+  box.appendChild(h("p", "reg-sub", `${p.observations} observation(s), ${p.ruleDays} rule-day(s)`
+    + (p.span ? ` (${p.span[0]} to ${p.span[1]})` : "") + `, ${p.regions} region(s)`));
+
+  const regs = Object.keys(p.frequency || {}).sort();
+  box.appendChild(h("div", "reg-sub2", "per-region rule frequency"));
+  if (!regs.length) box.appendChild(h("div", "hint", "—"));
+  regs.forEach((r) => {
+    const fr = p.frequency[r];
+    const seen = fr.counts.map(([rule, c]) => `${rule} ×${c}`).join(", ") || "(none)";
+    const line = h("div", "reg-freq");
+    line.appendChild(h("span", "reg-freq-name", r));
+    line.appendChild(h("span", null, seen));
+    if (fr.days < p.minDaysPerRegion) {
+      line.appendChild(h("span", "reg-caveat", ` (only ${fr.days} day(s) — not enough to read)`));
+    }
+    box.appendChild(line);
+  });
+
+  const rep = p.repeat || { same: 0, total: 0 };
+  box.appendChild(h("div", "reg-sub2", "does a region keep yesterday's rules?"));
+  box.appendChild(h("div", null, rep.total < p.minPairs
+    ? `${rep.total} back-to-back day pair(s) so far — need ${p.minPairs}+ before this means anything`
+      + (rep.total ? ` (repeated ${rep.same} of ${rep.total})` : "")
+    : `repeated ${rep.same}/${rep.total} = ${Math.round(100 * rep.same / rep.total)}% of the time`));
+
+  const xr = p.crossRegion || { same: 0, total: 0 };
+  box.appendChild(h("div", "reg-sub2", "do two regions roll the same rules on the same day?"));
+  box.appendChild(h("div", null, !xr.total
+    ? "never logged two regions on one day — do that to test it"
+    : `matched ${xr.same}/${xr.total} region pair(s) compared`
+      + (xr.same === 0 ? "  (if this stays 0, each region rolls independently)" : "")));
+
+  box.appendChild(h("div", "reg-sub2", "by weekday"));
+  let anyWd = false;
+  REG_WD.forEach((name, i) => {
+    const c = (p.weekday && p.weekday[String(i)]) || [];
+    if (!c.length) return;
+    anyWd = true;
+    box.appendChild(h("div", null, `${name}  ` + c.map(([r, n]) => `${r} ×${n}`).join(", ")));
+  });
+  if (!anyWd) box.appendChild(h("div", "hint", "—"));
+
+  const thin = regs.filter((r) => p.frequency[r].days < p.minDaysPerRegion);
+  if (thin.length) {
+    box.appendChild(h("p", "reg-caveat", `note: ${thin.length} region(s) still under `
+      + `${p.minDaysPerRegion} logged days. Frequencies above are indicative only — with a `
+      + `handful of samples any ruleset can look 'favoured' by chance.`));
+  }
+}
+
+function renderRegHistory() {
+  const box = $("reg-history");
+  box.innerHTML = "";
+  const rows = (REG.history || []).slice().reverse();
+  if (!rows.length) { box.textContent = "no observations logged yet."; return; }
+  rows.forEach((rec) => {
+    const line = h("div", "reg-hrow");
+    line.appendChild(h("span", "reg-hday", `${rec.day} ${rec.weekday}`));
+    line.appendChild(h("span", "reg-hreg", rec.region));
+    line.appendChild(h("span", null, rec.rules.join(", ") || "(none)"));
+    box.appendChild(line);
+  });
 }
 
 function npcPayload() {

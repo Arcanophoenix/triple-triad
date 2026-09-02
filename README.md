@@ -188,12 +188,16 @@ built to answer: does a region ever keep yesterday's rules, and do two regions
 ever roll the same rules on the same day (i.e. one global roll or one per
 region)?
 
-The GUI shows the selected NPC's region and its regional rules under the opponent
-box with an inline **edit**. Entries older than the last daily reset are flagged
-stale. `zone -> region` grouping lives in `tt/regions.py` (best-effort - split a
-region there if two of its NPCs show different regionals); the Gold Saucer and a
-few other spots are marked regional-immune. `--no-regional` on the CLIs (and the
-Rules-override field in the GUI) bypasses regional rules entirely.
+The GUI's **Regional** tab is the whole `tt-cli regional` surface: every region
+with its recorded rules (chips to set them, **None / None** for a blank screen,
+**Clear** to forget), what's still unread for the current rule-day, the pattern
+summary, and the observation log. The Solver tab also shows the selected NPC's
+region and rules inline under the opponent box. Entries older than the last daily
+reset are flagged stale. `zone -> region` grouping lives in `tt/regions.py`
+(best-effort - split a region there if two of its NPCs show different regionals);
+the Gold Saucer and a few other spots are marked regional-immune. `--no-regional`
+on the CLIs (and the Rules-override field in the GUI) bypasses regional rules
+entirely.
 
 ## Solving
 
@@ -223,7 +227,7 @@ branching - a ~20x faster search (opening solves drop to well under a second).
 ./tt-cli gui 9000     # different port
 ```
 
-Three tabs, switched from the top nav. Card portraits come from the saved ARR:
+Four tabs, switched from the top nav. Card portraits come from the saved ARR:
 Triple Triad page (wiki icons as fallback); the board frame is stitched from
 `reference/*.webp`.
 
@@ -239,6 +243,12 @@ export in one go (cards owned come along too). Set **Story progress** to hide
 NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
 unbeaten reachable ones by how comfortably the solver says you take them (a quick
 cautious estimate - `tt-cli difficulty --challenge` is the thorough version).
+
+**Regional:** every region's current regional rules, set with rule chips (or
+**None / None** for a blank screen, **Clear** to forget). Shows what's still
+unread for today's rule-day (regionals roll 15:00 UTC), the recent observation
+log, and the pattern summary - each figure carrying its own sample size, since a
+thin log will happily invent a favourite.
 
 **Solver:** type the NPC (its recorded deck loads and is shown). Pick one of your
 saved decks, or

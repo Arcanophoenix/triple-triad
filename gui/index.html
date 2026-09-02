@@ -13,6 +13,7 @@
   <button class="nav-btn" data-view="solver">Solver</button>
   <button class="nav-btn" data-view="manage">Manage decks</button>
   <button class="nav-btn" data-view="npcs">NPCs</button>
+  <button class="nav-btn" data-view="regional">Regional</button>
 </nav>
 
 <datalist id="npclist"></datalist>
@@ -113,6 +114,27 @@
       </div>
       <div class="npc-msg hint" id="npc-msg"></div>
       <div class="picker" id="npc-picker"></div>
+    </div>
+  </section>
+
+  <!-- ============ REGIONAL ============ -->
+  <section id="view-regional" class="view" hidden>
+    <div class="panel">
+      <h2>Regional rules <span class="hint inl" id="reg-ruleday"></span></h2>
+      <p class="hint">Regional rules vary by area and reroll daily at 15:00&nbsp;UTC.
+        Read them off the in-game Match Registration screen (the &ldquo;Regional
+        Rules&rdquo; row) and record them here &mdash; the solver unions them onto
+        each NPC's match rules.</p>
+      <div class="reg-today hint" id="reg-today"></div>
+      <div class="reg-board" id="reg-board"></div>
+      <details class="reg-details" id="reg-pattern-wrap">
+        <summary>Pattern so far</summary>
+        <div id="reg-pattern"></div>
+      </details>
+      <details class="reg-details" id="reg-history-wrap">
+        <summary>Recent observations</summary>
+        <div id="reg-history"></div>
+      </details>
     </div>
   </section>
 

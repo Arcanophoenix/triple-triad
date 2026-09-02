@@ -203,6 +203,57 @@ button.linklike {
 .exp-tag.exp-EW  { background: #45356b; color: #ded0f4; }
 .exp-tag.exp-DT  { background: #2c5a56; color: #c4e8e4; }
 
+/* ---- Regional tab ---- */
+#view-regional .panel { width: 760px; max-width: 100%; }
+.reg-today { margin: 4px 0 12px; font-size: 12px; }
+.reg-today strong { color: #e0a458; font-weight: 600; }
+
+.reg-board { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; }
+.reg-row {
+  display: grid; grid-template-columns: 190px 1fr 130px auto; gap: 10px; align-items: start;
+  padding: 8px 12px; border-bottom: 1px solid var(--line);
+}
+.reg-row:last-child { border-bottom: 0; }
+.reg-name { font-weight: 600; color: #d8c8f0; font-size: 13px; padding-top: 3px; }
+.reg-rules { display: flex; flex-wrap: wrap; gap: 4px; }
+.reg-tag {
+  font-size: 11px; padding: 2px 7px; border-radius: 4px;
+  background: #43375c; color: #e8dff6;
+}
+.reg-tag.empty { background: transparent; border: 1px dashed #4a3c60; color: #8f83a6; }
+.reg-unset { font-size: 11px; color: #6f6486; padding-top: 2px; }
+.reg-when { font-size: 11px; color: #8f83a6; text-align: right; padding-top: 3px; }
+.reg-when.stale { color: #e0a458; }
+
+.reg-edit { grid-column: 1 / -1; margin-top: 8px; }
+.reg-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.reg-chip {
+  padding: 4px 10px; font-size: 11px; font-weight: 600;
+  background: #2b2340; color: #b7a9cc; border: 1px solid #43375c; border-radius: 999px; cursor: pointer;
+}
+.reg-chip:hover { background: #362c49; }
+.reg-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.reg-acts { display: flex; gap: 6px; margin-top: 8px; }
+.reg-acts button { padding: 6px 12px; font-size: 12px; }
+
+.reg-details { width: 100%; margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; }
+.reg-details summary { cursor: pointer; font-size: 12px; color: #b3a6c6; font-weight: 600; }
+.reg-details > div { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.7; }
+.reg-sub { color: #d8d0e6; }
+.reg-sub2 { color: #b3a6c6; font-weight: 600; margin-top: 10px; }
+.reg-freq { display: flex; flex-wrap: wrap; gap: 6px; }
+.reg-freq-name { display: inline-block; min-width: 180px; color: #cfc4e4; }
+.reg-caveat { color: #8f7f6a; font-style: italic; }
+.reg-hrow { display: grid; grid-template-columns: 130px 190px 1fr; gap: 8px; }
+.reg-hday { color: #8f83a6; font-variant-numeric: tabular-nums; }
+.reg-hreg { color: #cfc4e4; }
+
+@media (max-width: 720px) {
+  .reg-row { grid-template-columns: 1fr auto; }
+  .reg-when { text-align: left; }
+  .reg-hrow { grid-template-columns: 1fr; }
+}
+
 /* ---- game ---- */
 #view-game { gap: 10px; }
 .unseen {

@@ -177,3 +177,66 @@ def test_suggest_skips_beaten_and_unreachable(_isolated, monkeypatch):
     assert "Maisenta" not in cands and "Roger" not in cands
     assert "Aiglephine" not in cands           # patch 6.0, beyond ARR
     assert "Triple Triad Master" in cands      # ARR, unbeaten, has a deck
+
+
+# --- Regional tab: overview payload + the None/None-vs-clear fix -----------
+
+class _Cap(gui.Handler):
+    """A Handler that captures _send instead of writing to a socket."""
+    def __init__(self):                 # skip BaseHTTPRequestHandler's socket setup
+        self.command = "POST"
+        self.sent = None
+
+    def _send(self, code, body, ctype="application/json"):
+        self.sent = (code, body)
+
+
+@pytest.fixture
+def _regional_isolated(_isolated, monkeypatch):
+    # set_regional/load_regional touch BUNDLED_DATA/regional.json when not frozen;
+    # _isolated already points USER_DIR (the observation log) at tmp_path.
+    monkeypatch.setattr("tt.paths.BUNDLED_DATA", _isolated)
+    return _isolated
+
+
+def test_regional_overview_shape_and_pattern(_regional_isolated):
+    from tt.regions import set_regional
+    set_regional("Thanalan", ["Same"], on="2026-09-01")
+    set_regional("La Noscea", ["Plus", "Roulette"], on="2026-09-01")
+
+    ov = gui._regional_overview()
+    assert ov["regions"][0] == "La Noscea"
+    assert ov["vocab"] and "Roulette" in ov["vocab"]
+    assert ov["current"]["Thanalan"]["rules"] == ["Same"]
+    assert ov["pattern"]["observations"] == 2
+    assert ov["pattern"]["frequency"]["La Noscea"]["counts"]        # Counter.most_common list
+    assert ov["pattern"]["crossRegion"]["total"] == 1              # two regions, one day
+    assert ov["pattern"]["crossRegion"]["same"] == 0               # different rules
+    # nothing was logged under *today's* rule-day, so every region is still to check
+    assert set(ov["today"]["missing"]) == set(ov["regions"])
+    assert ov["history"][-1]["region"] == "La Noscea"
+
+
+def test_set_regional_endpoint_logs_none_none_as_a_real_reading(_regional_isolated):
+    """The GUI used to send an empty ruleset to clear_regional, so a None/None
+    screen could never be recorded.  It must now be logged like `--none`."""
+    from tt.regions import load_history, load_regional
+
+    h = _Cap()
+    h._set_regional({"region": "The Black Shroud", "rules": []})   # screen showed None/None
+    assert h.sent[0] == 200
+    assert load_regional()["regions"]["The Black Shroud"]["rules"] == []   # an entry, not absent
+    logged = [r for r in load_history() if r["region"] == "The Black Shroud"]
+    assert logged and logged[-1]["rules"] == []
+    assert "The Black Shroud" in h.sent[1]["today"]["logged"]      # counts as checked today
+
+
+def test_set_regional_endpoint_clear_forgets_the_region(_regional_isolated):
+    from tt.regions import load_regional
+    gui.set_regional("Gyr Abania", ["Reverse"])
+    assert "Gyr Abania" in load_regional()["regions"]
+
+    h = _Cap()
+    h._set_regional({"region": "Gyr Abania", "clear": True})
+    assert "Gyr Abania" not in load_regional()["regions"]         # pointer dropped
+    assert h.sent[1]["current"]["Gyr Abania"]["rules"] == []

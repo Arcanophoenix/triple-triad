@@ -18,6 +18,7 @@ import sys
 import time
 import urllib.parse
 import webbrowser
+from datetime import date
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
@@ -34,8 +35,10 @@ from tt.progress import (  # noqa: E402
 )
 from tt.recommend import recommend  # noqa: E402
 from tt.regions import (  # noqa: E402
-    REGIONS, clear_regional, effective_rules, is_stale, load_regional,
-    region_for_npc, set_regional,
+    FIXED, MIN_CONSECUTIVE_PAIRS, MIN_DAYS_PER_REGION, REGIONS, by_region,
+    clear_regional, cross_region_agreement, effective_rules, is_stale,
+    load_history, load_regional, observations, region_for_npc, repeat_rate,
+    rule_day, rule_frequency, seed_history, set_regional, weekday_counts,
 )
 from tt.solver import analyze, apply  # noqa: E402
 
@@ -163,6 +166,65 @@ def _regional_payload() -> dict:
                         "date": (saved.get(r) or {}).get("date"),
                         "stale": is_stale((saved.get(r) or {}).get("date"))}
                     for r in REGIONS},
+    }
+
+
+# The regional-rules pool the game rolls from (Combo is always on, not a toggle;
+# Same Wall is part of Same, not a standalone regional).  Offered as quick chips
+# on the Regional tab; the server still accepts any valid rule name.
+REGIONAL_RULE_VOCAB = [
+    "All Open", "Three Open", "Same", "Plus", "Sudden Death", "Order", "Chaos",
+    "Reverse", "Fallen Ace", "Ascension", "Descension", "Swap", "Roulette",
+]
+
+_WD = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+
+def _regional_overview() -> dict:
+    """Everything the Regional tab renders: the per-region board (from
+    `_regional_payload`), what is still unlogged for the current rule-day, the
+    recent observation log, and the pattern analysis.  Every figure ships with
+    its own sample size so a thin log cannot read as a finding."""
+    seed_history()                       # fold any pre-log regional.json days in
+    obs = observations()
+    today = rule_day().isoformat()
+    logged = sorted(r for (d, r) in obs if d == today)
+    rows_by_region = by_region(obs)
+    wdc = weekday_counts(obs)
+    days = sorted({d for d, _ in obs})
+    rep_same, rep_total = repeat_rate(obs)
+    xr_same, xr_total = cross_region_agreement(obs)
+
+    return {
+        **_regional_payload(),
+        "fixedLabel": FIXED,
+        "vocab": REGIONAL_RULE_VOCAB,
+        "ruleDay": today,
+        "today": {
+            "logged": logged,
+            "missing": [r for r in REGIONS if r not in logged],
+            "rules": {r: obs[(today, r)] for r in logged},
+        },
+        "history": [{"day": rec["day"],
+                     "weekday": _WD[date.fromisoformat(rec["day"]).weekday()],
+                     "region": rec["region"],
+                     "rules": list(rec.get("rules") or [])}
+                    for rec in load_history()[-30:]],
+        "pattern": {
+            "observations": len(obs),
+            "ruleDays": len(days),
+            "span": [days[0], days[-1]] if days else None,
+            "regions": len(rows_by_region),
+            "frequency": {r: {"counts": c.most_common(),
+                              "days": len(rows_by_region.get(r, []))}
+                          for r, c in rule_frequency(obs).items()},
+            "repeat": {"same": rep_same, "total": rep_total},
+            "crossRegion": {"same": xr_same, "total": xr_total},
+            "weekday": {str(i): (list(wdc[i].most_common()) if i in wdc else [])
+                        for i in range(7)},
+            "minDaysPerRegion": MIN_DAYS_PER_REGION,
+            "minPairs": MIN_CONSECUTIVE_PAIRS,
+        },
     }
 
 
@@ -318,6 +380,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             })
         if path == "/api/regional":
             return self._send(200, _regional_payload())
+        if path == "/api/regionaloverview":
+            return self._send(200, _regional_overview())
         return self._send(404, {"error": "not found"})
 
     def do_POST(self):
@@ -367,15 +431,21 @@ class Handler(http.server.BaseHTTPRequestHandler):
         return RuleSet.from_names([r.strip() for r in names if r.strip()])
 
     def _set_regional(self, body):
+        """Record (or clear) a region's rules.
+
+        `clear: true` or `rules: null` forgets the region.  An *empty* `rules`
+        list is a real reading - the screen showed None/None - and is logged as
+        such, not treated as "not recorded" (matches `tt-cli regional --none`).
+        """
         region = (body.get("region") or "").strip()
-        raw = body.get("rules", [])
-        rules = [r.strip() for r in (raw.split(",") if isinstance(raw, str) else raw)
-                 if r and r.strip()]
-        if body.get("clear") or not rules:
+        raw = body.get("rules", None)
+        if body.get("clear") or raw is None:
             clear_regional(region)
         else:
-            set_regional(region, rules)          # validates region + rule names
-        return self._send(200, _regional_payload())
+            rules = [r.strip() for r in (raw.split(",") if isinstance(raw, str) else raw)
+                     if r and r.strip()]
+            set_regional(region, rules)           # validates region + rule names; [] is None/None
+        return self._send(200, _regional_overview())
 
     @staticmethod
     def _npc_deck_names(body, entry, rec):
