@@ -12,12 +12,15 @@ from __future__ import annotations
 import http.server
 import itertools
 import json
+import multiprocessing
+import os
 import pathlib
 import socketserver
 import sys
 import time
 import urllib.parse
 import webbrowser
+from concurrent.futures import ProcessPoolExecutor, wait
 from datetime import date
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
@@ -64,8 +67,12 @@ _PARTIAL_BUDGET_S = 25   # wall-clock cap for an exact worst-case-over-unknowns 
 _SUGGEST_SCREEN = dict(shortlist_n=14, cand_cap=300, screen_tail=4, exact_k=0)
 _SUGGEST_ACCURATE = dict(shortlist_n=14, cand_cap=300, screen_tail=6, exact_k=0)
 _SUGGEST_BAND = -6.0            # screen values >= this could still be winnable
-_SUGGEST_RECHECK_BUDGET_S = 40.0
+_SUGGEST_RECHECK_BUDGET_S = 30.0
 _SUGGEST_SLOW_RULES = {"Chaos", "Roulette", "Swap"}   # these deepen or fan the solve a lot
+# Chaos deepens the endgame tail and Swap doubles the solve per exchange, so an
+# accurate re-check of those runs into minutes - too slow to do while the button
+# spins.  They keep the (bias-aware) screen value, flagged `screen`.
+_SUGGEST_NO_RECHECK = {"Chaos", "Swap"}
 _SUGGEST_BUCKET_RANK = {"win": 0, "likely": 1, "close": 2, "notyet": 3, "unknown": 4}
 
 
@@ -326,6 +333,83 @@ def _suggest_bucket(edge, kind) -> str:
                 else "close" if edge >= -1 else "notyet")
     return ("win" if edge >= 0 else "likely" if edge >= _SUGGEST_BAND
             else "notyet")
+
+
+_SUGGEST_CFG = {"screen": _SUGGEST_SCREEN, "accurate": _SUGGEST_ACCURATE}
+
+
+def _deck_edge(npc, entry, pool, cfg):
+    """Worst-case margin for your best owned deck vs this NPC under `cfg`
+    (`_SUGGEST_SCREEN` fast pass / `_SUGGEST_ACCURATE` slow pass); None when it
+    cannot be scored (unknown deck shape, or fewer than 5 owned cards)."""
+    if len(pool) < 5:
+        return None
+    rnames = entry.get("rules") or npc.get("rules") or []
+    rules = RuleSet.from_names([r.strip() for r in rnames if r.strip()])
+    if entry.get("cards"):
+        arg = [resolve(x).id for x in entry["cards"]]
+    elif is_variable_deck(entry):
+        arg = [[resolve(x).id for x in o] for o in npc_deck_options(entry)]
+    else:
+        return None
+    try:
+        rec = recommend(arg, rules, pool, opp="greedy", top=1, swaps=False,
+                        workers=1, **cfg)      # one NPC per task; recommend stays serial
+    except (ValueError, KeyError):
+        return None
+    return rec.best.worst
+
+
+def _suggest_edge_job(job):
+    npc, entry, pool, cfg_key = job
+    return npc["name"], _deck_edge(npc, entry, list(pool), _SUGGEST_CFG[cfg_key])
+
+
+def _suggest_edges(jobs, cfg_key, *, workers=0, timeout=None):
+    """``{npc name: edge}`` for ``jobs`` (each ``(npc, entry, pool)``) scored
+    under ``cfg_key``.
+
+    The screen/solve of one NPC is independent of the rest, so this fans across
+    a fork pool (``workers=1`` forces serial; used by the tests).  With
+    ``timeout`` it returns whatever finished inside that wall-clock window - the
+    rest are simply absent from the map, and a couple of long solves already
+    running when it elapses are left to finish and exit on their own rather than
+    blocking the response.
+    """
+    tagged = [(npc, entry, pool, cfg_key) for npc, entry, pool in jobs]
+    if not tagged:
+        return {}
+    nw = 1 if workers == 1 else max(1, min(len(tagged), (os.cpu_count() or 2) // 2))
+
+    def _serial():
+        out, deadline = {}, (None if timeout is None else time.monotonic() + timeout)
+        for j in tagged:
+            if deadline is not None and time.monotonic() >= deadline:
+                break
+            name, edge = _suggest_edge_job(j)
+            out[name] = edge
+        return out
+
+    if len(tagged) <= 2 or nw <= 1:
+        return _serial()
+    try:
+        ex = ProcessPoolExecutor(max_workers=nw,
+                                 mp_context=multiprocessing.get_context("fork"))
+    except (OSError, ValueError):
+        return _serial()
+    try:
+        futs = [ex.submit(_suggest_edge_job, j) for j in tagged]
+        done, _pending = wait(futs, timeout=timeout)
+        out = {}
+        for f in done:
+            try:
+                name, edge = f.result()
+                out[name] = edge
+            except Exception:                  # a worker raised; drop that NPC
+                pass
+        return out
+    finally:
+        ex.shutdown(wait=False, cancel_futures=True)
 
 
 def _partial_state(st_like: dict, board, hand0, hand1, pool, to_move, opp) -> dict:
@@ -826,13 +910,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         Every candidate gets the cheap screen first (fast, but biased LOW by ~4
         and never optimistic).  The rows that screen near or below zero - where
         that bias could be hiding a winnable match - are then re-scored with the
-        accurate config, cheapest rulesets first, until a wall-clock budget runs
-        out; the rest keep the screen value, flagged as such.  `body["fast"]`
-        skips the re-score; `tt-cli difficulty --challenge` is the full version.
+        accurate config, cheapest rulesets first, within a wall-clock budget; the
+        rest keep the screen value, flagged as such.  Both passes fan across
+        processes (one NPC per task).  `body["fast"]` skips the re-score;
+        `tt-cli difficulty --challenge` is the full, unbounded version.
         """
         limit = max(1, min(int(body.get("limit") or 10), 25))
         fast = bool(body.get("fast"))
         budget = float(body.get("budget") or _SUGGEST_RECHECK_BUDGET_S)
+        workers = int(body.get("workers") or 0)
         progress = load_progress()
         beaten = load_beaten()
         decks = load_decks()
@@ -847,26 +933,29 @@ class Handler(http.server.BaseHTTPRequestHandler):
             cands.append(n)
         cands.sort(key=lambda n: (n.get("mgp_win") or 0, n["name"]))
         considered = len(cands)
+        picks = cands[:limit]
+        entries = {n["name"]: decks[n["name"]] for n in picks}
 
-        rows = []
-        for n in cands[:limit]:
-            entry = decks[n["name"]]
-            cheap = self._deck_edge(n, entry, pool, _SUGGEST_SCREEN)
-            rows.append({"npc": n, "entry": entry, "edge": cheap,
-                         "kind": None if cheap is None else "screen"})
+        screen = _suggest_edges([(n, entries[n["name"]], pool) for n in picks],
+                                "screen", workers=workers)
+        rows = [{"npc": n, "entry": entries[n["name"]],
+                 "edge": screen.get(n["name"]),
+                 "kind": None if screen.get(n["name"]) is None else "screen"}
+                for n in picks]
 
         rechecked = 0
         if not fast and len(pool) >= 5:
             band = [r for r in rows
-                    if r["edge"] is not None and _SUGGEST_BAND <= r["edge"] < 6.0]
+                    if r["edge"] is not None and _SUGGEST_BAND <= r["edge"] < 6.0
+                    and not self._too_slow_to_recheck(r["npc"], r["entry"])]
             band.sort(key=lambda r: (self._recheck_cost(r["npc"], r["entry"]), -r["edge"]))
-            deadline = time.monotonic() + max(0.0, budget)
+            acc = _suggest_edges([(r["npc"], r["entry"], pool) for r in band],
+                                 "accurate", workers=workers,
+                                 timeout=max(0.0, budget))
             for r in band:
-                if time.monotonic() >= deadline:
-                    break
-                acc = self._deck_edge(r["npc"], r["entry"], pool, _SUGGEST_ACCURATE)
-                if acc is not None:
-                    r["edge"], r["kind"] = acc, "accurate"
+                v = acc.get(r["npc"]["name"])
+                if v is not None:
+                    r["edge"], r["kind"] = v, "accurate"
                     rechecked += 1
 
         out = []
@@ -888,33 +977,21 @@ class Handler(http.server.BaseHTTPRequestHandler):
         })
 
     @staticmethod
-    def _recheck_cost(npc, entry) -> int:
+    def _npc_rule_set(npc, entry) -> set:
+        return set(entry.get("rules") or npc.get("rules") or [])
+
+    @classmethod
+    def _recheck_cost(cls, npc, entry) -> int:
         """Cheap proxy for how long an accurate solve of this NPC will take, so
         the budgeted re-score does the quick ones first: Chaos / Roulette / Swap
         each deepen or fan the solve by a large factor."""
-        rs = set(entry.get("rules") or npc.get("rules") or [])
-        return len(rs & _SUGGEST_SLOW_RULES)
+        return len(cls._npc_rule_set(npc, entry) & _SUGGEST_SLOW_RULES)
 
-    @staticmethod
-    def _deck_edge(npc, entry, pool, cfg):
-        """Worst-case margin for your best owned deck vs this NPC, under `cfg`
-        (`_SUGGEST_SCREEN` for the fast pass, `_SUGGEST_ACCURATE` for the slow)."""
-        if len(pool) < 5:
-            return None
-        rnames = entry.get("rules") or npc.get("rules") or []
-        rules = RuleSet.from_names([r.strip() for r in rnames if r.strip()])
-        if entry.get("cards"):
-            arg = [resolve(x).id for x in entry["cards"]]
-        elif is_variable_deck(entry):
-            arg = [[resolve(x).id for x in o] for o in npc_deck_options(entry)]
-        else:
-            return None
-        try:
-            rec = recommend(arg, rules, pool, opp="greedy", top=1, swaps=False,
-                            workers=1, **cfg)
-        except (ValueError, KeyError):
-            return None
-        return rec.best.worst
+    @classmethod
+    def _too_slow_to_recheck(cls, npc, entry) -> bool:
+        """Chaos / Swap put an accurate solve into the minutes - not worth
+        starting for a live suggestion; the screen value stands."""
+        return bool(cls._npc_rule_set(npc, entry) & _SUGGEST_NO_RECHECK)
 
     def _recommend(self, body):
         rec_npc = find_npc(body["npc"])

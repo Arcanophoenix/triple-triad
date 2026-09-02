@@ -244,9 +244,11 @@ NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
 unbeaten reachable ones by how comfortably you take them: a fast screen (which
 runs ~4 low and never optimistic, so a small negative is still a win), then an
 exact re-check of the borderline rows within a wall-clock budget, cheapest
-rulesets first. Rows are labelled `winnable / likely win / close / not yet` and
-tagged `screen` where the budget didn't reach them. `tt-cli difficulty
---challenge` re-checks the whole roster with no time limit.
+rulesets first. Both passes fan across processes. Rows are labelled `winnable /
+likely win / close / not yet` and tagged `screen` where the value is the
+estimate - the budget didn't reach it, or (Chaos / Swap) an exact solve would
+take minutes. `tt-cli difficulty --challenge` re-checks the whole roster with no
+time limit.
 
 **Regional:** every region's current regional rules, set with rule chips (or
 **None / None** for a blank screen, **Clear** to forget). Shows what's still

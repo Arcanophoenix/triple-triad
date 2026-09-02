@@ -1361,7 +1361,8 @@ async function suggestNext() {
     const rc = r.rechecked ? `; ${r.rechecked} re-checked exactly` : "";
     if (r.suggestions.length) out.appendChild(h("div", "pick-more",
       `best of ${r.consideredOf} unbeaten NPC(s)${prog}${rc}. `
-      + `“screen” margins run ~4 low — a small negative is usually still a win.`));
+      + `“screen” margins run ~4 low and never high — a small negative is usually `
+      + `still a win; Chaos/Swap stay on the screen value (too slow to solve live).`));
     for (const s of r.suggestions) {
       const row = h("div", "pick-row");
       const b = SUGGEST_BUCKET[s.bucket] || SUGGEST_BUCKET.unknown;

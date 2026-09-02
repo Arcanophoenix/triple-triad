@@ -267,6 +267,14 @@ def test_recheck_cost_orders_fast_rulesets_first():
     assert cost({"rules": ["Swap"]}, {}) == 1          # falls back to the npc's rules
 
 
+def test_chaos_and_swap_are_skipped_by_the_live_recheck():
+    slow = gui.Handler._too_slow_to_recheck
+    assert slow({}, {"rules": ["Chaos"]})
+    assert slow({}, {"rules": ["Swap", "Same"]})
+    assert not slow({}, {"rules": ["Roulette", "Plus"]})   # slow-ish but still tractable
+    assert not slow({"rules": ["Order"]}, {})
+
+
 def test_suggest_rechecks_the_borderline_band_and_sorts_by_bucket(_isolated, monkeypatch):
     monkeypatch.setattr(gui, "_owned_ids", lambda: [1, 2, 3, 4, 5])
 
@@ -274,7 +282,10 @@ def test_suggest_rechecks_the_borderline_band_and_sorts_by_bucket(_isolated, mon
     decks = load_decks()
     order = sorted((n for n in load_npcs() if n["name"] in decks),
                    key=lambda n: (n.get("mgp_win") or 0, n["name"]))
-    picks = [n["name"] for n in order[:3]]
+    # three candidates the live re-check will actually attempt (no Chaos/Swap)
+    tractable = [n["name"] for n in order
+                 if not gui.Handler._too_slow_to_recheck(n, decks[n["name"]])]
+    picks = tractable[:3]
     canned = dict(zip(picks, [-3.0, 0.0, -7.0]))       # in-band, in-band, below the band
 
     def fake_edge(npc, entry, pool, cfg):
@@ -282,10 +293,10 @@ def test_suggest_rechecks_the_borderline_band_and_sorts_by_bucket(_isolated, mon
         if v is None:
             return 8.0                                 # everyone else: clear win, no re-check
         return v + 5.0 if cfg is gui._SUGGEST_ACCURATE else v
-    monkeypatch.setattr(gui.Handler, "_deck_edge", staticmethod(fake_edge))
+    monkeypatch.setattr(gui, "_deck_edge", fake_edge)
 
     h = _Cap()
-    h._suggest({"limit": 12, "budget": 999})
+    h._suggest({"limit": 12, "budget": 999, "workers": 1})
     res = h.sent[1]
     rows = {r["name"]: r for r in res["suggestions"]}
 
@@ -299,10 +310,9 @@ def test_suggest_rechecks_the_borderline_band_and_sorts_by_bucket(_isolated, mon
 
 def test_suggest_fast_skips_the_accurate_pass(_isolated, monkeypatch):
     monkeypatch.setattr(gui, "_owned_ids", lambda: [1, 2, 3, 4, 5])
-    monkeypatch.setattr(gui.Handler, "_deck_edge",
-                        staticmethod(lambda npc, entry, pool, cfg: -1.0))
+    monkeypatch.setattr(gui, "_deck_edge", lambda npc, entry, pool, cfg: -1.0)
     h = _Cap()
-    h._suggest({"limit": 6, "fast": True})
+    h._suggest({"limit": 6, "fast": True, "workers": 1})
     res = h.sent[1]
     assert res["rechecked"] == 0
     assert all(r["edgeKind"] == "screen" for r in res["suggestions"])
