@@ -223,7 +223,7 @@ branching - a ~20x faster search (opening solves drop to well under a second).
 ./tt-cli gui 9000     # different port
 ```
 
-Two modes, switched from the top nav. Card portraits come from the saved ARR:
+Three tabs, switched from the top nav. Card portraits come from the saved ARR:
 Triple Triad page (wiki icons as fallback); the board frame is stitched from
 `reference/*.webp`.
 
@@ -232,8 +232,16 @@ checkbox to mark what you own (writes `collection.json`; starters are always
 on). On the left, the deck editor - click a card to add/drop it (max 5, at most
 one 4-5★), name it, `Save`. Saved decks are shared with the CLIs.
 
-**Solver:** type the NPC (a recorded deck loads automatically and is shown;
-otherwise a field appears for their 5 cards). Pick one of your saved decks, or
+**NPCs:** every opponent, filterable by name/zone/rule and by expansion (the
+`ARR HW SB ShB EW DT` chips). Tick who you've beaten, or **Import Collect
+export…** to fill it from an [FFXIV Collect](https://ffxivcollect.com) account
+export in one go (cards owned come along too). Set **Story progress** to hide
+NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
+unbeaten reachable ones by how comfortably the solver says you take them (a quick
+cautious estimate - `tt-cli difficulty --challenge` is the thorough version).
+
+**Solver:** type the NPC (its recorded deck loads and is shown). Pick one of your
+saved decks, or
 hit **Recommend from owned** - an estimate over your owned pool (seconds for a
 small collection, a minute or more for a large one or a many-draw NPC; a live
 progress bar shows the screening pass and, with `refine`, the exact solves that

@@ -28,10 +28,6 @@
       <input id="npc" list="npclist" placeholder="type an NPC name">
       <div id="npc-info" class="hint"></div>
       <div id="regional-info" class="hint regional-info"></div>
-      <div id="npc-deck-wrap" hidden>
-        <label for="npc-deck">Their 5 cards (deck not recorded)</label>
-        <input id="npc-deck" placeholder="Chocobo, Mandragora, Tonberry, Pudding, Spriggan">
-      </div>
 
       <label>Your deck</label>
       <div class="deck-choose">
@@ -92,12 +88,28 @@
   <section id="view-npcs" class="view" hidden>
     <div class="panel">
       <h2>NPCs <span id="npc-count" class="hint inl"></span></h2>
-      <p class="hint">Tick the ones you have beaten. <code>tt-cli import &lt;export.json&gt;</code>
-         fills this in from an FFXIV Collect export.</p>
+      <p class="hint">Tick the ones you have beaten, or import them from an
+         <a href="https://ffxivcollect.com" target="_blank" rel="noreferrer">FFXIV&nbsp;Collect</a>
+         export.</p>
+
+      <div class="npc-toolbar">
+        <label class="filebtn">
+          <input type="file" id="npc-import" accept=".json,application/json" hidden>
+          Import Collect export…
+        </label>
+        <span class="npc-progress">
+          Story progress
+          <select id="npc-progress"><option value="">not set</option></select>
+        </span>
+        <button id="npc-suggest" type="button" class="primary">Suggest who to challenge next</button>
+      </div>
+      <div class="npc-msg hint" id="npc-import-msg"></div>
+      <div class="rec-out" id="npc-suggest-out"></div>
+
+      <div class="exp-filter" id="exp-filter"></div>
       <div class="row">
         <input id="npc-filter" placeholder="filter by name, zone or rule…">
         <label class="inl"><input type="checkbox" id="npc-unbeaten-only"> not beaten yet</label>
-        <label class="inl"><input type="checkbox" id="npc-deck-only"> deck recorded</label>
       </div>
       <div class="npc-msg hint" id="npc-msg"></div>
       <div class="picker" id="npc-picker"></div>

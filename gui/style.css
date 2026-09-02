@@ -158,6 +158,51 @@ button.linklike {
 .save-row input { flex: 1; }
 .save-row button { padding: 7px 12px; }
 
+/* ---- NPCs tab ---- */
+.npc-toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0;
+}
+.npc-progress { font-size: 12px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.npc-progress select { padding: 5px 7px; font-size: 12px; }
+.filebtn {
+  display: inline-flex; align-items: center; padding: 7px 12px; font-size: 12px;
+  background: #362c49; color: #d8d0e6; border: 1px solid #4a3c60; border-radius: 6px; cursor: pointer;
+}
+.filebtn:hover { background: #43375c; }
+
+.exp-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.exp-chip {
+  padding: 5px 11px; font-size: 12px; font-weight: 600; letter-spacing: .3px;
+  background: #2b2340; color: #b7a9cc; border: 1px solid #43375c; border-radius: 999px; cursor: pointer;
+}
+.exp-chip:hover { background: #362c49; }
+.exp-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.exp-chip.locked { opacity: .45; }
+.exp-chip.clear { font-weight: 400; color: #8f83a6; border-style: dashed; }
+
+/* NPC rows carry more columns than the card picker - lay them out with flex */
+#npc-picker .pick-row, #npc-suggest-out .pick-row {
+  display: flex; gap: 8px; align-items: center;
+}
+#npc-picker .pick-row .pk-name, #npc-suggest-out .pick-row .pk-name { flex: 0 0 auto; min-width: 150px; }
+#npc-picker .pick-row .pk-sides:not(:last-child) { flex: 1; text-align: left; color: var(--muted); }
+#npc-suggest-out .pick-row .pk-sides:nth-of-type(1) { flex: 1; text-align: left; }
+#npc-picker .pick-row .pk-stars, #npc-suggest-out .pick-row .pk-stars {
+  color: #c9bce4; font-size: 11px; letter-spacing: 0; flex: 0 0 auto;
+}
+#npc-suggest-out { margin: 8px 0 4px; }
+
+.exp-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .3px; padding: 1px 5px; border-radius: 4px;
+  background: #43375c; color: #d8d0e6; flex: 0 0 auto;
+}
+.exp-tag.exp-ARR { background: #4a5a3c; color: #d7e8c4; }
+.exp-tag.exp-HW  { background: #35506b; color: #cfe4f4; }
+.exp-tag.exp-SB  { background: #6b3a3a; color: #f4d4d4; }
+.exp-tag.exp-ShB { background: #5a4a2c; color: #f0dcae; }
+.exp-tag.exp-EW  { background: #45356b; color: #ded0f4; }
+.exp-tag.exp-DT  { background: #2c5a56; color: #c4e8e4; }
+
 /* ---- game ---- */
 #view-game { gap: 10px; }
 .unseen {

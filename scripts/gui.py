@@ -22,12 +22,16 @@ import webbrowser
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from tt import paths  # noqa: E402
-from tt.collect import load_beaten, set_beaten  # noqa: E402
+from tt.collect import apply_export, load_beaten, set_beaten  # noqa: E402
 from tt.data import (  # noqa: E402
     CARDS, STARTER_CARDS, deck_draw, find_npc, is_variable_deck, load_collection,
     load_decks, load_npcs, npc_deck_options, resolve,
 )
 from tt.model import EMPTY_BOARD, GameState, RuleSet, is_terminal, score_a  # noqa: E402
+from tt.progress import (  # noqa: E402
+    EXPANSIONS, describe as _describe_progress, expansion_of, is_reachable,
+    load_progress, npc_patch, save_progress,
+)
 from tt.recommend import recommend  # noqa: E402
 from tt.regions import (  # noqa: E402
     REGIONS, clear_regional, effective_rules, is_stale, load_regional,
@@ -140,6 +144,13 @@ def _reward_cards(rec: dict) -> list[dict]:
 def _cards_payload() -> dict:
     return {c.id: {"name": c.name, "sides": list(c.sides), "stars": c.stars,
                    "kind": c.kind, "icon": _RAW[c.id]["icon"]} for c in CARDS}
+
+
+def _progress_payload() -> dict:
+    """Current story progress for the front-end: the raw patch number, a label,
+    and the expansion it lands in (so the NPCs tab can pre-tick its filter)."""
+    p = load_progress()
+    return {"value": p, "label": _describe_progress(p), "expansion": expansion_of(p)}
 
 
 def _regional_payload() -> dict:
@@ -293,6 +304,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "npcs": [{"name": n["name"], "rules": n["rules"],
                           "zone": n["location"]["zone"], "hasDeck": n["name"] in recorded,
                           "region": region_for_npc(n), "patch": n.get("patch"),
+                          "expansion": expansion_of(npc_patch(n)),
                           "mgp": n.get("mgp_win") or 0}
                          for n in load_npcs()],
                 "decks": recorded,
@@ -301,6 +313,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "beaten": sorted(load_beaten()),
                 "starterIds": sorted(_STARTER_IDS),
                 "regional": _regional_payload(),
+                "expansions": [e for e, _ in EXPANSIONS],
+                "progress": _progress_payload(),
             })
         if path == "/api/regional":
             return self._send(200, _regional_payload())
@@ -330,6 +344,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return self._set_owned(body)
             if path == "/api/setbeaten":
                 return self._set_beaten(body)
+            if path == "/api/setprogress":
+                return self._set_progress(body)
+            if path == "/api/import":
+                return self._import(body)
+            if path == "/api/suggest":
+                return self._suggest(body)
             if path == "/api/recommend":
                 return self._recommend(body)
             if path == "/api/loggame":
@@ -668,6 +688,95 @@ class Handler(http.server.BaseHTTPRequestHandler):
         name - the same names an FFXIV Collect import writes."""
         npc = find_npc(body["npc"])
         self._send(200, {"beaten": set_beaten(npc["name"], bool(body.get("beaten")))})
+
+    def _set_progress(self, body):
+        """Record story progress (an expansion name, a patch number, or null to
+        clear).  Everything from later content then drops off the NPCs list and
+        the challenge suggestion."""
+        try:
+            value = save_progress(body.get("progress"))
+        except ValueError as e:
+            return self._send(400, {"error": str(e)})
+        self._send(200, _progress_payload() if value is None else {
+            "value": value, "label": _describe_progress(value),
+            "expansion": expansion_of(value)})
+
+    def _import(self, body):
+        """Fold a parsed FFXIV Collect export into the collection.  The browser
+        reads the file and posts its JSON here as {"export": {...}}; merges by
+        default (only ever gains cards / wins), replace=true makes it
+        authoritative."""
+        data = body.get("export")
+        if not isinstance(data, dict):
+            return self._send(400, {"error": "no export object in the request"})
+        if not ({"cards", "npcs"} & set(data)):
+            return self._send(400, {"error": "that file has no 'cards' or 'npcs' "
+                                             "list - is it an FFXIV Collect export?"})
+        r = apply_export(data, replace=bool(body.get("replace")))
+        r["ownedIds"] = _owned_ids()
+        r["beaten"] = sorted(load_beaten())
+        self._send(200, r)
+
+    def _suggest(self, body):
+        """Rank the NPCs worth challenging next: reachable given story progress,
+        not yet beaten, deck on record, sorted by how comfortably the solver
+        says you take them.
+
+        The solver pass is the cheap screen (fast, and it errs pessimistic - it
+        will not talk you into an unwinnable match), run on only the lowest-MGP
+        `limit` candidates so the button stays responsive.  `tt-cli difficulty
+        --challenge` is the thorough version.
+        """
+        limit = max(1, min(int(body.get("limit") or 10), 25))
+        progress = load_progress()
+        beaten = load_beaten()
+        decks = load_decks()
+        pool = _owned_ids()
+
+        cands = []
+        for n in load_npcs():
+            if n["name"] in beaten or n["name"] not in decks:
+                continue
+            if progress is not None and not is_reachable(n, progress):
+                continue
+            cands.append(n)
+        cands.sort(key=lambda n: (n.get("mgp_win") or 0, n["name"]))
+
+        out = []
+        for n in cands[:limit]:
+            edge = self._screen_edge(n, decks[n["name"]], pool)
+            out.append({"name": n["name"], "zone": n["location"]["zone"],
+                        "rules": n["rules"], "mgp": n.get("mgp_win") or 0,
+                        "expansion": expansion_of(npc_patch(n)), "edge": edge})
+        out.sort(key=lambda r: (r["edge"] is None,
+                                -(r["edge"] if r["edge"] is not None else -99),
+                                r["mgp"]))
+        self._send(200, {
+            "suggestions": out,
+            "consideredOf": len(cands),
+            "progress": _progress_payload(),
+        })
+
+    @staticmethod
+    def _screen_edge(npc, entry, pool):
+        """Worst-case margin for your best owned deck vs this NPC, cheap screen."""
+        if len(pool) < 5:
+            return None
+        rnames = entry.get("rules") or npc.get("rules") or []
+        rules = RuleSet.from_names([r.strip() for r in rnames if r.strip()])
+        if entry.get("cards"):
+            arg = [resolve(x).id for x in entry["cards"]]
+        elif is_variable_deck(entry):
+            arg = [[resolve(x).id for x in o] for o in npc_deck_options(entry)]
+        else:
+            return None
+        try:
+            rec = recommend(arg, rules, pool, opp="greedy", top=1, swaps=False,
+                            shortlist_n=14, cand_cap=300, screen_tail=4,
+                            exact_k=0, workers=1)
+        except (ValueError, KeyError):
+            return None
+        return rec.best.worst
 
     def _recommend(self, body):
         rec_npc = find_npc(body["npc"])

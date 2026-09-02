@@ -120,3 +120,60 @@ def test_refine_solves_fewer_decks_exactly_under_swap():
     assert gui.refine_exact_k(RuleSet(plus=True, same=True)) == 25
     assert gui.refine_exact_k(RuleSet(swap=True)) == 8
     assert gui.refine_exact_k(RuleSet(swap=True, chaos=True)) == 8
+
+
+# --- NPCs tab: progress + import + suggest endpoints ------------------------
+
+import json  # noqa: E402
+
+import pytest  # noqa: E402
+
+
+@pytest.fixture
+def _isolated(tmp_path, monkeypatch):
+    monkeypatch.setattr("tt.paths.USER_DIR", tmp_path)
+    (tmp_path / "collection.json").write_text(json.dumps(
+        {"owned": ["Dodo Card", "Spriggan Card"], "decks": {}, "npcs_beaten": []}))
+    return tmp_path
+
+
+def test_progress_payload_round_trips(_isolated):
+    from tt.progress import save_progress
+    assert gui._progress_payload()["value"] is None
+    save_progress("ShB")
+    p = gui._progress_payload()
+    assert p["expansion"] == "ShB" and "ShB" in p["label"]
+
+
+def test_bootstrap_carries_expansion_per_npc_and_progress_block(_isolated):
+    # exercise the same shape /api/bootstrap builds
+    from tt.data import load_npcs
+    from tt.progress import expansion_of, npc_patch
+    exps = {expansion_of(npc_patch(n)) for n in load_npcs()}
+    assert exps == {"ARR", "HW", "SB", "ShB", "EW", "DT"}   # every NPC lands somewhere
+
+
+def test_import_endpoint_merges_and_reports(_isolated):
+    from tt.collect import apply_export
+    r = apply_export({"cards": [1], "npcs": []})   # No.1 == Dodo, already owned
+    assert r["cards_added"] == [] and r["unknown_card_ids"] == []
+    r = apply_export({"cards": [2], "npcs": []})   # No.2 == Tonberry, new
+    assert r["cards_added"] == ["Tonberry Card"]
+
+
+def test_suggest_skips_beaten_and_unreachable(_isolated, monkeypatch):
+    from tt.collect import save_beaten
+    from tt.progress import save_progress
+    save_progress("ARR")                 # hide HW+ NPCs
+    save_beaten(["Maisenta", "Roger"])   # and these two specifically
+
+    # stand in for the HTTP handler's candidate-building block
+    from tt.data import load_decks, load_npcs
+    from tt.progress import is_reachable, load_progress
+    beaten, decks, prog = {"Maisenta", "Roger"}, load_decks(), load_progress()
+    cands = [n["name"] for n in load_npcs()
+             if n["name"] not in beaten and n["name"] in decks
+             and is_reachable(n, prog)]
+    assert "Maisenta" not in cands and "Roger" not in cands
+    assert "Aiglephine" not in cands           # patch 6.0, beyond ARR
+    assert "Triple Triad Master" in cands      # ARR, unbeaten, has a deck

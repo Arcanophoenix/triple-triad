@@ -68,7 +68,7 @@ async function boot() {
   const nl = $("npclist");
   BOOT.npcs.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach((n) => {
     const o = h("option"); o.value = n.name;
-    o.label = `${n.rules.join(", ") || "no special rules"}${n.hasDeck ? "  ·  deck known" : ""}`;
+    o.label = n.rules.join(", ") || "no special rules";
     nl.appendChild(o);
   });
 
@@ -107,11 +107,15 @@ async function boot() {
   $("owned-only").addEventListener("change", renderPicker);
   $("npc-filter").addEventListener("input", renderNpcs);
   $("npc-unbeaten-only").addEventListener("change", renderNpcs);
-  $("npc-deck-only").addEventListener("change", renderNpcs);
+  $("npc-import").addEventListener("change", (e) => importCollectFile(e.target.files[0]));
+  $("npc-progress").addEventListener("change", (e) => setProgress(e.target.value));
+  $("npc-suggest").addEventListener("click", suggestNext);
   $("save-deck").addEventListener("click", saveEditDeck);
   $("del-deck").addEventListener("click", deleteEditDeck);
 
   refreshDeckSelects();
+  fillProgressSelect();
+  renderExpFilter();
   showView("solver");
 }
 
@@ -147,12 +151,9 @@ function refreshNpcInfo() {
     if (d && d.cards) info += `  ·  deck: ${d.cards.map(short).join(", ")}`;
     else if (variable)
       info += `  ·  ${d.fixed.map(short).join(", ")} + ${d.draw} of [${d.pool.map(short).join(", ")}]`;
-    else info += "  ·  deck not recorded";
   }
   $("npc-info").textContent = info;
   renderRegionalInfo(n);
-  $("npc-deck").value = "";
-  $("npc-deck-wrap").hidden = !(n && !d);        // free-text: nothing recorded at all
 }
 
 // ---------- regional rules ----------
@@ -219,7 +220,7 @@ function npcPayload() {
   return {
     npc: $("npc").value.trim(),
     rules: $("rules").value.trim() ? $("rules").value.split(",").map((s) => s.trim()) : null,
-    npcCards: $("npc-deck").value.trim() ? $("npc-deck").value.split(",").map((s) => s.trim()) : null,
+    npcCards: null,        // every roster NPC has a recorded deck now
   };
 }
 
@@ -1002,11 +1003,80 @@ function undo() {
 boot();
 
 
-// ---------- NPCs tab: which opponents you have beaten ----------
+// ---------- NPCs tab: who you have beaten, and who to take on next ----------
+
+// FF expansions, oldest first, with the leading major patch number.  Kept in
+// sync with tt/progress.py EXPANSIONS - the server sends the list in `boot`.
+const EXP_ORDER = ["ARR", "HW", "SB", "ShB", "EW", "DT"];
+const EXP_LABEL = {
+  ARR: "A Realm Reborn", HW: "Heavensward", SB: "Stormblood",
+  ShB: "Shadowbringers", EW: "Endwalker", DT: "Dawntrail",
+};
+let EXP_FILTER = new Set();            // selected expansions; empty = show all
+
+function fillProgressSelect() {
+  const sel = $("npc-progress");
+  const cur = (BOOT.progress && BOOT.progress.expansion) || "";
+  sel.innerHTML = "";
+  const none = h("option"); none.value = ""; none.textContent = "not set"; sel.appendChild(none);
+  for (const e of (BOOT.expansions || EXP_ORDER)) {
+    const o = h("option"); o.value = e;
+    o.textContent = `finished ${EXP_LABEL[e] || e}`;
+    sel.appendChild(o);
+  }
+  sel.value = cur;
+}
+
+function renderExpFilter() {
+  const box = $("exp-filter");
+  box.innerHTML = "";
+  const reached = (BOOT.progress && BOOT.progress.expansion) || null;
+  const reachIdx = reached ? EXP_ORDER.indexOf(reached) : EXP_ORDER.length - 1;
+  for (const [i, e] of EXP_ORDER.entries()) {
+    const chip = h("button", "exp-chip" + (EXP_FILTER.has(e) ? " on" : ""), e);
+    chip.type = "button";
+    chip.title = EXP_LABEL[e] + (i > reachIdx && reached ? " (not reached yet)" : "");
+    chip.dataset.exp = e;
+    if (i > reachIdx && reached) chip.classList.add("locked");
+    chip.addEventListener("click", () => {
+      EXP_FILTER.has(e) ? EXP_FILTER.delete(e) : EXP_FILTER.add(e);
+      renderExpFilter();
+      renderNpcs();
+    });
+    box.appendChild(chip);
+  }
+  if (EXP_FILTER.size) {
+    const clear = h("button", "exp-chip clear", "clear");
+    clear.type = "button";
+    clear.addEventListener("click", () => { EXP_FILTER.clear(); renderExpFilter(); renderNpcs(); });
+    box.appendChild(clear);
+  }
+}
+
+function npcRow(n) {
+  const beaten = BEATEN.has(n.name);
+  const row = h("div", "pick-row");
+  if (beaten) row.classList.add("in");
+  const box = h("input"); box.type = "checkbox"; box.className = "own"; box.checked = beaten;
+  box.addEventListener("click", (e) => e.stopPropagation());
+  box.addEventListener("change", () => setBeaten(n.name, box.checked));
+  row.appendChild(box);
+  row.appendChild(h("span", "pk-name", n.name));
+  if (n.expansion) row.appendChild(h("span", "exp-tag exp-" + n.expansion, n.expansion));
+  row.appendChild(h("span", "pk-sides", n.zone));
+  row.appendChild(h("span", "pk-stars", (n.rules || []).join(", ") || "-"));
+  row.appendChild(h("span", "pk-sides", n.mgp ? `${n.mgp} MGP` : ""));
+  row.addEventListener("click", () => {           // row (not the box) -> solver, targeting them
+    $("npc").value = n.name;
+    showView("solver");
+    renderSolver();
+  });
+  return row;
+}
+
 function renderNpcs() {
   const q = $("npc-filter").value.toLowerCase().trim();
   const unbeatenOnly = $("npc-unbeaten-only").checked;
-  const deckOnly = $("npc-deck-only").checked;
   const list = BOOT.npcs || [];
   $("npc-count").textContent = `${BEATEN.size}/${list.length} beaten`;
 
@@ -1015,30 +1085,12 @@ function renderNpcs() {
   box.innerHTML = "";
   let shown = 0;
   for (const n of [...list].sort((a, b) => (a.mgp || 0) - (b.mgp || 0) || a.name.localeCompare(b.name))) {
-    const beaten = BEATEN.has(n.name);
-    if (unbeatenOnly && beaten) continue;
-    if (deckOnly && !n.hasDeck) continue;
+    if (unbeatenOnly && BEATEN.has(n.name)) continue;
+    if (EXP_FILTER.size && !EXP_FILTER.has(n.expansion)) continue;
     const hay = `${n.name} ${n.zone} ${(n.rules || []).join(" ")}`.toLowerCase();
     if (q && !hay.includes(q)) continue;
     shown++;
-
-    const row = h("div", "pick-row");
-    if (beaten) row.classList.add("in");
-    const box2 = h("input"); box2.type = "checkbox"; box2.className = "own"; box2.checked = beaten;
-    box2.addEventListener("click", (e) => e.stopPropagation());
-    box2.addEventListener("change", () => setBeaten(n.name, box2.checked));
-    row.appendChild(box2);
-    row.appendChild(h("span", "pk-name", n.name));
-    row.appendChild(h("span", "pk-sides", n.zone));
-    row.appendChild(h("span", "pk-stars", (n.rules || []).join(", ") || "-"));
-    row.appendChild(h("span", "pk-sides", n.mgp ? `${n.mgp} MGP` : ""));
-    // clicking the row (not the box) takes you to the solver already targeting them
-    row.addEventListener("click", () => {
-      $("npc").value = n.name;
-      showView("solver");
-      renderSolver();
-    });
-    box.appendChild(row);
+    box.appendChild(npcRow(n));
   }
   if (!shown) box.appendChild(h("div", "pick-more", "no NPCs match that filter"));
   box.scrollTop = keepScroll;
@@ -1053,4 +1105,89 @@ async function setBeaten(name, beaten) {
     $("npc-msg").textContent = e.message;
   }
   renderNpcs();
+}
+
+async function setProgress(value) {
+  try {
+    const r = await post("/api/setprogress", { progress: value || null });
+    BOOT.progress = { value: r.value, label: r.label, expansion: r.expansion };
+    $("npc-import-msg").textContent = value ? `progress: ${r.label}` : "progress cleared";
+    renderExpFilter();
+    renderNpcs();
+  } catch (e) {
+    $("npc-import-msg").textContent = e.message;
+  }
+}
+
+function importCollectFile(file) {
+  if (!file) return;
+  const msg = $("npc-import-msg");
+  msg.textContent = `reading ${file.name}…`;
+  const reader = new FileReader();
+  reader.onerror = () => { msg.textContent = "couldn't read that file"; };
+  reader.onload = async () => {
+    let data;
+    try {
+      data = JSON.parse(reader.result);
+    } catch (e) {
+      msg.textContent = "that file isn't valid JSON — is it the Collect export?";
+      return;
+    }
+    try {
+      const r = await post("/api/import", { export: data });
+      OWNED = new Set(r.ownedIds || []);
+      BEATEN = new Set(r.beaten || []);
+      const bits = [`+${r.cards_added.length} card(s)`, `+${r.npcs_added.length} beaten NPC(s)`];
+      if ((r.unknown_card_ids || []).length) bits.push(`${r.unknown_card_ids.length} card id(s) unmatched`);
+      if ((r.unknown_npc_ids || []).length) bits.push(`${r.unknown_npc_ids.length} NPC id(s) unmatched`);
+      msg.textContent = "imported: " + bits.join(", ");
+      renderNpcs();
+      renderPicker();
+    } catch (e) {
+      msg.textContent = e.message;
+    }
+  };
+  reader.readAsText(file);
+  $("npc-import").value = "";        // let the same file be re-picked later
+}
+
+async function suggestNext() {
+  const btn = $("npc-suggest");
+  const out = $("npc-suggest-out");
+  btn.disabled = true;
+  out.innerHTML = "";
+  out.appendChild(h("div", "pick-more", "checking the winnable matchups…"));
+  try {
+    const r = await post("/api/suggest", { limit: 12 });
+    out.innerHTML = "";
+    if (!r.suggestions.length) {
+      out.appendChild(h("div", "pick-more",
+        BOOT.progress && BOOT.progress.value
+          ? "nothing unbeaten and reachable — set progress further, or you've cleared them"
+          : "every recorded NPC is already ticked as beaten"));
+    }
+    const prog = r.progress && r.progress.value ? ` · reachable given ${r.progress.label}` : "";
+    if (r.suggestions.length) out.appendChild(h("div", "pick-more",
+      `best of ${r.consideredOf} unbeaten NPC(s)${prog} — margins are cautious estimates`));
+    for (const s of r.suggestions) {
+      const row = h("div", "pick-row");
+      const verdict = s.edge == null ? "?"
+        : s.edge >= 6 ? `clear win +${fmt(s.edge)}`
+        : s.edge >= 2 ? `ahead +${fmt(s.edge)}`
+        : s.edge >= -1 ? `coin-flip ${fmt(s.edge)}`
+        : `behind ${fmt(s.edge)}`;
+      row.appendChild(h("span", "pk-name", s.name));
+      if (s.expansion) row.appendChild(h("span", "exp-tag exp-" + s.expansion, s.expansion));
+      row.appendChild(h("span", "pk-sides", s.zone));
+      row.appendChild(h("span", "pk-stars", verdict));
+      row.appendChild(h("span", "pk-sides", s.mgp ? `${s.mgp} MGP` : ""));
+      row.addEventListener("click", () => { $("npc").value = s.name; showView("solver"); renderSolver(); });
+      out.appendChild(row);
+    }
+  } catch (e) {
+    out.innerHTML = "";
+    out.appendChild(h("div", "pick-more", e.message));
+  } finally {
+    btn.disabled = false;
+  }
 }
