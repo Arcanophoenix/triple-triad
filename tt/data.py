@@ -23,6 +23,7 @@ class Card:
     stars: int
     kind: str          # "None" | "Primal" | "Scion" | "Garlean" | "Society"
     sides: tuple       # (N, E, S, W), each 1..10  (10 == 'A')
+    collect_id: int = 0  # ffxivcollect.com's own card id (0 = not in that data)
 
     @property
     def high(self) -> str:
@@ -48,7 +49,8 @@ def _load() -> None:
     for i, c in enumerate(raw):
         s = c["sides"]
         card = Card(i, c["number"], c["series"], c["name"], c["stars"], c["type"],
-                    (s["up"], s["right"], s["down"], s["left"]))
+                    (s["up"], s["right"], s["down"], s["left"]),
+                    c.get("collect_id") or 0)
         CARDS.append(card)
         _BY_NORM.setdefault(_norm(card.name), card)
 

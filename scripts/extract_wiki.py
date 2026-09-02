@@ -65,6 +65,26 @@ def _collect_types() -> dict[int, str]:
     return out
 
 
+def _collect_ids() -> dict[str, int]:
+    """{card name -> ffxivcollect.com card id} from the same saved page.
+
+    This is Collect's own id (the number in a ``/triad/cards/<id>`` link), which
+    is NOT the in-game No. - Collect interleaves the FF-collab cards, so the two
+    drift apart past the low 60s.  It is what an account export's ``cards`` list
+    contains, so ``tt-cli import`` needs it.  Joined by name, since the numbers
+    differ."""
+    try:
+        page = _find("Cards - FFXIV Collect*.html").read_text(encoding="utf-8", errors="replace")
+    except SystemExit:
+        return {}
+    out: dict[str, int] = {}
+    for row in re.findall(r'<tr class="collectable".*?</tr>', page, re.S):
+        m = re.search(r'/triad/cards/(\d+)"[^>]*>([^<]+)</a>', row)
+        if m:
+            out[html.unescape(m.group(2)).strip()] = int(m.group(1))
+    return out
+
+
 def _collect_npcs() -> dict[str, dict]:
     """{npc name -> {"rules": [...], "rewards": [...]}} from a saved
     'NPCs - FFXIV Collect.html', if any.
@@ -96,6 +116,7 @@ _COLLECT_NPCS = _collect_npcs()
 
 
 _COLLECT = _collect_types()
+_COLLECT_IDS = _collect_ids()
 
 
 def strip_tags(s: str) -> str:
@@ -174,6 +195,8 @@ def parse_cards(page: str) -> list[dict]:
                 "acquired_by": strip_tags(c[12]),
                 "patch": strip_tags(c[13]),
                 "icon": icon,
+                "collect_id": _COLLECT_IDS.get(name)
+                or _COLLECT_IDS.get(name.removesuffix(" Card")) or 0,
             }
         )
     return out

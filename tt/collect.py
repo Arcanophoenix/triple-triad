@@ -5,18 +5,20 @@ of id lists, of which two matter here::
 
     {"cards": [1, 7, 23, ...], "npcs": [2293762, ...], ...}
 
-**The two lists use different id spaces, and neither is our card id.**
+**Both lists are FFXIV Collect's own ids, and neither is any id we assign.**
 
-``cards`` are FFXIV Collect's card *numbers* - the "No." shown on its card list,
-which matches ``Card.number`` for the 460 main-series cards.  The 15 FF-collab
-cards carry no number on Collect at all, so they cannot appear here and cannot be
-imported; anything unmatched is reported rather than dropped silently, because a
-number that does not resolve means an assumption in here has gone stale.
+``cards`` are Collect's card ids - the number in a ``ffxivcollect.com/triad/cards/<id>``
+link, stored per card in ``data/cards.json`` as ``collect_id``.  It is NOT the
+in-game "No." (= our ``Card.number``): the two happen to agree for roughly the
+first 60 cards and then diverge - Collect slots the 15 FF-collab cards in at
+ids 61-75, so every card after that is offset.  Mapping through ``Card.number``
+imported the wrong card for anything past the low 60s (Collect id 64 is Gaius
+van Baelsar, not our No. 64); it now goes through ``collect_id``.
 
-``npcs`` are Collect's own NPC ids (7 digits, e.g. 2293905), stored per NPC in
-``data/npcs.json`` as ``collect_id``.  133 of our 134 NPCs have one - **Lewena is
-absent from FFXIV Collect entirely**, so she can never arrive through an import
-and has to be ticked by hand.
+``npcs`` are Collect's NPC ids (7 digits, from ``/triad/npcs/<id>``), stored per
+NPC in ``data/npcs.json`` as ``collect_id``.  133 of our 134 NPCs have one -
+**Lewena is absent from FFXIV Collect entirely**, so she can never arrive through
+an import and has to be ticked by hand.
 
 Beaten NPCs live in ``collection.json`` under ``npcs_beaten`` as a list of names,
 matching how ``owned`` stores card names rather than ids.
@@ -28,7 +30,6 @@ from pathlib import Path
 
 from tt.data import CARDS, load_npcs, read_collection, write_collection
 
-MAIN_SERIES = "main"
 
 
 def load_export(path: str | Path) -> dict:
@@ -49,8 +50,8 @@ def load_export(path: str | Path) -> dict:
     return data
 
 
-def _card_by_number() -> dict[int, object]:
-    return {c.number: c for c in CARDS if c.series == MAIN_SERIES}
+def _card_by_collect_id() -> dict[int, object]:
+    return {c.collect_id: c for c in CARDS if c.collect_id}
 
 
 def _npc_by_collect_id() -> dict[int, str]:
@@ -59,10 +60,10 @@ def _npc_by_collect_id() -> dict[int, str]:
 
 def map_cards(ids) -> tuple[list[str], list[int]]:
     """``(card names, ids we could not place)``."""
-    by_num = _card_by_number()
+    by_cid = _card_by_collect_id()
     names, unknown = [], []
     for i in ids or []:
-        c = by_num.get(i)
+        c = by_cid.get(i)
         (names.append(c.name) if c else unknown.append(i))
     return names, unknown
 

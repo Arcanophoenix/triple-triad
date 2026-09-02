@@ -95,8 +95,10 @@ def _warn(bad_cards, bad_npcs) -> None:
     if bad_cards:
         print(f"\nnote: {len(bad_cards)} card id(s) in the export did not match a "
               f"card here: {bad_cards[:10]}{' ...' if len(bad_cards) > 10 else ''}\n"
-              f"      Collect numbers the 460 main-series cards and leaves the 15 "
-              f"FF-collab cards unnumbered, so those cannot be imported.")
+              f"      These are FFXIV Collect card ids; every one we know is in "
+              f"data/cards.json as collect_id. An unmatched id means Collect added "
+              f"a card the local data hasn't caught up with - re-save its card "
+              f"page and re-run `tt-cli data`.")
     if bad_npcs:
         print(f"\nnote: {len(bad_npcs)} NPC id(s) in the export did not match: "
               f"{bad_npcs[:10]}{' ...' if len(bad_npcs) > 10 else ''}")

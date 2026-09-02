@@ -14,22 +14,32 @@ def _isolate_collection(tmp_path, monkeypatch):
     monkeypatch.setattr("tt.paths.USER_DIR", tmp_path)
 
 
-def test_card_ids_are_collect_numbers_not_our_ids():
-    """Collect's "No." is Card.number for the 460 main-series cards, which is NOT
-    our Card.id - number 1 is Dodo (id 0), and id 1 is a different card."""
+def test_card_ids_are_collects_own_id_not_the_in_game_number():
+    """The export's `cards` are ffxivcollect.com/triad/cards/<id> ids, stored as
+    Card.collect_id.  They match the in-game No. (= Card.number) for the low cards
+    then diverge, because Collect interleaves the 15 FF-collab cards.
+
+    The real regression: Gaelicat is No. 68 but collect_id 81, and No. 81 is
+    Byblos.  An export listing 81 (its owner has Gaelicat) imported Byblos when
+    the lookup went through the number.
+    """
     names, unknown = C.map_cards([1])
     assert names == ["Dodo Card"] and unknown == []
-    assert CARDS[1].name != "Dodo Card"
+
+    gaelicat = next(c for c in CARDS if c.name == "Gaelicat Card")
+    assert (gaelicat.number, gaelicat.collect_id) == (68, 81)
+    byblos = next(c for c in CARDS if c.name == "Byblos Card")
+    assert byblos.number == 81
+    assert C.map_cards([81])[0] == ["Gaelicat Card"]        # not Byblos
 
 
-def test_ff_collab_cards_cannot_arrive_and_are_reported():
-    """Collect numbers only the main series; the 15 FF cards have no number, so
-    their numbers collide with main-series ones and must never be guessed at."""
-    ff = [c for c in CARDS if c.series == "ff"]
-    assert ff, "expected FF-collab cards in the dataset"
-    names, _ = C.map_cards([ff[0].number])
-    assert all(CARDS[0].series == "main" for _ in names)
-    assert all(n not in {c.name for c in ff} for n in names)
+def test_ff_collab_cards_import_through_their_collect_id():
+    """FF cards have no in-game No. but they DO have a collect_id, so a player who
+    owns one gets it - the old number-based lookup silently dropped them."""
+    ff = [c for c in CARDS if c.series == "ff" and c.collect_id]
+    assert ff, "expected FF-collab cards with a collect_id"
+    names, unknown = C.map_cards([ff[0].collect_id])
+    assert names == [ff[0].name] and unknown == []
 
 
 def test_unknown_ids_are_reported_not_dropped():
@@ -37,6 +47,13 @@ def test_unknown_ids_are_reported_not_dropped():
     assert names == ["Dodo Card"] and unknown == [999999]
     names, unknown = C.map_npcs([424242])
     assert names == [] and unknown == [424242]
+
+
+def test_every_main_series_card_has_a_collect_id():
+    """The gate is only as good as the data; a card with collect_id 0 silently
+    cannot be imported."""
+    missing = [c.name for c in CARDS if c.series == "main" and not c.collect_id]
+    assert not missing, f"main-series cards without a collect_id: {missing}"
 
 
 def test_npc_ids_map_to_the_roster():
