@@ -1,5 +1,6 @@
 # --- per-user data (never shared) --------------------------------------------
 /data/collection.json
+/data/collection.json.bak*
 /data/history.jsonl
 # your own regional-rule observations. Unlike the files above this is not
 # personal - regionals are the same for every player - so it is safe to share if
