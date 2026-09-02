@@ -55,6 +55,19 @@ _HISTORY_PATH = paths.user_path("history.jsonl")
 _STARTER_IDS = {resolve(n).id for n in STARTER_CARDS}
 _PARTIAL_BUDGET_S = 25   # wall-clock cap for an exact worst-case-over-unknowns sweep
 
+# "Suggest who to challenge next" solver configs.  The cheap screen (screen_tail
+# 4) is biased LOW - measured mean understatement 4.0, worst case 6.0, and never
+# once optimistic (see difficulty.py / the regional+difficulty memory).  So a row
+# reading a small negative here is very likely a win; the accurate pass
+# (screen_tail 6, mean error 1.7) is run on that borderline band within a
+# wall-clock budget, cheapest rulesets first.
+_SUGGEST_SCREEN = dict(shortlist_n=14, cand_cap=300, screen_tail=4, exact_k=0)
+_SUGGEST_ACCURATE = dict(shortlist_n=14, cand_cap=300, screen_tail=6, exact_k=0)
+_SUGGEST_BAND = -6.0            # screen values >= this could still be winnable
+_SUGGEST_RECHECK_BUDGET_S = 40.0
+_SUGGEST_SLOW_RULES = {"Chaos", "Roulette", "Swap"}   # these deepen or fan the solve a lot
+_SUGGEST_BUCKET_RANK = {"win": 0, "likely": 1, "close": 2, "notyet": 3, "unknown": 4}
+
 
 def refine_exact_k(rules) -> int:
     """How many decks the "refine" button solves exactly.
@@ -294,6 +307,25 @@ def _completions(st: dict):
     for combo in itertools.combinations(pool, len(holes)):
         yield GameState(board, (hand0, tuple(_fill(hand1, holes, combo))),
                         st["to_move"], rules)
+
+
+def _suggest_bucket(edge, kind) -> str:
+    """Coarse winnability class for a suggest row.
+
+    An `accurate` edge is read at face value.  A `screen` edge understates by ~4
+    on average and (in the measured sample) was never optimistic, so screen >= 0
+    already means you do not lose, and anything down to the worst-case
+    understatement (`_SUGGEST_BAND`) is still very likely a win.  "close" is only
+    ever reported off an accurate read - the screen cannot tell a real coin-flip
+    from its own low bias.
+    """
+    if edge is None:
+        return "unknown"
+    if kind == "accurate":
+        return ("win" if edge >= 6 else "likely" if edge >= 2
+                else "close" if edge >= -1 else "notyet")
+    return ("win" if edge >= 0 else "likely" if edge >= _SUGGEST_BAND
+            else "notyet")
 
 
 def _partial_state(st_like: dict, board, hand0, hand1, pool, to_move, opp) -> dict:
@@ -789,15 +821,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def _suggest(self, body):
         """Rank the NPCs worth challenging next: reachable given story progress,
-        not yet beaten, deck on record, sorted by how comfortably the solver
-        says you take them.
+        not yet beaten, deck on record, ordered by how comfortably you take them.
 
-        The solver pass is the cheap screen (fast, and it errs pessimistic - it
-        will not talk you into an unwinnable match), run on only the lowest-MGP
-        `limit` candidates so the button stays responsive.  `tt-cli difficulty
-        --challenge` is the thorough version.
+        Every candidate gets the cheap screen first (fast, but biased LOW by ~4
+        and never optimistic).  The rows that screen near or below zero - where
+        that bias could be hiding a winnable match - are then re-scored with the
+        accurate config, cheapest rulesets first, until a wall-clock budget runs
+        out; the rest keep the screen value, flagged as such.  `body["fast"]`
+        skips the re-score; `tt-cli difficulty --challenge` is the full version.
         """
         limit = max(1, min(int(body.get("limit") or 10), 25))
+        fast = bool(body.get("fast"))
+        budget = float(body.get("budget") or _SUGGEST_RECHECK_BUDGET_S)
         progress = load_progress()
         beaten = load_beaten()
         decks = load_decks()
@@ -811,25 +846,59 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 continue
             cands.append(n)
         cands.sort(key=lambda n: (n.get("mgp_win") or 0, n["name"]))
+        considered = len(cands)
+
+        rows = []
+        for n in cands[:limit]:
+            entry = decks[n["name"]]
+            cheap = self._deck_edge(n, entry, pool, _SUGGEST_SCREEN)
+            rows.append({"npc": n, "entry": entry, "edge": cheap,
+                         "kind": None if cheap is None else "screen"})
+
+        rechecked = 0
+        if not fast and len(pool) >= 5:
+            band = [r for r in rows
+                    if r["edge"] is not None and _SUGGEST_BAND <= r["edge"] < 6.0]
+            band.sort(key=lambda r: (self._recheck_cost(r["npc"], r["entry"]), -r["edge"]))
+            deadline = time.monotonic() + max(0.0, budget)
+            for r in band:
+                if time.monotonic() >= deadline:
+                    break
+                acc = self._deck_edge(r["npc"], r["entry"], pool, _SUGGEST_ACCURATE)
+                if acc is not None:
+                    r["edge"], r["kind"] = acc, "accurate"
+                    rechecked += 1
 
         out = []
-        for n in cands[:limit]:
-            edge = self._screen_edge(n, decks[n["name"]], pool)
+        for r in rows:
+            n = r["npc"]
+            bucket = _suggest_bucket(r["edge"], r["kind"])
             out.append({"name": n["name"], "zone": n["location"]["zone"],
                         "rules": n["rules"], "mgp": n.get("mgp_win") or 0,
-                        "expansion": expansion_of(npc_patch(n)), "edge": edge})
-        out.sort(key=lambda r: (r["edge"] is None,
+                        "expansion": expansion_of(npc_patch(n)),
+                        "edge": r["edge"], "edgeKind": r["kind"], "bucket": bucket})
+        out.sort(key=lambda r: (_SUGGEST_BUCKET_RANK[r["bucket"]],
                                 -(r["edge"] if r["edge"] is not None else -99),
                                 r["mgp"]))
         self._send(200, {
             "suggestions": out,
-            "consideredOf": len(cands),
+            "consideredOf": considered,
+            "rechecked": rechecked,
             "progress": _progress_payload(),
         })
 
     @staticmethod
-    def _screen_edge(npc, entry, pool):
-        """Worst-case margin for your best owned deck vs this NPC, cheap screen."""
+    def _recheck_cost(npc, entry) -> int:
+        """Cheap proxy for how long an accurate solve of this NPC will take, so
+        the budgeted re-score does the quick ones first: Chaos / Roulette / Swap
+        each deepen or fan the solve by a large factor."""
+        rs = set(entry.get("rules") or npc.get("rules") or [])
+        return len(rs & _SUGGEST_SLOW_RULES)
+
+    @staticmethod
+    def _deck_edge(npc, entry, pool, cfg):
+        """Worst-case margin for your best owned deck vs this NPC, under `cfg`
+        (`_SUGGEST_SCREEN` for the fast pass, `_SUGGEST_ACCURATE` for the slow)."""
         if len(pool) < 5:
             return None
         rnames = entry.get("rules") or npc.get("rules") or []
@@ -842,8 +911,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return None
         try:
             rec = recommend(arg, rules, pool, opp="greedy", top=1, swaps=False,
-                            shortlist_n=14, cand_cap=300, screen_tail=4,
-                            exact_k=0, workers=1)
+                            workers=1, **cfg)
         except (ValueError, KeyError):
             return None
         return rec.best.worst

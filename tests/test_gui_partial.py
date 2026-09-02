@@ -240,3 +240,70 @@ def test_set_regional_endpoint_clear_forgets_the_region(_regional_isolated):
     h._set_regional({"region": "Gyr Abania", "clear": True})
     assert "Gyr Abania" not in load_regional()["regions"]         # pointer dropped
     assert h.sent[1]["current"]["Gyr Abania"]["rules"] == []
+
+
+# --- suggest: bias-aware buckets + budgeted accurate re-check --------------
+
+def test_suggest_bucket_shifts_thresholds_for_the_screen_bias():
+    b = gui._suggest_bucket
+    # a screen value never overstates and runs ~4 low, so the bar is lower;
+    # "close" is never reported off a screen read
+    assert b(0.0, "screen") == "win"
+    assert b(-0.5, "screen") == "likely"
+    assert b(-5.9, "screen") == "likely"
+    assert b(-6.5, "screen") == "notyet"
+    # an accurate value is taken at face value
+    assert b(0.0, "accurate") == "close"
+    assert b(3.0, "accurate") == "likely"
+    assert b(6.0, "accurate") == "win"
+    assert b(-3.0, "accurate") == "notyet"
+    assert b(None, "screen") == "unknown"
+
+
+def test_recheck_cost_orders_fast_rulesets_first():
+    cost = gui.Handler._recheck_cost
+    assert cost({}, {"rules": ["Three Open"]}) == 0
+    assert cost({}, {"rules": ["Chaos", "Roulette"]}) == 2
+    assert cost({"rules": ["Swap"]}, {}) == 1          # falls back to the npc's rules
+
+
+def test_suggest_rechecks_the_borderline_band_and_sorts_by_bucket(_isolated, monkeypatch):
+    monkeypatch.setattr(gui, "_owned_ids", lambda: [1, 2, 3, 4, 5])
+
+    from tt.data import load_decks, load_npcs
+    decks = load_decks()
+    order = sorted((n for n in load_npcs() if n["name"] in decks),
+                   key=lambda n: (n.get("mgp_win") or 0, n["name"]))
+    picks = [n["name"] for n in order[:3]]
+    canned = dict(zip(picks, [-3.0, 0.0, -7.0]))       # in-band, in-band, below the band
+
+    def fake_edge(npc, entry, pool, cfg):
+        v = canned.get(npc["name"])
+        if v is None:
+            return 8.0                                 # everyone else: clear win, no re-check
+        return v + 5.0 if cfg is gui._SUGGEST_ACCURATE else v
+    monkeypatch.setattr(gui.Handler, "_deck_edge", staticmethod(fake_edge))
+
+    h = _Cap()
+    h._suggest({"limit": 12, "budget": 999})
+    res = h.sent[1]
+    rows = {r["name"]: r for r in res["suggestions"]}
+
+    assert rows[picks[0]]["edgeKind"] == "accurate" and rows[picks[0]]["edge"] == 2.0
+    assert rows[picks[1]]["edgeKind"] == "accurate" and rows[picks[1]]["edge"] == 5.0
+    assert rows[picks[2]]["edgeKind"] == "screen" and rows[picks[2]]["edge"] == -7.0  # skipped
+    assert res["rechecked"] == 2
+    ranks = [gui._SUGGEST_BUCKET_RANK[r["bucket"]] for r in res["suggestions"]]
+    assert ranks == sorted(ranks)                      # output ordered best-bucket first
+
+
+def test_suggest_fast_skips_the_accurate_pass(_isolated, monkeypatch):
+    monkeypatch.setattr(gui, "_owned_ids", lambda: [1, 2, 3, 4, 5])
+    monkeypatch.setattr(gui.Handler, "_deck_edge",
+                        staticmethod(lambda npc, entry, pool, cfg: -1.0))
+    h = _Cap()
+    h._suggest({"limit": 6, "fast": True})
+    res = h.sent[1]
+    assert res["rechecked"] == 0
+    assert all(r["edgeKind"] == "screen" for r in res["suggestions"])
+    assert all(r["bucket"] == "likely" for r in res["suggestions"])   # screen -1 -> likely

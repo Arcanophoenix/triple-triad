@@ -191,6 +191,12 @@ button.linklike {
   color: #c9bce4; font-size: 11px; letter-spacing: 0; flex: 0 0 auto;
 }
 #npc-suggest-out { margin: 8px 0 4px; }
+#npc-suggest-out .pick-row .pk-stars { min-width: 132px; text-align: left; }
+#npc-suggest-out .pick-row .pk-stars.sg-win     { color: #8fe0a0; }
+#npc-suggest-out .pick-row .pk-stars.sg-likely  { color: #c6e08f; }
+#npc-suggest-out .pick-row .pk-stars.sg-close   { color: #e0c98f; }
+#npc-suggest-out .pick-row .pk-stars.sg-notyet  { color: #e09a9a; }
+#npc-suggest-out .pick-row .pk-stars.sg-unknown { color: #8f83a6; }
 
 .exp-tag {
   font-size: 10px; font-weight: 700; letter-spacing: .3px; padding: 1px 5px; border-radius: 4px;

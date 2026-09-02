@@ -1334,12 +1334,20 @@ function importCollectFile(file) {
   $("npc-import").value = "";        // let the same file be re-picked later
 }
 
+const SUGGEST_BUCKET = {
+  win:     { txt: "winnable",       cls: "sg-win" },
+  likely:  { txt: "likely win",    cls: "sg-likely" },
+  close:   { txt: "close",         cls: "sg-close" },
+  notyet:  { txt: "not yet",       cls: "sg-notyet" },
+  unknown: { txt: "no read",       cls: "sg-unknown" },
+};
+
 async function suggestNext() {
   const btn = $("npc-suggest");
   const out = $("npc-suggest-out");
   btn.disabled = true;
   out.innerHTML = "";
-  out.appendChild(h("div", "pick-more", "checking the winnable matchups…"));
+  out.appendChild(h("div", "pick-more", "screening the matchups, then re-checking the close ones…"));
   try {
     const r = await post("/api/suggest", { limit: 12 });
     out.innerHTML = "";
@@ -1349,20 +1357,20 @@ async function suggestNext() {
           ? "nothing unbeaten and reachable — set progress further, or you've cleared them"
           : "every recorded NPC is already ticked as beaten"));
     }
-    const prog = r.progress && r.progress.value ? ` · reachable given ${r.progress.label}` : "";
+    const prog = r.progress && r.progress.value ? `, reachable given ${r.progress.label}` : "";
+    const rc = r.rechecked ? `; ${r.rechecked} re-checked exactly` : "";
     if (r.suggestions.length) out.appendChild(h("div", "pick-more",
-      `best of ${r.consideredOf} unbeaten NPC(s)${prog} — margins are cautious estimates`));
+      `best of ${r.consideredOf} unbeaten NPC(s)${prog}${rc}. `
+      + `“screen” margins run ~4 low — a small negative is usually still a win.`));
     for (const s of r.suggestions) {
       const row = h("div", "pick-row");
-      const verdict = s.edge == null ? "?"
-        : s.edge >= 6 ? `clear win +${fmt(s.edge)}`
-        : s.edge >= 2 ? `ahead +${fmt(s.edge)}`
-        : s.edge >= -1 ? `coin-flip ${fmt(s.edge)}`
-        : `behind ${fmt(s.edge)}`;
+      const b = SUGGEST_BUCKET[s.bucket] || SUGGEST_BUCKET.unknown;
+      const num = s.edge == null ? ""
+        : ` ${fmt(s.edge)}${s.edgeKind === "screen" ? " screen" : ""}`;
       row.appendChild(h("span", "pk-name", s.name));
       if (s.expansion) row.appendChild(h("span", "exp-tag exp-" + s.expansion, s.expansion));
       row.appendChild(h("span", "pk-sides", s.zone));
-      row.appendChild(h("span", "pk-stars", verdict));
+      row.appendChild(h("span", "pk-stars " + b.cls, b.txt + num));
       row.appendChild(h("span", "pk-sides", s.mgp ? `${s.mgp} MGP` : ""));
       row.addEventListener("click", () => { $("npc").value = s.name; showView("solver"); renderSolver(); });
       out.appendChild(row);

@@ -241,8 +241,12 @@ one 4-5★), name it, `Save`. Saved decks are shared with the CLIs.
 export…** to fill it from an [FFXIV Collect](https://ffxivcollect.com) account
 export in one go (cards owned come along too). Set **Story progress** to hide
 NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
-unbeaten reachable ones by how comfortably the solver says you take them (a quick
-cautious estimate - `tt-cli difficulty --challenge` is the thorough version).
+unbeaten reachable ones by how comfortably you take them: a fast screen (which
+runs ~4 low and never optimistic, so a small negative is still a win), then an
+exact re-check of the borderline rows within a wall-clock budget, cheapest
+rulesets first. Rows are labelled `winnable / likely win / close / not yet` and
+tagged `screen` where the budget didn't reach them. `tt-cli difficulty
+--challenge` re-checks the whole roster with no time limit.
 
 **Regional:** every region's current regional rules, set with rule chips (or
 **None / None** for a blank screen, **Clear** to forget). Shows what's still
