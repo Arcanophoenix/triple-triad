@@ -907,6 +907,39 @@ function renderSlots() {
   c.textContent = `${EDIT.ids.length}/5` + (hi > 1 ? "  ·  too many 4-5★ cards" : "");
   c.classList.toggle("bad", hi > 1);
 }
+function cardTile(id) {
+  const c = CARDS[id];
+  const owned = OWNED.has(id);
+  const t = h("div", "ctile" + (owned ? " owned" : "") + (EDIT.ids.includes(id) ? " in" : ""));
+  t.title = `${short(c.name)} — ${c.sides.map(face).join("/")}` + (owned ? "" : "  (not owned)");
+
+  const art = h("div", "mini");
+  art.style.backgroundImage = `url(/card/${id}.png)`;
+  art.appendChild(h("span", "num n-n", face(c.sides[0])));
+  art.appendChild(h("span", "num n-e", face(c.sides[1])));
+  art.appendChild(h("span", "num n-s", face(c.sides[2])));
+  art.appendChild(h("span", "num n-w", face(c.sides[3])));
+  t.appendChild(art);
+
+  const own = h("input"); own.type = "checkbox"; own.className = "ctile-own"; own.checked = owned;
+  if (STARTERS.has(id)) { own.disabled = true; own.title = "starter card — always owned"; }
+  else own.title = "you own this card";
+  own.addEventListener("click", (e) => e.stopPropagation());
+  own.addEventListener("change", () => setOwned(id, own.checked));
+  t.appendChild(own);
+
+  t.appendChild(h("span", "ctile-stars", "★".repeat(c.stars)));
+  t.appendChild(h("span", "ctile-name", short(c.name)));
+
+  t.addEventListener("click", () => {
+    const at = EDIT.ids.indexOf(id);
+    if (at >= 0) EDIT.ids.splice(at, 1);
+    else if (EDIT.ids.length < 5) EDIT.ids.push(id);
+    renderManage();
+  });
+  return t;
+}
+
 function renderPicker() {
   const q = $("card-filter").value.toLowerCase().trim();
   const ownedOnly = $("owned-only").checked;
@@ -920,25 +953,7 @@ function renderPicker() {
     if (ownedOnly && !OWNED.has(id)) continue;
     if (q && !c.name.toLowerCase().includes(q) && String(id) !== q) continue;
     if (++shown > 300) { pick.appendChild(h("div", "pick-more", "…narrow the filter to see more")); break; }
-    const row = h("div", "pick-row");
-    if (EDIT.ids.includes(id)) row.classList.add("in");
-
-    const own = h("input"); own.type = "checkbox"; own.className = "own"; own.checked = OWNED.has(id);
-    if (STARTERS.has(id)) { own.disabled = true; own.title = "starter card — always owned"; }
-    own.addEventListener("click", (e) => e.stopPropagation());
-    own.addEventListener("change", () => setOwned(id, own.checked));
-    row.appendChild(own);
-
-    row.appendChild(h("span", "pk-name", c.name.replace(/ Card$/, "")));
-    row.appendChild(h("span", "pk-stars", "★".repeat(c.stars)));
-    row.appendChild(h("span", "pk-sides", c.sides.map(face).join("/")));
-    row.addEventListener("click", () => {
-      const at = EDIT.ids.indexOf(id);
-      if (at >= 0) EDIT.ids.splice(at, 1);
-      else if (EDIT.ids.length < 5) EDIT.ids.push(id);
-      renderManage();
-    });
-    pick.appendChild(row);
+    pick.appendChild(cardTile(id));
   }
   pick.scrollTop = keepScroll;
 }
