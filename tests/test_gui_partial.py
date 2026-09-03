@@ -268,17 +268,20 @@ def test_recheck_cost_orders_fast_rulesets_first():
 
 
 def test_npc_portrait_map_points_at_real_saved_images():
+    # reference/NPCs/ is gitignored (a re-downloadable wiki mirror), so a bare
+    # checkout has none of it; scripts/fetch_npc_portraits.py populates it.
     m = gui._NPC_PORTRAIT
-    assert 15 <= len(m) <= 60           # ~27: only the pages saved for deck-scraping
+    if not m:
+        pytest.skip("reference/NPCs/ not populated here")
     from tt.data import load_npcs
     roster = {n["name"] for n in load_npcs()}
-    npc_dir = (gui.NPCS_DIR).resolve()
+    npc_dir = gui.NPCS_DIR.resolve()
     for name, path in m.items():
         assert name in roster                       # keyed by the real roster name
         assert path.is_file() and npc_dir in path.resolve().parents
         assert path.suffix.lower() in (".png", ".jpg", ".jpeg")
-    # a name we know was saved with a portrait, and one that was not
-    assert "Baderon" in m and "Arsieu" not in m
+    assert "Baderon" in m           # one of the originally-saved pages
+    assert "Arsieu" not in m        # a generic NPC with no wiki portrait
 
 
 def test_chaos_and_swap_are_skipped_by_the_live_recheck():

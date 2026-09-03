@@ -159,8 +159,10 @@ def _load_npc_portraits() -> dict:
             continue
         key = re.sub(r"[^a-z]", "", npc.lower())[:6]
         best, best_rank = None, ()
-        for f in (*d.glob("*.png"), *d.glob("*.jpg"), *d.glob("*.jpeg")):
+        for f in d.iterdir():                            # ext match is case-insensitive
             low = f.name.lower()
+            if not low.endswith((".png", ".jpg", ".jpeg")):
+                continue
             if f.name.startswith("TT_") or any(s in low for s in skip):
                 continue
             if re.match(r"^\d{1,2}px-", f.name):        # a small chrome icon

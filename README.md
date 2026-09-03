@@ -58,6 +58,7 @@ scripts/
   gui.py          local web server + engine behind the browser GUI
   extract_wiki.py rebuild cards.json + npcs.json from the saved wiki pages
   fetch_npc_pages.py  download NPC wiki pages from the saved "Triple Triad NPCs" list
+  fetch_npc_portraits.py  download each NPC's infobox portrait for the GUI
   scrape_npc.py   pull NPC decks + rules from saved reference/NPCs/*.html
   deck.py         add / show / list recorded NPC decks (manual alternative)
   solve.py        move (mid-game best move) and plan (solve a match from empty)
@@ -108,6 +109,11 @@ The NPC list gives each NPC's rules but not their 5 cards. To fill that in:
 (stdlib only, ~1s apart; `--only <name>`, `--limit N`, `--dry-run`, `--force`).
 `scrape` reads the deck + rules from each page, checks the rules against
 `data/npcs.json`, and writes `data/decks.json`.
+
+**Portraits for the GUI.** `scripts/fetch_npc_portraits.py` (same options) grabs
+each NPC's infobox portrait into `reference/NPCs/<name> … _files/`, where the GUI
+picks it up; ~130 of 134 have one on the wiki, the rest fall back to an initials
+tile. `reference/NPCs/` is gitignored, so this is a local, re-runnable step.
 
 **Or one at a time.** Save a single NPC's wiki page into `reference/NPCs/` and
 run `./tt-cli scrape "Name"`. `play.py` also prompts for an unrecorded NPC's
@@ -237,9 +243,10 @@ un-owned cards render dimmed. On the left, the deck editor - click a card to
 add/drop it (max 5, at most one 4-5★), name it, `Save`. Saved decks are shared
 with the CLIs.
 
-**NPCs:** every opponent - portrait (only ~27 were saved with one; the rest get
-an initials tile tinted by expansion), deck as card thumbnails, zone and rules -
-filterable by name/zone/rule and by expansion (the `ARR HW SB ShB EW DT` chips).
+**NPCs:** every opponent - portrait (from the wiki via
+`scripts/fetch_npc_portraits.py`; ~130 have one, the rest get an initials tile
+tinted by expansion), deck as card thumbnails, zone and rules - filterable by
+name/zone/rule and by expansion (the `ARR HW SB ShB EW DT` chips).
 Tick who you've beaten, or **Import Collect export…** to fill it from an
 [FFXIV Collect](https://ffxivcollect.com) account export in one go (cards owned
 come along too). Set **Story progress** to hide
