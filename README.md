@@ -231,15 +231,18 @@ Four tabs, switched from the top nav. Card portraits come from the saved ARR:
 Triple Triad page (wiki icons as fallback); the board frame is stitched from
 `reference/*.webp`.
 
-**Manage decks:** on the right, a searchable list of every card - tick the
-checkbox to mark what you own (writes `collection.json`; starters are always
-on). On the left, the deck editor - click a card to add/drop it (max 5, at most
-one 4-5★), name it, `Save`. Saved decks are shared with the CLIs.
+**Manage decks:** on the right, a searchable grid of every card as its art -
+the corner box marks what you own (writes `collection.json`; starters always on),
+un-owned cards render dimmed. On the left, the deck editor - click a card to
+add/drop it (max 5, at most one 4-5★), name it, `Save`. Saved decks are shared
+with the CLIs.
 
-**NPCs:** every opponent, filterable by name/zone/rule and by expansion (the
-`ARR HW SB ShB EW DT` chips). Tick who you've beaten, or **Import Collect
-export…** to fill it from an [FFXIV Collect](https://ffxivcollect.com) account
-export in one go (cards owned come along too). Set **Story progress** to hide
+**NPCs:** every opponent - portrait (only ~27 were saved with one; the rest get
+an initials tile tinted by expansion), deck as card thumbnails, zone and rules -
+filterable by name/zone/rule and by expansion (the `ARR HW SB ShB EW DT` chips).
+Tick who you've beaten, or **Import Collect export…** to fill it from an
+[FFXIV Collect](https://ffxivcollect.com) account export in one go (cards owned
+come along too). Set **Story progress** to hide
 NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
 unbeaten reachable ones by how comfortably you take them: a fast screen (which
 runs ~4 low and never optimistic, so a small negative is still a win), then an

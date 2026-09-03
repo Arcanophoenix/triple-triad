@@ -131,6 +131,61 @@ def _load_arr_art() -> dict:
 
 _ARR_BY_ID = _load_arr_art()
 
+NPCS_DIR = paths.REFERENCE_DIR / "NPCs"
+
+
+def _load_npc_portraits() -> dict:
+    """npc name -> a portrait image Path under reference/NPCs/.
+
+    Only ~28 of the 134 NPC wiki pages were ever saved (they were fetched for
+    deck scraping), and only those carry an infobox portrait; every other NPC
+    falls back to a generated initials tile in the browser.  The file names are
+    irregular (``227px-Baderon_render.png``, ``Momodi_portrait.jpg``,
+    ``280px-Trachtoum.png``), so rank the non-chrome images in each page's
+    ``_files`` dir: a name match wins first, then render > portrait > character
+    shot, then the larger rendition.
+    """
+    import re
+    out: dict[str, object] = {}
+    if not NPCS_DIR.is_dir():
+        return out
+    skip = ("_card.png", "_location.", "_map.", "tick_", "featurequest",
+            "mainscenarioquest", "sidequest", "dailyquest", "gold_saucer_point",
+            "rarity", "tt_card_background")
+    names = {n["name"] for n in load_npcs()}
+    for d in NPCS_DIR.glob("* - Final Fantasy XIV Online Wiki*_files"):
+        npc = d.name.split(" - Final Fantasy")[0]
+        if npc not in names:
+            continue
+        key = re.sub(r"[^a-z]", "", npc.lower())[:6]
+        best, best_rank = None, ()
+        for f in (*d.glob("*.png"), *d.glob("*.jpg"), *d.glob("*.jpeg")):
+            low = f.name.lower()
+            if f.name.startswith("TT_") or any(s in low for s in skip):
+                continue
+            if re.match(r"^\d{1,2}px-", f.name):        # a small chrome icon
+                continue
+            try:
+                if f.stat().st_size < 4000:
+                    continue
+            except OSError:
+                continue
+            m = re.match(r"^(\d+)px-", f.name)
+            px = int(m.group(1)) if m else 250
+            stem = re.sub(r"[^a-z]", "", re.sub(r"^\d+px-", "", low).rsplit(".", 1)[0])
+            rank = (bool(key) and key in stem,
+                    3 if "render" in low else 2 if "portrait" in low
+                    else 1 if "character" in low else 0,
+                    px)
+            if rank > best_rank:
+                best, best_rank = f, rank
+        if best is not None:
+            out[npc] = best
+    return out
+
+
+_NPC_PORTRAIT = _load_npc_portraits()
+
 
 def _read_col() -> dict:
     return json.loads(_COL_PATH.read_text(encoding="utf-8")) if _COL_PATH.is_file() else {}
@@ -459,6 +514,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if f.is_file() and f.suffix == ".png" and f.parent == ICONS.resolve():
                 return self._file(f, "image/png")
             return self._send(404, b"", "text/plain")
+        if path.startswith("/npc-portrait/"):
+            npc = urllib.parse.unquote(path[len("/npc-portrait/"):])
+            f = _NPC_PORTRAIT.get(npc)                      # curated dict, not a user path
+            if f is not None and f.is_file():
+                ct = "image/jpeg" if f.suffix.lower() in (".jpg", ".jpeg") else "image/png"
+                return self._file(f, ct)
+            return self._send(404, b"", "text/plain")
         if path.startswith("/card/") and path.endswith(".png"):
             try:
                 cid = int(path[len("/card/"):-4])
@@ -483,6 +545,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                           "zone": n["location"]["zone"], "hasDeck": n["name"] in recorded,
                           "region": region_for_npc(n), "patch": n.get("patch"),
                           "expansion": expansion_of(npc_patch(n)),
+                          "hasPortrait": n["name"] in _NPC_PORTRAIT,
                           "mgp": n.get("mgp_win") or 0}
                          for n in load_npcs()],
                 "decks": recorded,
@@ -965,6 +1028,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             out.append({"name": n["name"], "zone": n["location"]["zone"],
                         "rules": n["rules"], "mgp": n.get("mgp_win") or 0,
                         "expansion": expansion_of(npc_patch(n)),
+                        "hasPortrait": n["name"] in _NPC_PORTRAIT,
                         "edge": r["edge"], "edgeKind": r["kind"], "bucket": bucket})
         out.sort(key=lambda r: (_SUGGEST_BUCKET_RANK[r["bucket"]],
                                 -(r["edge"] if r["edge"] is not None else -99),

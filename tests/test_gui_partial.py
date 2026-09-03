@@ -267,6 +267,20 @@ def test_recheck_cost_orders_fast_rulesets_first():
     assert cost({"rules": ["Swap"]}, {}) == 1          # falls back to the npc's rules
 
 
+def test_npc_portrait_map_points_at_real_saved_images():
+    m = gui._NPC_PORTRAIT
+    assert 15 <= len(m) <= 60           # ~27: only the pages saved for deck-scraping
+    from tt.data import load_npcs
+    roster = {n["name"] for n in load_npcs()}
+    npc_dir = (gui.NPCS_DIR).resolve()
+    for name, path in m.items():
+        assert name in roster                       # keyed by the real roster name
+        assert path.is_file() and npc_dir in path.resolve().parents
+        assert path.suffix.lower() in (".png", ".jpg", ".jpeg")
+    # a name we know was saved with a portrait, and one that was not
+    assert "Baderon" in m and "Arsieu" not in m
+
+
 def test_chaos_and_swap_are_skipped_by_the_live_recheck():
     slow = gui.Handler._too_slow_to_recheck
     assert slow({}, {"rules": ["Chaos"]})

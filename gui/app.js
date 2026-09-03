@@ -1276,19 +1276,65 @@ function renderExpFilter() {
   }
 }
 
+// ---------- NPC visuals ----------
+function npcInitials(name) {
+  const w = String(name).replace(/[^A-Za-z ]/g, " ").split(/\s+/).filter(Boolean);
+  const a = (w[0] || name || "?")[0] || "?";
+  const b = w.length > 1 ? w[w.length - 1][0] : ((w[0] || "")[1] || "");
+  return (a + b).toUpperCase();
+}
+function npcPortrait(n) {
+  const box = h("div", "npc-pic exp-" + (n.expansion || "none"));
+  box.appendChild(h("span", "npc-pic-ini", npcInitials(n.name)));
+  if (n.hasPortrait) {
+    const img = h("img", "npc-pic-img");
+    img.loading = "lazy"; img.alt = "";
+    img.addEventListener("error", () => img.remove());   // fall back to the initials
+    img.src = "/npc-portrait/" + encodeURIComponent(n.name);
+    box.appendChild(img);
+  }
+  return box;
+}
+function cardThumb(id) {
+  const e = h("div", "cthumb");
+  if (CARDS[id]) { e.style.backgroundImage = `url(/card/${id}.png)`; e.title = short(CARDS[id].name); }
+  return e;
+}
+function deckThumbs(entry) {
+  if (!entry) return null;
+  const wrap = h("div", "npc-deck-thumbs");
+  (entry.cards || entry.fixed || []).slice(0, 5).forEach((nm) => {
+    const id = nameToId(nm);
+    if (id != null) wrap.appendChild(cardThumb(id));
+  });
+  if (entry.pool) wrap.appendChild(h("span", "npc-deck-plus", `+${entry.draw} of ${entry.pool.length}`));
+  return wrap.childNodes.length ? wrap : null;
+}
+
 function npcRow(n) {
   const beaten = BEATEN.has(n.name);
-  const row = h("div", "pick-row");
+  const row = h("div", "pick-row npc-r");
   if (beaten) row.classList.add("in");
+
   const box = h("input"); box.type = "checkbox"; box.className = "own"; box.checked = beaten;
   box.addEventListener("click", (e) => e.stopPropagation());
   box.addEventListener("change", () => setBeaten(n.name, box.checked));
   row.appendChild(box);
-  row.appendChild(h("span", "pk-name", n.name));
-  if (n.expansion) row.appendChild(h("span", "exp-tag exp-" + n.expansion, n.expansion));
-  row.appendChild(h("span", "pk-sides", n.zone));
-  row.appendChild(h("span", "pk-stars", (n.rules || []).join(", ") || "-"));
-  row.appendChild(h("span", "pk-sides", n.mgp ? `${n.mgp} MGP` : ""));
+  row.appendChild(npcPortrait(n));
+
+  const mid = h("div", "npc-r-mid");
+  const top = h("div", "npc-r-top");
+  top.appendChild(h("span", "pk-name", n.name));
+  if (n.expansion) top.appendChild(h("span", "exp-tag exp-" + n.expansion, n.expansion));
+  mid.appendChild(top);
+  mid.appendChild(h("div", "npc-r-sub",
+    n.zone + ((n.rules || []).length ? "  ·  " + n.rules.join(", ") : "")));
+  const dt = deckThumbs(deckEntry(n));
+  if (dt) mid.appendChild(dt);
+  row.appendChild(mid);
+
+  row.appendChild(h("span", "npc-r-mgp", n.mgp ? `${n.mgp} MGP` : ""));
+
   row.addEventListener("click", () => {           // row (not the box) -> solver, targeting them
     $("npc").value = n.name;
     showView("solver");
@@ -1408,6 +1454,7 @@ async function suggestNext() {
       const b = SUGGEST_BUCKET[s.bucket] || SUGGEST_BUCKET.unknown;
       const num = s.edge == null ? ""
         : ` ${fmt(s.edge)}${s.edgeKind === "screen" ? " screen" : ""}`;
+      row.appendChild(npcPortrait(s));
       row.appendChild(h("span", "pk-name", s.name));
       if (s.expansion) row.appendChild(h("span", "exp-tag exp-" + s.expansion, s.expansion));
       row.appendChild(h("span", "pk-sides", s.zone));
