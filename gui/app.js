@@ -749,6 +749,19 @@ async function saveGameLog() {
   } catch (e) { G.logMeta.saved = false; }   // let a later render() retry
 }
 
+// won the match — record the NPC as beaten (same list the NPCs tab / import fill)
+async function markBeaten(btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const r = await post("/api/setbeaten", { npc: G.npc, beaten: true });
+    BEATEN = new Set(r.beaten || []);
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = e.message; }
+    return;
+  }
+  renderPostMatch();
+}
+
 // won a card off the match — mark it owned
 async function addPrize(id) {
   const box = $("postmatch");
@@ -788,6 +801,18 @@ function renderPostMatch() {
              : res === "loss" ? `Lost to ${G.npc}  ${you}–${npc}`
              : `Drew with ${G.npc}  ${you}–${npc}`;
   box.appendChild(h("div", "pm-head " + res, head));
+
+  if (res === "win" && G.npc) {
+    const bt = h("div", "pm-beaten");
+    if (BEATEN.has(G.npc)) {
+      bt.appendChild(h("span", "pm-beaten-on", `✓ ${G.npc} is marked as beaten`));
+    } else {
+      const b = h("button", "ghost", `Mark ${G.npc} as beaten`);
+      b.addEventListener("click", () => markBeaten(b));
+      bt.appendChild(b);
+    }
+    box.appendChild(bt);
+  }
 
   if (res === "win" && G.rewards.length) {
     const pz = h("div", "pm-prizes");
