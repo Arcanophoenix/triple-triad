@@ -341,15 +341,16 @@ button.linklike {
   image-rendering: -webkit-optimize-contrast;
 }
 .name {
-  position: absolute; font-size: 13px; font-weight: 700; letter-spacing: .5px;
-  text-shadow: 0 1px 3px #000;
+  position: absolute; width: 351px; text-align: center;
+  font-size: 19px; font-weight: 800; letter-spacing: .5px;
+  text-shadow: 0 1px 4px #000, 0 1px 3px #000;
 }
-.name-you { left: 34px; top: 150px; color: #7fd0ff; }
-.name-npc { right: 34px; top: 150px; color: #ff9a8f; text-align: right; }
+.name-you { left: 38px; top: 150px; color: #7fd0ff; }
+.name-npc { right: 38px; top: 150px; color: #ff9a8f; }
 
 .grid {
-  position: absolute; left: 412px; top: 82px; width: 456px; height: 462px;
-  display: grid; grid-template-columns: repeat(3, 152px); grid-template-rows: repeat(3, 154px);
+  position: absolute; left: 412px; top: 90px; width: 456px; height: 454px;
+  display: grid; grid-template-columns: repeat(3, 152px); grid-template-rows: repeat(3, 151.33px);
 }
 .cell { position: relative; cursor: pointer; }
 .cell.empty:hover { background: rgba(255, 255, 255, .10); }
@@ -357,15 +358,16 @@ button.linklike {
 @keyframes pulse { 50% { box-shadow: inset 0 0 0 3px #fff0b8, inset 0 0 30px rgba(255, 212, 94, .75); } }
 
 .hand {
-  position: absolute; display: grid; grid-template-columns: repeat(2, 156px);
-  grid-auto-rows: 160px; gap: 4px;
+  position: absolute; top: 249px; display: flex; flex-direction: column; align-items: center; gap: 13px;
 }
-.hand-you { left: 40px; top: 60px; }
-.hand-npc { right: 40px; top: 60px; }
-.slot { position: relative; }
+.hand-you { left: 38px; }
+.hand-npc { right: 38px; }
+.hand-row { display: flex; gap: 9px; }
+.hand-row .slot { position: relative; width: 111px; height: 139px; }
 
 .card {
-  position: absolute; inset: 5px; border-radius: 6px;
+  position: absolute; top: 5px; bottom: 5px; left: 50%; transform: translateX(-50%);
+  aspect-ratio: 208 / 256; border-radius: 6px;
   background: #17121f center/cover no-repeat;
   border: 2px solid #b9a05a; box-shadow: 0 3px 8px rgba(0, 0, 0, .45); overflow: hidden;
 }
@@ -391,7 +393,10 @@ button.linklike {
 }
 .card .asc-badge.desc { background: #d63b3b; }
 
-.slot .card { cursor: pointer; }
+.slot .card {
+  top: 0; bottom: 0; left: 0; transform: none;
+  width: 100%; height: 100%; aspect-ratio: auto; cursor: pointer;
+}
 .slot.sel .card { border-color: #ffd45e; box-shadow: 0 0 0 3px #ffd45e, 0 3px 10px rgba(0, 0, 0, .5); }
 .slot.rec .card { outline: 3px solid #ffd45e; outline-offset: 2px; }
 .slot.dim { opacity: .4; }
@@ -478,12 +483,15 @@ button.linklike {
 @media (max-width: 1320px) {
   :root { --scale: 1.5; --bw: 960px; --bh: 468px; }
   .grid {
-    left: 309px; top: 61px; width: 342px; height: 347px;
-    grid-template-columns: repeat(3, 114px); grid-template-rows: repeat(3, 115px);
+    left: 309px; top: 67.5px; width: 342px; height: 340.5px;
+    grid-template-columns: repeat(3, 114px); grid-template-rows: repeat(3, 113.5px);
   }
-  .hand { grid-template-columns: repeat(2, 117px); grid-auto-rows: 120px; }
-  .hand-you { left: 30px; top: 45px; } .hand-npc { right: 30px; top: 45px; }
-  .name-you { left: 26px; top: 112px; } .name-npc { right: 26px; top: 112px; }
+  .hand { top: 187px; gap: 10px; }
+  .hand-row { gap: 7px; }
+  .hand-row .slot { width: 83px; height: 104px; }
+  .hand-you { left: 29px; } .hand-npc { right: 29px; }
+  .name { width: 263px; font-size: 14px; }
+  .name-you { left: 29px; top: 112px; } .name-npc { right: 29px; top: 112px; }
   .card .num { font-size: 15px; }
   .card .asc-badge { font-size: 11px; padding: 1px 5px; }
 }

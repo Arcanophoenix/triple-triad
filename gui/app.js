@@ -1044,6 +1044,10 @@ function renderHand(side, recCard) {
   const wrap = $(side === 0 ? "hand-you" : "hand-npc");
   wrap.innerHTML = "";
   const hand = G.state.hands[side];
+  const rowTop = h("div", "hand-row");
+  const rowBottom = h("div", "hand-row");
+  wrap.appendChild(rowTop);
+  wrap.appendChild(rowBottom);
   for (let i = 0; i < 5; i++) {
     const slot = h("div", "slot");
     const id = hand[i];
@@ -1055,7 +1059,7 @@ function renderHand(side, recCard) {
       if (recCard != null && recCard === id) slot.classList.add("rec");
       slot.addEventListener("click", () => onHand(side, id));
     }
-    wrap.appendChild(slot);
+    (i < 3 ? rowTop : rowBottom).appendChild(slot);
   }
 }
 function render() {
