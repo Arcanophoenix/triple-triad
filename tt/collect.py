@@ -22,6 +22,19 @@ an import and has to be ticked by hand.
 
 Beaten NPCs live in ``collection.json`` under ``npcs_beaten`` as a list of names,
 matching how ``owned`` stores card names rather than ids.
+
+A second source feeds the same ``collect_id`` fields: a native export straight
+from the game client (see the companion Dalamud plugin under
+``scripts/dalamud/``, which reads the game's own memory - no FFXIV Collect
+account needed). It turns out **Collect doesn't invent its own numbering for
+either list** - both ``collect_id`` fields already ARE the game's native Excel
+sheet row ids verbatim: confirmed for NPCs by cross-checking Memeroon's real
+``TripleTriad`` sheet row (2293762), and for cards by comparing all 475
+``TripleTriadCard`` sheet row ids against every card's ``collect_id`` by name -
+zero mismatches. So a native export needs no separate id mapping at all;
+``map_cards``/``map_npcs`` already do the right thing, and
+:func:`apply_native_export` is a thin, differently-shaped front door onto the
+same :func:`apply_export` machinery.
 """
 from __future__ import annotations
 
@@ -134,3 +147,35 @@ def apply_export(data: dict, *, replace: bool = False) -> dict:
 def unimportable_npcs() -> list[str]:
     """NPCs with no Collect id, so an import can never tick them."""
     return sorted(n["name"] for n in load_npcs() if not n.get("collect_id"))
+
+
+def load_native_export(path: str | Path) -> dict:
+    """Parse a native-export file (from the companion Dalamud plugin), with
+    errors phrased for someone who picked the wrong file rather than a
+    traceback."""
+    p = Path(path).expanduser()
+    try:
+        raw = p.read_text(encoding="utf-8")
+    except OSError as e:
+        raise ValueError(f"cannot read {p}: {e}") from None
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"{p.name} is not valid JSON ({e})") from None
+    if not isinstance(data, dict) or not ({"owned_card_ids", "beaten_npc_ids"} & set(data)):
+        raise ValueError(f"{p.name} has no 'owned_card_ids' or 'beaten_npc_ids' list - "
+                         f"is it a native client export?")
+    return data
+
+
+def apply_native_export(data: dict, *, replace: bool = False) -> dict:
+    """Fold a native client export into collection.json.
+
+    Just :func:`apply_export` under its own key names
+    (``owned_card_ids``/``beaten_npc_ids`` instead of ``cards``/``npcs``) - the
+    ids are the same native sheet row ids either way, see module docstring.
+    """
+    return apply_export(
+        {"cards": data.get("owned_card_ids"), "npcs": data.get("beaten_npc_ids")},
+        replace=replace,
+    )

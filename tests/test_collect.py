@@ -113,3 +113,39 @@ def test_load_export_rejects_a_file_that_is_not_an_export(tmp_path):
         C.load_export(broken)
     with pytest.raises(ValueError, match="cannot read"):
         C.load_export(tmp_path / "missing.json")
+
+
+def test_native_ids_are_literally_the_same_as_collects_id():
+    """Collect doesn't invent its own numbering for either list - collect_id
+    already IS the game's native Excel sheet row id, for both cards and NPCs
+    (confirmed by comparing all 475 TripleTriadCard rows by name, zero
+    mismatches, and Memeroon's real TripleTriad row 2293762). So a native
+    client export needs no separate id mapping - map_cards/map_npcs already
+    do the right thing."""
+    gaelicat = next(c for c in CARDS if c.name == "Gaelicat Card")
+    names, unknown = C.map_cards([gaelicat.collect_id])
+    assert names == ["Gaelicat Card"] and unknown == []
+
+    npc = next(n for n in load_npcs() if n.get("collect_id"))
+    npc_names, unknown_n = C.map_npcs([npc["collect_id"]])
+    assert npc_names == [npc["name"]] and unknown_n == []
+
+
+def test_apply_native_export_merges_like_apply_export(tmp_path):
+    (tmp_path / "collection.json").write_text(json.dumps(
+        {"owned": ["Spriggan Card"], "npcs_beaten": ["Maisenta"]}))
+    npc = next(n for n in load_npcs() if n.get("collect_id") and n["name"] != "Maisenta")
+
+    r = C.apply_native_export({"owned_card_ids": [1], "beaten_npc_ids": [npc["collect_id"]]})
+
+    assert r["cards_added"] == ["Dodo Card"]
+    col = read_collection()
+    assert set(col["owned"]) == {"Spriggan Card", "Dodo Card"}
+    assert set(col["npcs_beaten"]) == {"Maisenta", npc["name"]}
+
+
+def test_load_native_export_rejects_a_file_that_is_not_one(tmp_path):
+    bad = tmp_path / "nope.json"
+    bad.write_text('{"hello": 1}')
+    with pytest.raises(ValueError, match="native client export"):
+        C.load_native_export(bad)

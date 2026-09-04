@@ -261,7 +261,12 @@ tinted by expansion), deck as card thumbnails, zone and rules - filterable by
 name/zone/rule and by expansion (the `ARR HW SB ShB EW DT` chips).
 Tick who you've beaten, or **Import Collect export…** to fill it from an
 [FFXIV Collect](https://ffxivcollect.com) account export in one go (cards owned
-come along too). Set **Story progress** to hide
+come along too) - or `tt-cli import <export.json>` on the command line, which
+also accepts a *native* export straight from the game client (see
+`scripts/dalamud/TripleTriadNativeExport/`, a small companion Dalamud plugin;
+its ids turn out to be the exact same native Excel-sheet row ids Collect's
+`collect_id` already stores, so no separate mapping is needed - see
+`tt/collect.py`'s module docstring). Set **Story progress** to hide
 NPCs you can't reach yet, and **Suggest who to challenge next** ranks the
 unbeaten reachable ones by how comfortably you take them: a fast screen (which
 runs ~4 low and never optimistic, so a small negative is still a win), then an

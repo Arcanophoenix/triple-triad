@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0.0</Version>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/blob/827d88dc/DalamudPackager/DalamudPackager.cs#L420) -->
+    <Author>you</Author>
+    <Name>Triple Triad Native Export</Name>
+    <Punchline>Dumps owned Triple Triad cards / beaten NPCs to JSON for the Triple Triad solver.</Punchline>
+    <Description>Reads the game's own "do I own this card" / "have I beaten this NPC"
+state (the same read-only technique FFTriadBuddy's collection view uses) and writes
+it to a JSON file next to this plugin's config, for import into the Triple Triad
+solver (tt-cli import). No network access, no writes to game memory, dev-only plugin.</Description>
+    <Tags>triple-triad;utility;personal</Tags>
+  </PropertyGroup>
+</Project>

@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Import an FFXIV Collect account export: cards you own, NPCs you have beaten.
+"""Import cards you own / NPCs you have beaten, from either source:
 
   scripts/collect_import.py export.json            # merge into your collection
   scripts/collect_import.py export.json --replace  # make the export authoritative
   scripts/collect_import.py export.json --dry-run  # show what would change
   scripts/collect_import.py --beaten               # list NPCs recorded as beaten
 
-Get the file from ffxivcollect.com: sign in, open your character, Export.  The
-download's name contains your character and world, so it is gitignored here.
+Accepts two file shapes, auto-detected:
+
+- An **FFXIV Collect** account export (sign in at ffxivcollect.com, open your
+  character, Export). The download's name contains your character and world,
+  so it is gitignored here.
+- A **native client export** (``{"owned_card_ids": [...], "beaten_npc_ids": [...]}``)
+  from the companion Dalamud plugin, which reads the game's own memory
+  directly - see scripts/dalamud/TripleTriadNativeExport/.
 
 Merging is the default because cards and wins are only ever gained - a union
 cannot lose anything you ticked by hand, whereas a replace would drop cards the
@@ -22,10 +28,21 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from tt.collect import (  # noqa: E402
-    apply_export, load_beaten, load_export, map_cards, map_npcs,
-    unimportable_npcs,
+    apply_export, apply_native_export, load_beaten, load_export,
+    load_native_export, map_cards, map_npcs, unimportable_npcs,
 )
 from tt.data import load_npcs, read_collection  # noqa: E402
+
+
+def _load_any(path):
+    """Return (data, is_native). Tries a Collect export first, then native."""
+    try:
+        return load_export(path), False
+    except ValueError as collect_err:
+        try:
+            return load_native_export(path), True
+        except ValueError:
+            raise collect_err from None
 
 
 def _plural(n: int, one: str, many: str | None = None) -> str:
@@ -56,18 +73,21 @@ def main(argv=None) -> int:
         p.error("give an export file, or --beaten")
 
     try:
-        data = load_export(args.export)
+        data, is_native = _load_any(args.export)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
+    cards_key, npcs_key = ("owned_card_ids", "beaten_npc_ids") if is_native else ("cards", "npcs")
+
     if args.dry_run:
-        cards, bad_cards = map_cards(data.get("cards"))
-        npcs, bad_npcs = map_npcs(data.get("npcs"))
+        cards, bad_cards = map_cards(data.get(cards_key))
+        npcs, bad_npcs = map_npcs(data.get(npcs_key))
         col = read_collection()
         have_c = set(col.get("owned") or [])
         have_n = set(col.get("npcs_beaten") or [])
-        print(f"export holds {len(cards)} card(s) and {len(npcs)} beaten NPC(s)")
+        print(f"export holds {len(cards)} card(s) and {len(npcs)} beaten NPC(s)"
+              f"{' (native client export)' if is_native else ''}")
         print(f"would add {len(set(cards) - have_c)} card(s), "
               f"{len(set(npcs) - have_n)} NPC(s)")
         if args.replace:
@@ -76,7 +96,7 @@ def main(argv=None) -> int:
         _warn(bad_cards, bad_npcs)
         return 0
 
-    r = apply_export(data, replace=args.replace)
+    r = (apply_native_export if is_native else apply_export)(data, replace=args.replace)
     print(f"cards : +{len(r['cards_added'])}"
           + (f"  -{len(r['cards_removed'])}" if r["cards_removed"] else "")
           + f"   now {r['cards_total']}")
