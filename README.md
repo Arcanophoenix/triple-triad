@@ -43,7 +43,8 @@ thing - engine, GUI, card art - into one double-clickable executable.
 gui/              browser GUI (served by scripts/gui.py, stdlib http only)
 reference/        saved wiki pages (Cards, NPCs, Triple Triad) - dataset source
   NPCs/           saved individual NPC pages -> scraped into decks.json
-  Cards @ ARR.../ saved ARR: Triple Triad page - card portraits for the GUI
+  Cards @ ARR.../ saved ARR: Triple Triad page - card portrait fallback for the GUI
+  card-art/       official in-game card portraits for the GUI (fetch_card_art.py)
 data/
   cards.json      475 cards - stats, type, stars, acquisition, icon (generated)
   npcs.json       134 NPCs  - match rules, location, MGP, rewards (generated)
@@ -59,6 +60,7 @@ scripts/
   extract_wiki.py rebuild cards.json + npcs.json from the saved wiki pages
   fetch_npc_pages.py  download NPC wiki pages from the saved "Triple Triad NPCs" list
   fetch_npc_portraits.py  download each NPC's infobox portrait for the GUI
+  fetch_card_art.py  download each card's official in-game portrait for the GUI
   scrape_npc.py   pull NPC decks + rules from saved reference/NPCs/*.html
   deck.py         add / show / list recorded NPC decks (manual alternative)
   solve.py        move (mid-game best move) and plan (solve a match from empty)
@@ -114,6 +116,16 @@ The NPC list gives each NPC's rules but not their 5 cards. To fill that in:
 each NPC's infobox portrait into `reference/NPCs/<name> … _files/`, where the GUI
 picks it up; ~130 of 134 have one on the wiki, the rest fall back to an initials
 tile. `reference/NPCs/` is gitignored, so this is a local, re-runnable step.
+
+**Card art.** `scripts/fetch_card_art.py` downloads each card's real in-game
+portrait into `reference/card-art/<id>.png`, straight from XIVAPI's public asset
+endpoint (`v2.xivapi.com`, no local FFXIV install needed) - the same icon-id
+formula (`87000 + collect_id`) ffxivcollect.com's own card-image pipeline uses.
+Every card is already tagged with a `collect_id` from `tt-cli import`, so this is
+full 475/475 coverage. Unlike the wiki/NPC mirrors, `reference/card-art/` is
+committed (it's the art the GUI actually serves, not a scrape input) and bundled
+by `TripleTriad.spec`; the older ARR-page scrape stays as a fallback for any card
+this ever fails to fetch.
 
 **Or one at a time.** Save a single NPC's wiki page into `reference/NPCs/` and
 run `./tt-cli scrape "Name"`. `play.py` also prompts for an unrecorded NPC's
@@ -233,9 +245,9 @@ branching - a ~20x faster search (opening solves drop to well under a second).
 ./tt-cli gui 9000     # different port
 ```
 
-Four tabs, switched from the top nav. Card portraits come from the saved ARR:
-Triple Triad page (wiki icons as fallback); the board frame is stitched from
-`reference/*.webp`.
+Four tabs, switched from the top nav. Card portraits are the real in-game art
+(`reference/card-art/`, see [Card art](#recording-an-npc-deck) above; ARR page /
+wiki icon as fallback); the board frame is stitched from `reference/*.webp`.
 
 **Manage decks:** on the right, a searchable grid of every card as its art -
 the corner box marks what you own (writes `collection.json`; starters always on),

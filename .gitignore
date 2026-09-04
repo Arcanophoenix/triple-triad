@@ -27,6 +27,10 @@
 /reference/*.webp
 # third-party source archives kept for reference only (re-downloadable)
 /reference/FFTriadBuddy*.zip
+/reference/ffxiv-collect*.zip
+/reference/xiv-data-oxidizer*.zip
+/reference/SaintCoinach*.zip
+/reference/Novus*.zip
 
 # --- build output ----------------------------------------------------------
 /build/

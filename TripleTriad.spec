@@ -20,6 +20,7 @@ datas = [
     (str(ROOT / "reference" / _ICONS), f"reference/{_ICONS}"),
     (str(ROOT / "reference" / _ARR), f"reference/{_ARR}"),
     (str(ROOT / "reference" / _ARR_HTML), "reference"),
+    (str(ROOT / "reference" / "card-art"), "reference/card-art"),
 ]
 
 # app.py imports sub-commands dynamically, so name them for the analysis

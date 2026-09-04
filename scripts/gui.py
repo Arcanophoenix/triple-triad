@@ -52,6 +52,7 @@ ICONS = paths.REFERENCE_DIR / (
 )
 ARR_ART = paths.REFERENCE_DIR / "Cards @ ARR_ Triple Triad - Final Fantasy XIV_files"
 ARR_HTML = paths.REFERENCE_DIR / "Cards @ ARR_ Triple Triad - Final Fantasy XIV.html"
+CARD_ART = paths.REFERENCE_DIR / "card-art"
 _RAW = json.loads((paths.BUNDLED_DATA / "cards.json").read_text(encoding="utf-8"))
 _COL_PATH = paths.user_path("collection.json")
 _HISTORY_PATH = paths.user_path("history.jsonl")
@@ -530,6 +531,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return self._send(404, b"", "text/plain")
             if not (0 <= cid < len(CARDS)):
                 return self._send(404, b"", "text/plain")
+            official = CARD_ART / f"{cid}.png"               # real in-game portrait
+            if official.is_file():
+                return self._file(official, "image/png")
             fname = _ARR_BY_ID.get(cid)                     # ARR portrait art, no numbers
             if fname:
                 art = ARR_ART / fname
